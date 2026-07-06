@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pawsitive Gluc</title>
+	<link rel="manifest" href="manifest.json">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 🎨 Variables de Tema */
@@ -46,7 +48,7 @@
             --border-color: #333;
         }
 
-        body, h1, #tarjeta-glucosa, #contenedor-grafico, li, dialog, button, input {
+        body, h1, #tarjeta-glucosa, #contenedor-grafico, li, dialog, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -59,11 +61,20 @@
         .btn-perfil { background: var(--tag-bg); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; position: absolute; right: 0; }
         .bloque-ajustado { width: 90%; max-width: 400px; box-sizing: border-box; }
         
-        #tarjeta-glucosa { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
+        #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         button:hover { background-color: var(--btn-hover); }
+        
+        /* Estilos Vet Display */
+        #display-vet { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background-color: var(--bg-body); cursor: pointer; color: var(--text-main); text-align: left; }
+        
+        /* Estilos Backup */
+        .btn-secondary { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .btn-secondary:hover { background-color: #e2e8f0; color: #1e293b; }
+        .button-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+        .hidden { display: none; }
         
         #contenedor-grafico { background: var(--card-bg); padding: 15px; border-radius: 20px; margin-bottom: 20px; width: 100%; height: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: none; box-sizing: border-box; border: 1px solid var(--border-color); }
         #contenedor-grafico canvas { width: 100% !important; height: 100% !important; }
@@ -88,7 +99,7 @@
         dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
 
         label { display: block; font-size: 0.85rem; color: var(--text-main); margin-top: 10px; font-weight: bold; }
-        input[type="number"], input[type="date"], input[type="time"], input[type="text"], select { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: var(--bg-body); color: var(--text-main); }
+        input[type="number"], input[type="date"], input[type="time"], input[type="text"], input[type="email"], select { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: var(--bg-body); color: var(--text-main); }
 
         .checkbox-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
         .checkbox-grupo label { font-weight: normal; margin: 0; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem; }
@@ -156,6 +167,16 @@
         <button onclick="window.print()" style="width: 100%; background-color: var(--accent-color); margin-top: 10px; border-radius: 10px; padding: 10px;">🖨️ Imprimir / Guardar PDF</button>
     </section>
 
+    <div class="card bloque-ajustado" style="margin-top: 2rem;">
+        <h2>Backup de Datos</h2>
+        <p style="font-size: 13px; color: #64748b; margin-top: -8px;">Exporta o importa tus datos para no perderlos.</p>
+        <div class="button-row">
+            <input type="file" id="importFile" class="hidden" accept=".json" onchange="importarDatos(event)">
+            <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📤 Importar JSON</button>
+            <button class="btn-secondary" onclick="exportarDatos()">📥 Exportar JSON</button>
+        </div>
+    </div>
+
     <dialog id="modal-registro">
         <form id="form-registro">
             <input type="hidden" id="input-index">
@@ -200,16 +221,12 @@
                 <option value="ProZinc">ProZinc</option>
                 <option value="Otra">Otra</option>
             </select>
-            <label>Tipo de Jeringuilla</label>
-            <select id="p-jeringuilla">
-                <option value="">Selecciona...</option>
-                <option value="U-40 (0.5ml)">U-40 (0.5ml)</option>
-                <option value="U-40 (1ml)">U-40 (1ml)</option>
-                <option value="U-100 (0.3ml)">U-100 (0.3ml)</option>
-                <option value="U-100 (0.5ml)">U-100 (0.5ml)</option>
-            </select>
             <label>Dosis Habitual (Unidades)</label><input type="number" id="p-dosis" step="0.5">
-            <label>Veterinario / Clínica</label><input type="text" id="p-vet">
+            
+            <label>Veterinario / Clínica</label>
+            <div id="display-vet" onclick="abrirVetModal()">Toca para configurar...</div>
+            <input type="hidden" id="p-vet-data">
+
             <label>Rango Objetivo (mg/dL)</label>
             <div class="fila-grid">
                 <input type="number" id="p-min" placeholder="Mín">
@@ -220,29 +237,72 @@
         </form>
     </dialog>
 
+    <dialog id="modal-vet">
+        <form id="form-vet" onsubmit="guardarVetModal(event)">
+            <h3>Datos del Veterinario</h3>
+            <label>Nombre</label><input type="text" id="vet-nombre" required>
+            <label>Teléfono</label><input type="text" id="vet-telefono">
+            <label>Email</label><input type="email" id="vet-email">
+            <button type="submit" class="btn-form">Aceptar</button>
+            <button type="button" class="btn-form" style="background-color: #999;" onclick="document.getElementById('modal-vet').close()">Cancelar</button>
+        </form>
+    </dialog>
+
     <script>
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
         const KEY_THEME = 'theme_pref'; 
         const modalReg = document.getElementById('modal-registro');
         const modalPerfil = document.getElementById('modal-perfil');
+        const modalVet = document.getElementById('modal-vet');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
         
         let filtroActual = 'T';
 
+        // Lógica de Backup
+        function exportarDatos() {
+            const data = {
+                registros: localStorage.getItem(KEY_GLUCOSA),
+                perfil: localStorage.getItem(KEY_PERFIL),
+                fechaExportacion: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Backup_Pawsitive_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+            a.click();
+        }
+
+        function importarDatos(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.registros) localStorage.setItem(KEY_GLUCOSA, data.registros);
+                    if(data.perfil) localStorage.setItem(KEY_PERFIL, data.perfil);
+                    alert('¡Datos importados con éxito! La página se recargará.');
+                    location.reload();
+                } catch(err) {
+                    alert('Error al leer el archivo. Asegúrate de que sea un JSON válido.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Lógica Temas
         const temas = ['', 'theme-modern', 'theme-dark'];
-        
         function aplicarTema(tema) {
             temas.forEach(t => { if(t) document.body.classList.remove(t); });
             if (tema) document.body.classList.add(tema);
             localStorage.setItem(KEY_THEME, tema);
         }
-        
         const temaGuardado = localStorage.getItem(KEY_THEME) || '';
         aplicarTema(temaGuardado);
-
         toggleTrigger.onclick = () => {
             let actual = localStorage.getItem(KEY_THEME) || '';
             let index = temas.indexOf(actual);
@@ -250,11 +310,34 @@
             aplicarTema(siguiente);
         };
 
+        // Lógica Modales
         const habilitarCierreFuera = (modal) => {
             modal.addEventListener('click', (e) => { if (e.target === modal) { modal.close(); } });
         };
         habilitarCierreFuera(modalReg);
         habilitarCierreFuera(modalPerfil);
+        habilitarCierreFuera(modalVet);
+
+        // Lógica Veterinario
+        window.abrirVetModal = () => {
+            const datosVet = JSON.parse(document.getElementById('p-vet-data').value || '{}');
+            document.getElementById('vet-nombre').value = datosVet.nombre || '';
+            document.getElementById('vet-telefono').value = datosVet.telefono || '';
+            document.getElementById('vet-email').value = datosVet.email || '';
+            modalVet.showModal();
+        };
+
+        window.guardarVetModal = (e) => {
+            e.preventDefault();
+            const nuevoVet = {
+                nombre: document.getElementById('vet-nombre').value,
+                telefono: document.getElementById('vet-telefono').value,
+                email: document.getElementById('vet-email').value
+            };
+            document.getElementById('p-vet-data').value = JSON.stringify(nuevoVet);
+            document.getElementById('display-vet').innerText = nuevoVet.nombre || "Toca para configurar...";
+            modalVet.close();
+        };
 
         window.cambiarFiltro = function(filtro) {
             filtroActual = filtro;
@@ -338,10 +421,14 @@
             document.getElementById('p-diagnostico').value = data.diagnostico || '';
             document.getElementById('p-insulina').value = data.insulina || '';
             document.getElementById('p-dosis').value = data.dosis || '';
-            document.getElementById('p-jeringuilla').value = data.jeringuilla || '';
-            document.getElementById('p-vet').value = data.vet || '';
             document.getElementById('p-min').value = data.min || '';
             document.getElementById('p-max').value = data.max || '';
+            
+            // Gestión Vet
+            const vetObj = data.veterinario || {nombre: '', telefono: '', email: ''};
+            document.getElementById('p-vet-data').value = JSON.stringify(vetObj);
+            document.getElementById('display-vet').innerText = vetObj.nombre || "Toca para configurar...";
+            
             modalPerfil.showModal();
         };
         document.getElementById('cerrar-perfil').onclick = () => modalPerfil.close();
@@ -356,8 +443,7 @@
                 diagnostico: document.getElementById('p-diagnostico').value,
                 insulina: document.getElementById('p-insulina').value,
                 dosis: document.getElementById('p-dosis').value,
-                jeringuilla: document.getElementById('p-jeringuilla').value,
-                vet: document.getElementById('p-vet').value,
+                veterinario: JSON.parse(document.getElementById('p-vet-data').value),
                 min: document.getElementById('p-min').value,
                 max: document.getElementById('p-max').value
             }));
@@ -479,7 +565,6 @@
         function manejarCambioOrientacion(e) {
             const contenedor = document.getElementById('contenedor-grafico');
             if (e.matches) {
-                // Aquí usamos regsFiltrados (datos del filtro actual) para la gráfica
                 const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
                 const ahora = new Date();
                 const regsGrafica = todosLosRegs.filter(r => {
