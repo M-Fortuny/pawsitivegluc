@@ -62,10 +62,10 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            overscroll-behavior: none; /* 📱 CORRECCIÓN 1: Elimina el rebote elástico de fondo en iPad/iOS */
+            overscroll-behavior: none; /* 📱 Elimina el rebote elástico de fondo en iPad/iOS */
         }
         
-        /* 🔥 Solución definitiva al rebote del fondo en móviles al abrir modales */
+        /* 🔥 Solución al rebote del fondo en móviles al abrir modales */
         body.modal-abierto { 
             overflow: hidden; 
             touch-action: pan-y; 
@@ -73,7 +73,7 @@
 
         header { width: 90%; max-width: 400px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; position: relative; height: 60px; }
         
-        h1 { color: var(--h1-color); margin: 0; font-size: 3.0rem; text-align: center; }
+        h1 { color: var(--h1-color); margin: 0; font-size: 2.5rem; text-align: center; }
         #btn-toggle-theme { cursor: pointer; user-select: none; }
 
         #tarjeta-glucosa {
@@ -109,7 +109,7 @@
         #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
-        /* Botones Globales (Grandes y táctiles) */
+        /* Botones Globales */
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         
         #display-vet { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background-color: var(--bg-body); cursor: pointer; color: var(--text-main); text-align: left; }
@@ -144,102 +144,23 @@
         input[type="number"], input[type="date"], input[type="time"], input[type="text"], input[type="email"], select { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: var(--bg-body); color: var(--text-main); }
 
         /* --- ESTILOS PARA FORMULARIO Y CHIPS --- */
-        .checkbox-grupo {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-
-        .chip {
-            cursor: pointer;
-            background: var(--bg-body);
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            color: var(--text-main);
-            transition: all 0.2s;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
+        .checkbox-grupo { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 20px; }
+        .chip { cursor: pointer; background: var(--bg-body); padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-main); transition: all 0.2s; user-select: none; display: flex; align-items: center; gap: 5px; }
         .chip input { display: none; }
+        .chip:has(input:checked) { background: var(--accent-color); color: white; border-color: var(--accent-color); }
 
-        .chip:has(input:checked) {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-
-        .btn-form {
-            width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: var(--btn-bg);
-            color: white;
-            border: none;
-        }
+        .btn-form { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; background-color: var(--btn-bg); color: white; border: none; }
 
         /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF) */
-        .seccion-herramientas {
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .titulo-herramientas {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-main);
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0;
-            margin-bottom: 0.8rem;
-        }
-
-        .botones-herramientas {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: space-between;
-        }
-
-        .btn-herramienta {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0.6rem 0.2rem;
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+        .seccion-herramientas { width: 90%; max-width: 400px; box-sizing: border-box; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem; margin-bottom: 1.5rem; }
+        .titulo-herramientas { text-align: center; font-size: 0.8rem; color: var(--text-main); opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 0.8rem; }
+        .botones-herramientas { display: flex; gap: 0.5rem; justify-content: space-between; }
         
+        .btn-herramienta { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.6rem 0.2rem; background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); cursor: pointer; transition: background-color 0.2s ease; }
         .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
         .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
-        .svg-icono-perfil { width: 100%; height: 100%; }
 
-
-        /* ==========================================================================
-           📱 CORRECCIÓN 2: CONTROL EXCLUSIVO DE HOVER (Solo ordenadores con ratón)
-           Elimina por completo los botones "pegajosos" en iPad y móviles.
-           ========================================================================== */
+        /* 📱 CONTROL EXCLUSIVO DE HOVER */
         @media (hover: hover) {
             button:hover { background-color: var(--btn-hover); }
             .btn-perfil:hover { transform: scale(1.05); }
@@ -249,21 +170,10 @@
             .btn-herramienta:hover { background-color: var(--border-color); }
         }
 
-
-        /* ==========================================================================
-           📱 CORRECCIÓN 3: RESPUESTA TÁCTIL (Efecto "Clic Nativo" al pulsar)
-           Reemplaza el hover persistente por una micro-pulsación fluida en iOS.
-           ========================================================================== */
-        button:active, .btn-form:active, .btn-secondary:active, .btn-herramienta:active, .chip:active {
-            transform: scale(0.98);
-        }
-        .btn-perfil:active {
-            transform: scale(0.95);
-        }
-        .btn-herramienta:active {
-            background-color: var(--border-color);
-        }
-
+        /* 📱 RESPUESTA TÁCTIL (iOS/Android) */
+        button:active, .btn-form:active, .btn-secondary:active, .btn-herramienta:active, .chip:active { transform: scale(0.98); }
+        .btn-perfil:active { transform: scale(0.95); }
+        .btn-herramienta:active { background-color: var(--border-color); }
 
         /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
@@ -279,8 +189,12 @@
             #lista-historial { display: block !important; width: 100% !important; }
             li { box-shadow: none !important; border-bottom: 1px solid #ccc !important; background: white !important; }
         }
-</style>
 
+        /* --- CONFIGURACIÓN PERFIL EN CUADRÍCULA --- */
+        .form-perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .form-perfil-grid label { font-weight: normal; margin: 0; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem; padding: 8px; background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; }
+        .form-perfil-grid input[type="checkbox"] { margin-right: 8px; }
+    </style>
 </head>
 <body>
 
@@ -348,67 +262,75 @@
     </div>
     <input type="file" id="input-archivo-importar" accept=".json" class="hidden">
 
-<dialog id="modal-registro">
-    <form id="form-registro">
-        <input type="hidden" id="input-index">
-        <h3 id="titulo-modal" style="margin-top:0;">Nuevo Registro</h3>
-        
-        <div class="grupo-formulario">
-            <label for="input-valor">Glucosa (mg/dL)</label>
-            <input type="number" id="input-valor" required inputmode="decimal" placeholder="Ej: 120" onfocus="this.value=''">
-        </div>
-
-        <div class="grupo-formulario">
-            <label for="input-insulina-registro">Insulina utilizada</label>
-            <select id="input-insulina-registro">
-                <option value="Caninsulin">Caninsulin (Vetsulin)</option>
-                <option value="Lantus">Lantus (Glargina)</option>
-                <option value="Levemir">Levemir (Detemir)</option>
-                <option value="NPH">NPH (Humana)</option>
-                <option value="ProZinc">ProZinc</option>
-                <option value="Otra">Otra</option>
-            </select>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="input-fecha">Fecha</label>
-                <input type="date" id="input-fecha" required>
+    <dialog id="modal-registro">
+        <form id="form-registro">
+            <input type="hidden" id="input-index">
+            <h3 id="titulo-modal" style="margin-top:0;">Nuevo Registro</h3>
+            
+            <div class="grupo-formulario">
+                <label for="input-valor">Glucosa (mg/dL)</label>
+                <input type="number" id="input-valor" required inputmode="decimal" placeholder="Ej: 120">
             </div>
-            <div style="flex: 1;">
-                <label for="input-hora">Hora</label>
-                <input type="time" id="input-hora" required>
+
+            <div class="grupo-formulario">
+                <label for="input-insulina-registro">Insulina utilizada</label>
+                <select id="input-insulina-registro" required>
+                    <option value="" disabled selected>Selecciona una opción...</option>
+                    <option value="Caninsulin">Caninsulin (Vetsulin)</option>
+                    <option value="Lantus">Lantus (Glargina)</option>
+                    <option value="Levemir">Levemir (Detemir)</option>
+                    <option value="NPH">NPH (Humana)</option>
+                    <option value="ProZinc">ProZinc</option>
+                    <option value="Otra">Otra</option>
+                </select>
             </div>
-        </div>
 
-        <label style="margin-top: 15px; display: block;">Factores influyentes</label>
-<div class="checkbox-grupo" id="input-factores">
-    <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
-    <label class="chip"><input type="checkbox" name="factor" value="Insulina"> 💉 Insulina</label>
-    <label class="chip"><input type="checkbox" name="factor" value="Ejercicio"> 🏃 Ejercicio</label>
-    <label class="chip"><input type="checkbox" name="factor" value="Caminata"> 🐕 Caminata</label>
-    <label class="chip"><input type="checkbox" name="factor" value="Estrés"> 😰 Estrés</label>
-    <label class="chip"><input type="checkbox" name="factor" value="Malestar"> 🤒 Malestar</label>
-</div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label for="input-fecha">Fecha</label>
+                    <input type="date" id="input-fecha" required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="input-hora">Hora</label>
+                    <input type="time" id="input-hora" required>
+                </div>
+            </div>
 
+            <label style="margin-top: 15px; display: block;">Factores influyentes</label>
+            <div class="checkbox-grupo" id="input-factores">
+                <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
+                <label class="chip"><input type="checkbox" name="factor" value="Insulina"> 💉 Insulina</label>
+                <label class="chip"><input type="checkbox" name="factor" value="Ejercicio"> 🏃 Ejercicio</label>
+                <label class="chip"><input type="checkbox" name="factor" value="Caminata"> 🐕 Caminata</label>
+                <label class="chip"><input type="checkbox" name="factor" value="Estrés"> 😰 Estrés</label>
+                <label class="chip"><input type="checkbox" name="factor" value="Malestar"> 🤒 Malestar</label>
+            </div>
 
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn-form">Guardar Registro</button>
-            <button type="button" id="cerrar-modal" class="btn-form" style="background-color: #999;">Cancelar</button>
-        </div>
-    </form>
-</dialog>
-
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-form">Guardar Registro</button>
+                <button type="button" id="cerrar-modal" class="btn-form" style="background-color: #999;">Cancelar</button>
+            </div>
+        </form>
+    </dialog> 
+    
     <dialog id="modal-perfil">
         <form id="form-perfil">
-            <h3 style="margin-top:0;">Perfil de Mascota</h3>
-            <label>Nombre del Perro</label><input type="text" id="p-nombre" required>
-            <label>Tutor / Responsable</label><input type="text" id="p-tutor" required>
-            <div class="fila-grid">
+            <h3 style="margin-top:0; text-align: center;">Perfil de Mascota</h3>
+            
+            <label>Nombre del Perro</label>
+            <input type="text" id="p-nombre" required>
+            
+            <label>Tutor / Responsable</label>
+            <input type="text" id="p-tutor" required>
+            
+            <div class="form-perfil-grid">
                 <div><label>Peso (kg)</label><input type="number" id="p-peso" step="0.1"></div>
                 <div><label>Edad (años)</label><input type="number" id="p-edad"></div>
             </div>
-            <label>Fecha de Diagnóstico</label><input type="date" id="p-diagnostico">
+            
+            <label>Fecha de Diagnóstico</label>
+            <input type="date" id="p-diagnostico">
+            
             <label>Tipo de Insulina</label>
             <select id="p-insulina">
                 <option value="">Selecciona...</option>
@@ -423,13 +345,13 @@
             <label>Tipo de Jeringuilla</label>
             <select id="p-jeringuilla">
                 <option value="">Selecciona...</option>
-                <optgroup label="Jeringuillas U-40 (Veterinaria - Tapón Rojo)">
+                <optgroup label="Jeringuillas U-40 (Vet - Tapón Rojo)">
                     <option value="U40-0.5-enteras">U-40 | 0.5 ml (Hasta 20 U. Enteras)</option>
                     <option value="U40-0.5-medias">U-40 | 0.5 ml (Con Medias Unidades)</option>
                     <option value="U40-1.0-enteras">U-40 | 1.0 ml (Hasta 40 U.)</option>
                 </optgroup>
                 <optgroup label="Jeringuillas U-100 (Humana - Tapón Naranja)">
-                    <option value="U100-0.3-medias">U-100 | 0.3 ml (Con Medias Unidades - Recomendada)</option>
+                    <option value="U100-0.3-medias">U-100 | 0.3 ml (Con Medias Unidades)</option>
                     <option value="U100-0.3-enteras">U-100 | 0.3 ml (Hasta 30 U. Enteras)</option>
                     <option value="U100-0.5-enteras">U-100 | 0.5 ml (Hasta 50 U.)</option>
                     <option value="U100-1.0-enteras">U-100 | 1.0 ml (Hasta 100 U.)</option>
@@ -440,35 +362,40 @@
                 </optgroup>
             </select>
 
-            <label>Dosis Habitual (Unidades)</label><input type="number" id="p-dosis" step="0.5">
+            <label>Dosis Habitual (Unidades)</label>
+            <input type="number" id="p-dosis" step="0.5">
             
             <label>Veterinario / Clínica</label>
             <div id="display-vet" onclick="abrirVetModal()">Toca para configurar...</div>
             <input type="hidden" id="p-vet-data">
 
             <label>Rango Objetivo (mg/dL)</label>
-            <div class="fila-grid">
+            <div class="form-perfil-grid">
                 <input type="number" id="p-min" placeholder="Mín">
                 <input type="number" id="p-max" placeholder="Máx">
             </div>
+            
             <button type="submit" class="btn-form">Guardar Perfil</button>
-            <button type="button" id="cerrar-perfil" class="btn-form" style="background-color: #999;">Cancelar</button>
+            <button type="button" id="cerrar-perfil" class="btn-form" style="background-color: #999; margin-top: 8px;">Cancelar</button>
         </form>
     </dialog>
 
     <dialog id="modal-vet">
         <form id="form-vet" onsubmit="guardarVetModal(event)">
-            <h3>Datos del Veterinario</h3>
-            <label>Nombre</label><input type="text" id="vet-nombre" required>
-            <label>Teléfono</label><input type="text" id="vet-telefono">
-            <label>Email</label><input type="email" id="vet-email">
+            <h3 style="text-align: center;">Datos del Veterinario</h3>
+            <label>Nombre</label>
+            <input type="text" id="vet-nombre" required>
+            <label>Teléfono</label>
+            <input type="text" id="vet-telefono">
+            <label>Email</label>
+            <input type="email" id="vet-email">
             <button type="submit" class="btn-form">Aceptar</button>
-            <button type="button" class="btn-form" style="background-color: #999;" onclick="cerrarVetYMantenerFondo()">Cancelar</button>
+            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarVetYMantenerFondo()">Cancelar</button>
         </form>
     </dialog>
 
-    <script>
 
+    <script>
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
         const KEY_THEME = 'theme_pref'; 
@@ -478,7 +405,6 @@
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
-        
         let filtroActual = 'T';
 
         // Lógica de Backup
@@ -514,13 +440,11 @@
             reader.readAsText(file);
         }
 
-        // --- Conectar botones de Backup (LO NUEVO AÑADIDO) ---
         document.getElementById('btn-exportar').onclick = exportarDatos;
         document.getElementById('btn-importar').onclick = () => {
             document.getElementById('input-archivo-importar').click();
         };
         document.getElementById('input-archivo-importar').onchange = importarDatos;
-        // ---------------------------------------------------
 
         // Lógica Temas
         const temas = ['', 'theme-modern', 'theme-dark'];
@@ -543,7 +467,6 @@
             modal.addEventListener('click', (e) => { 
                 if (e.target === modal) { 
                     modal.close(); 
-                    // Solo quitamos la congelación si no queda otro modal abierto debajo (ej. Perfil)
                     if (modal.id !== 'modal-vet' || !modalPerfil.open) {
                         document.body.classList.remove('modal-abierto');
                     }
@@ -577,7 +500,6 @@
 
         window.cerrarVetYMantenerFondo = () => {
             modalVet.close();
-            // No removemos modal-abierto porque el de perfil sigue activo detrás
         };
 
         window.cambiarFiltro = function(filtro) {
@@ -592,12 +514,15 @@
         document.getElementById('abrir-nueva').onclick = () => {
             document.getElementById('titulo-modal').innerText = "Nuevo Registro";
             document.getElementById('input-index').value = "";
-            formReg.reset();
-            const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-            if (regs.length > 0) { document.getElementById('input-valor').value = regs[0].valor; }
+            formReg.reset(); 
+            
             const ahora = new Date();
             document.getElementById('input-fecha').value = ahora.toISOString().split('T')[0];
-            document.getElementById('input-hora').value = ahora.toTimeString().substring(0, 5);
+            document.getElementById('input-hora').value = calibrationTime = ahora.toTimeString().substring(0, 5);
+            
+            // Forzar selector de insulina a la opción vacía descriptiva
+            document.getElementById('input-insulina-registro').selectedIndex = 0;
+            
             document.body.classList.add('modal-abierto');
             modalReg.showModal();
         };
@@ -607,73 +532,64 @@
             document.body.classList.remove('modal-abierto');
         };
 
-
         formReg.onsubmit = (e) => {
-    e.preventDefault();
-    let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-    const idx = document.getElementById('input-index').value;
-    const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
-    
-    const nuevaInsulina = document.getElementById('input-insulina-registro').value;
-    const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-    
-    const nuevoRegistro = {
-        valor: document.getElementById('input-valor').value,
-        fecha: document.getElementById('input-fecha').value,
-        hora: document.getElementById('input-hora').value,
-        factores: factores,
-        contextoClinico: {
-            insulina: nuevaInsulina,
-            dosis: perfilActual.dosis || "0"
-        }
-    };
+            e.preventDefault();
+            let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            const idx = document.getElementById('input-index').value;
+            const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
+            
+            const nuevaInsulina = document.getElementById('input-insulina-registro').value;
+            const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            
+            const nuevoRegistro = {
+                valor: document.getElementById('input-valor').value,
+                fecha: document.getElementById('input-fecha').value,
+                hora: document.getElementById('input-hora').value,
+                factores: factores,
+                contextoClinico: {
+                    insulina: nuevaInsulina || perfilActual.insulina || "No definida",
+                    dosis: perfilActual.dosis || "0"
+                }
+            };
 
-    if (idx !== "") { regs[parseInt(idx)] = nuevoRegistro; } 
-    else { regs.unshift(nuevoRegistro); }
+            if (idx !== "") { regs[parseInt(idx)] = nuevoRegistro; } 
+            else { regs.unshift(nuevoRegistro); }
 
-    regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
+            regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
 
-    localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
-    modalReg.close();
-    document.body.classList.remove('modal-abierto');
-    actualizarInterfaz();
-};
+            localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+            modalReg.close();
+            document.body.classList.remove('modal-abierto');
+            actualizarInterfaz();
+        };
 
+        window.editar = function(index) {
+            const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            const r = regs[index];
+            if (!r) return; 
 
-
-
-window.editar = function(index) {
-    // 1. Obtener los registros y el registro específico
-    const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-    const r = regs[index];
-
-    // 2. Rellenar los campos básicos del formulario
-    document.getElementById('titulo-modal').innerText = "Editar Registro";
-    document.getElementById('input-index').value = index;
-    document.getElementById('input-valor').value = r.valor || "";
-    document.getElementById('input-fecha').value = r.fecha || "";
-    document.getElementById('input-hora').value = r.hora || "";
-    
-    // 3. Carga del valor de insulina (con protección por si es undefined)
-    const campoInsulina = document.getElementById('input-insulina-registro');
-    if (campoInsulina) {
-        campoInsulina.value = r.contextoClinico?.insulina || "No definida";
-    }
-    
-    // 4. Marcar/Desmarcar los factores (chips)
-    // Primero desmarcamos todos para limpiar el estado previo
-    document.querySelectorAll('#input-factores input').forEach(cb => {
-        // Verificamos si r.factores existe y si contiene el valor del checkbox
-        cb.checked = Array.isArray(r.factores) ? r.factores.includes(cb.value) : false;
-    });
-    
-    // 5. Abrir el modal
-    document.body.classList.add('modal-abierto');
-    if (typeof modalReg !== 'undefined' && modalReg.showModal) {
-        modalReg.showModal();
-    }
-};
-
+            document.getElementById('titulo-modal').innerText = "Editar Registro";
+            document.getElementById('input-index').value = index;
+            
+            // Rellenado seguro de parámetros persistentes
+            document.getElementById('input-valor').value = r.valor || "";
+            document.getElementById('input-fecha').value = r.fecha || "";
+            document.getElementById('input-hora').value = r.hora || "";
+            
+            const campoInsulina = document.getElementById('input-insulina-registro');
+            if (campoInsulina) {
+                campoInsulina.value = r.contextoClinico?.insulina || "";
+            }
+            
+            document.querySelectorAll('#input-factores input').forEach(cb => {
+                cb.checked = Array.isArray(r.factores) ? r.factores.includes(cb.value) : false;
+            });
+            
+            document.body.classList.add('modal-abierto');
+            if (typeof modalReg !== 'undefined' && modalReg.showModal) {
+                modalReg.showModal();
+            }
+        };
 
         window.borrar = function(index) {
             if(confirm('¿Eliminar registro?')) {
@@ -814,6 +730,11 @@ window.editar = function(index) {
                 lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros en este periodo</li>';
             }
             calcularYMostrarInformes(regsFiltrados, perfil);
+            
+            // Actualización dinámica del gráfico si el usuario está en modo panorámico (landscape)
+            if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
+                renderizarGrafica([...regsFiltrados].reverse());
+            }
         }
 
         function renderizarGrafica(datos) {
@@ -866,7 +787,6 @@ window.editar = function(index) {
         mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
         actualizarInterfaz();
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
-
 
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
