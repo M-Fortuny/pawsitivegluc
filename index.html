@@ -48,14 +48,24 @@
             --border-color: #333;
         }
 
-        /* 🔄 Transiciones de Tema (Se añade .seccion-herramientas para cambios suaves) */
+        /* 🔄 Transiciones de Tema */
         body, h1, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, li, dialog, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            overscroll-behavior: none; /* 📱 CORRECCIÓN 1: Elimina el rebote elástico de fondo en iPad/iOS */
+        }
         
-        /* 🔥 Solución definitiva al rebote del fondo en móviles */
+        /* 🔥 Solución definitiva al rebote del fondo en móviles al abrir modales */
         body.modal-abierto { 
             overflow: hidden; 
             touch-action: pan-y; 
@@ -93,14 +103,6 @@
             height: 100%;
             object-fit: contain;
         }
-
-        .btn-perfil:hover {
-            transform: scale(1.05);
-        }
-
-        .btn-perfil:active {
-            transform: scale(0.95);
-        }
         
         .bloque-ajustado { width: 90%; max-width: 400px; box-sizing: border-box; }
         
@@ -109,12 +111,10 @@
         
         /* Botones Globales (Grandes y táctiles) */
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
-        button:hover { background-color: var(--btn-hover); }
         
         #display-vet { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background-color: var(--bg-body); cursor: pointer; color: var(--text-main); text-align: left; }
         
         .btn-secondary { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .btn-secondary:hover { background-color: #e2e8f0; color: #1e293b; }
         .button-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
         .hidden { display: none; }
         
@@ -143,10 +143,49 @@
         label { display: block; font-size: 0.85rem; color: var(--text-main); margin-top: 10px; font-weight: bold; }
         input[type="number"], input[type="date"], input[type="time"], input[type="text"], input[type="email"], select { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: var(--bg-body); color: var(--text-main); }
 
-        .checkbox-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
-        .checkbox-grupo label { font-weight: normal; margin: 0; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem; }
-        .btn-form { width: 100%; margin-top: 10px; }
-        .fila-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+        /* --- ESTILOS PARA FORMULARIO Y CHIPS --- */
+        .checkbox-grupo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chip {
+            cursor: pointer;
+            background: var(--bg-body);
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chip input { display: none; }
+
+        .chip:has(input:checked) {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .btn-form {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: var(--btn-bg);
+            color: white;
+            border: none;
+        }
 
         /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF) */
         .seccion-herramientas {
@@ -178,7 +217,7 @@
         }
 
         .btn-herramienta {
-            flex: 1; /* Mantiene forzosamente el formato de fila horizontal */
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -191,13 +230,40 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
-
-        .btn-herramienta:hover, .btn-herramienta:active {
-            background-color: var(--border-color);
-        }
         
         .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
         .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
+        .svg-icono-perfil { width: 100%; height: 100%; }
+
+
+        /* ==========================================================================
+           📱 CORRECCIÓN 2: CONTROL EXCLUSIVO DE HOVER (Solo ordenadores con ratón)
+           Elimina por completo los botones "pegajosos" en iPad y móviles.
+           ========================================================================== */
+        @media (hover: hover) {
+            button:hover { background-color: var(--btn-hover); }
+            .btn-perfil:hover { transform: scale(1.05); }
+            .btn-secondary:hover { background-color: #e2e8f0; color: #1e293b; }
+            .btn-form:hover { background-color: var(--btn-hover); }
+            .chip:hover { background-color: var(--border-color); }
+            .btn-herramienta:hover { background-color: var(--border-color); }
+        }
+
+
+        /* ==========================================================================
+           📱 CORRECCIÓN 3: RESPUESTA TÁCTIL (Efecto "Clic Nativo" al pulsar)
+           Reemplaza el hover persistente por una micro-pulsación fluida en iOS.
+           ========================================================================== */
+        button:active, .btn-form:active, .btn-secondary:active, .btn-herramienta:active, .chip:active {
+            transform: scale(0.98);
+        }
+        .btn-perfil:active {
+            transform: scale(0.95);
+        }
+        .btn-herramienta:active {
+            background-color: var(--border-color);
+        }
+
 
         /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
@@ -213,9 +279,8 @@
             #lista-historial { display: block !important; width: 100% !important; }
             li { box-shadow: none !important; border-bottom: 1px solid #ccc !important; background: white !important; }
         }
+</style>
 
-        .svg-icono-perfil { width: 100%; height: 100%; }
-    </style>
 </head>
 <body>
 
@@ -283,29 +348,56 @@
     </div>
     <input type="file" id="input-archivo-importar" accept=".json" class="hidden">
 
-    <dialog id="modal-registro">
-        <form id="form-registro">
-            <input type="hidden" id="input-index">
-            <h3 id="titulo-modal" style="margin-top:0;">Nuevo Registro</h3>
-            <label>Glucosa (mg/dL)</label>
-            <input type="number" id="input-valor" required inputmode="decimal" onfocus="this.value=''">
-            <div class="fila-grid">
-                <div><label>Fecha</label><input type="date" id="input-fecha" required></div>
-                <div><label>Hora</label><input type="time" id="input-hora" required></div>
+<dialog id="modal-registro">
+    <form id="form-registro">
+        <input type="hidden" id="input-index">
+        <h3 id="titulo-modal" style="margin-top:0;">Nuevo Registro</h3>
+        
+        <div class="grupo-formulario">
+            <label for="input-valor">Glucosa (mg/dL)</label>
+            <input type="number" id="input-valor" required inputmode="decimal" placeholder="Ej: 120" onfocus="this.value=''">
+        </div>
+
+        <div class="grupo-formulario">
+            <label for="input-insulina-registro">Insulina utilizada</label>
+            <select id="input-insulina-registro">
+                <option value="Caninsulin">Caninsulin (Vetsulin)</option>
+                <option value="Lantus">Lantus (Glargina)</option>
+                <option value="Levemir">Levemir (Detemir)</option>
+                <option value="NPH">NPH (Humana)</option>
+                <option value="ProZinc">ProZinc</option>
+                <option value="Otra">Otra</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label for="input-fecha">Fecha</label>
+                <input type="date" id="input-fecha" required>
             </div>
-            <label>Factores influyentes</label>
-            <div class="checkbox-grupo" id="input-factores">
-                <label><input type="checkbox" value="Comida"> Comida</label>
-                <label><input type="checkbox" value="Insulina"> Insulina</label>
-                <label><input type="checkbox" value="Ejercicio"> Ejercicio</label>
-                <label><input type="checkbox" value="Caminata"> Caminata</label>
-                <label><input type="checkbox" value="Estrés"> Estrés</label>
-                <label><input type="checkbox" value="Malestar"> Malestar</label>
+            <div style="flex: 1;">
+                <label for="input-hora">Hora</label>
+                <input type="time" id="input-hora" required>
             </div>
-            <button type="submit" class="btn-form">Guardar</button>
+        </div>
+
+        <label style="margin-top: 15px; display: block;">Factores influyentes</label>
+<div class="checkbox-grupo" id="input-factores">
+    <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
+    <label class="chip"><input type="checkbox" name="factor" value="Insulina"> 💉 Insulina</label>
+    <label class="chip"><input type="checkbox" name="factor" value="Ejercicio"> 🏃 Ejercicio</label>
+    <label class="chip"><input type="checkbox" name="factor" value="Caminata"> 🐕 Caminata</label>
+    <label class="chip"><input type="checkbox" name="factor" value="Estrés"> 😰 Estrés</label>
+    <label class="chip"><input type="checkbox" name="factor" value="Malestar"> 🤒 Malestar</label>
+</div>
+
+
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn-form">Guardar Registro</button>
             <button type="button" id="cerrar-modal" class="btn-form" style="background-color: #999;">Cancelar</button>
-        </form>
-    </dialog>
+        </div>
+    </form>
+</dialog>
 
     <dialog id="modal-perfil">
         <form id="form-perfil">
@@ -376,6 +468,7 @@
     </dialog>
 
     <script>
+
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
         const KEY_THEME = 'theme_pref'; 
@@ -514,48 +607,73 @@
             document.body.classList.remove('modal-abierto');
         };
 
+
         formReg.onsubmit = (e) => {
-            e.preventDefault();
-            let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-            const idx = document.getElementById('input-index').value;
-            const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
-            const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            
-            const nuevoRegistro = {
-                valor: document.getElementById('input-valor').value,
-                fecha: document.getElementById('input-fecha').value,
-                hora: document.getElementById('input-hora').value,
-                factores: factores,
-                contextoClinico: {
-                    insulina: perfilActual.insulina || "No definida",
-                    dosis: perfilActual.dosis || "0"
-                }
-            };
+    e.preventDefault();
+    let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+    const idx = document.getElementById('input-index').value;
+    const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
+    
+    const nuevaInsulina = document.getElementById('input-insulina-registro').value;
+    const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+    
+    const nuevoRegistro = {
+        valor: document.getElementById('input-valor').value,
+        fecha: document.getElementById('input-fecha').value,
+        hora: document.getElementById('input-hora').value,
+        factores: factores,
+        contextoClinico: {
+            insulina: nuevaInsulina,
+            dosis: perfilActual.dosis || "0"
+        }
+    };
 
-            if (idx !== "") { regs[parseInt(idx)] = nuevoRegistro; } 
-            else { regs.unshift(nuevoRegistro); }
-            regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
+    if (idx !== "") { regs[parseInt(idx)] = nuevoRegistro; } 
+    else { regs.unshift(nuevoRegistro); }
 
-            localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
-            modalReg.close();
-            document.body.classList.remove('modal-abierto');
-            actualizarInterfaz();
-        };
+    regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
 
-        window.editar = function(index) {
-            const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-            const r = regs[index];
-            document.getElementById('titulo-modal').innerText = "Editar Registro";
-            document.getElementById('input-index').value = index;
-            document.getElementById('input-valor').value = r.valor;
-            document.getElementById('input-fecha').value = r.fecha;
-            document.getElementById('input-hora').value = r.hora;
-            document.querySelectorAll('#input-factores input').forEach(cb => {
-                cb.checked = r.factores.includes(cb.value);
-            });
-            document.body.classList.add('modal-abierto');
-            modalReg.showModal();
-        };
+    localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+    modalReg.close();
+    document.body.classList.remove('modal-abierto');
+    actualizarInterfaz();
+};
+
+
+
+
+window.editar = function(index) {
+    // 1. Obtener los registros y el registro específico
+    const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+    const r = regs[index];
+
+    // 2. Rellenar los campos básicos del formulario
+    document.getElementById('titulo-modal').innerText = "Editar Registro";
+    document.getElementById('input-index').value = index;
+    document.getElementById('input-valor').value = r.valor || "";
+    document.getElementById('input-fecha').value = r.fecha || "";
+    document.getElementById('input-hora').value = r.hora || "";
+    
+    // 3. Carga del valor de insulina (con protección por si es undefined)
+    const campoInsulina = document.getElementById('input-insulina-registro');
+    if (campoInsulina) {
+        campoInsulina.value = r.contextoClinico?.insulina || "No definida";
+    }
+    
+    // 4. Marcar/Desmarcar los factores (chips)
+    // Primero desmarcamos todos para limpiar el estado previo
+    document.querySelectorAll('#input-factores input').forEach(cb => {
+        // Verificamos si r.factores existe y si contiene el valor del checkbox
+        cb.checked = Array.isArray(r.factores) ? r.factores.includes(cb.value) : false;
+    });
+    
+    // 5. Abrir el modal
+    document.body.classList.add('modal-abierto');
+    if (typeof modalReg !== 'undefined' && modalReg.showModal) {
+        modalReg.showModal();
+    }
+};
+
 
         window.borrar = function(index) {
             if(confirm('¿Eliminar registro?')) {
