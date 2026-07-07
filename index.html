@@ -48,53 +48,51 @@
             --border-color: #333;
         }
 
-        body, h1, #tarjeta-glucosa, #contenedor-grafico, li, dialog, button, input, select {
+        /* 🔄 Transiciones de Tema (Se añade .seccion-herramientas para cambios suaves) */
+        body, h1, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, li, dialog, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* 🔥 Solución definitiva al rebote del fondo en móviles */
+        body.modal-abierto { 
+            overflow: hidden; 
+            touch-action: pan-y; 
+        }
+
         header { width: 90%; max-width: 400px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; position: relative; height: 60px; }
         
-        h1 { color: var(--h1-color); margin: 0; font-size: 3,0rem; text-align: center; }
+        h1 { color: var(--h1-color); margin: 0; font-size: 3.0rem; text-align: center; }
         #btn-toggle-theme { cursor: pointer; user-select: none; }
 
-        /* Ajuste necesario para posicionar el botón de perfil */
         #tarjeta-glucosa {
             position: relative;
         }
 
         .btn-perfil {
-            background: var(--tag-bg);
+            background: transparent;
             border: none;
             border-radius: 50%;
             width: 75px;
-            height:75px;
+            height: 75px;
             cursor: pointer;
             font-size: 2.0rem;
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
-				background: transparent; /* Por si prefieres que no tenga fondo 				gris/blanco */
-   			border: none;
-    			padding: 0;
-    			cursor: pointer;
-            right: 15px; /* Colocación a la derecha */
-            top: 15px;   /* Colocación arriba */
+            padding: 0;
+            right: 15px;
+            top: 15px;
             transition: transform 0.2s ease, background-color 0.3s ease;
-				/* Ajuste para que la imagen no se desborde ni se deforme */
-				
         }
 
-
-				/* Ajuste para que la imagen no se desborde ni se deforme */
-				.img-icono-perfil {
-    			width: 100%;
-    			height: 100%;
-   			object-fit: contain; /* Mantiene la proporción perfecta del logo */
-
-}
-
+        .img-icono-perfil {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
         .btn-perfil:hover {
             transform: scale(1.05);
@@ -109,13 +107,12 @@
         #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
+        /* Botones Globales (Grandes y táctiles) */
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         button:hover { background-color: var(--btn-hover); }
         
-        /* Estilos Vet Display */
         #display-vet { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background-color: var(--bg-body); cursor: pointer; color: var(--text-main); text-align: left; }
         
-        /* Estilos Backup */
         .btn-secondary { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
         .btn-secondary:hover { background-color: #e2e8f0; color: #1e293b; }
         .button-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
@@ -139,7 +136,7 @@
         .btn-editar { background-color: #6cace4; color: white; }
         .btn-borrar { background-color: #FF7070; color: white; }
         
-        dialog { border: none; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 85%; max-width: 350px; opacity: 0; transition: opacity 0.3s ease; margin: 5dvh auto; max-height: 85vh; overflow-y: auto; background-color: var(--card-bg); color: var(--text-main); }
+        dialog { border: none; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 85%; max-width: 350px; opacity: 0; transition: opacity 0.3s ease; margin: 5dvh auto; max-height: 85vh; overflow-y: auto; background-color: var(--card-bg); color: var(--text-main); overscroll-behavior: contain; }
         dialog[open] { opacity: 1; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
 
@@ -151,29 +148,73 @@
         .btn-form { width: 100%; margin-top: 10px; }
         .fila-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
 
+        /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF) */
+        .seccion-herramientas {
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .titulo-herramientas {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+        }
+
+        .botones-herramientas {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: space-between;
+        }
+
+        .btn-herramienta {
+            flex: 1; /* Mantiene forzosamente el formato de fila horizontal */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 0.2rem;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-herramienta:hover, .btn-herramienta:active {
+            background-color: var(--border-color);
+        }
+        
+        .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
+        .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
+
+        /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
             body { padding: 0; height: 100vh; overflow: hidden; display: block; }
-            header, #tarjeta-glucosa, .seccion-vertical, dialog { display: none !important; }
+            header, #tarjeta-glucosa, .seccion-vertical, dialog, .seccion-herramientas { display: none !important; }
             #contenedor-grafico { display: flex !important; position: fixed; top: 0; left: 0; width: 100vw !important; height: 100vh !important; margin: 0 !important; padding: 15px !important; box-sizing: border-box; background: var(--bg-body); z-index: 99999; border-radius: 0; }
         }
 
         @media print {
             body { background: white; color: black; padding: 0; }
-            header, #tarjeta-glucosa, #contenedor-grafico, button, .btn-accion, .selector-tiempo { display: none !important; }
+            header, #tarjeta-glucosa, #contenedor-grafico, button, .btn-accion, .selector-tiempo, .seccion-herramientas { display: none !important; }
             #seccion-informes { display: block !important; width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
             #lista-historial { display: block !important; width: 100% !important; }
             li { box-shadow: none !important; border-bottom: 1px solid #ccc !important; background: white !important; }
         }
 
-
-
-.svg-icono-perfil {
-    width: 100%;
-    height: 100%;
-    /* Si tu SVG usa currentColor, puedes cambiarle el color desde aquí con 'fill' o 'stroke' */
-}
-
-
+        .svg-icono-perfil { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -182,12 +223,10 @@
         <h1><span id="btn-toggle-theme">Pawsitive Gluc</span></h1>
     </header>
 
-
     <section id="tarjeta-glucosa" class="bloque-ajustado">
-<button id="abrir-perfil" class="btn-perfil">
-    <img src="https://raw.githubusercontent.com/M-Fortuny/pawsitivegluc/refs/heads/main/icono-app.png" alt="Perfil Mascota" class="img-icono-perfil">
-</button>
-
+        <button id="abrir-perfil" class="btn-perfil">
+            <img src="https://raw.githubusercontent.com/M-Fortuny/pawsitivegluc/refs/heads/main/icono-app.png" alt="Perfil Mascota" class="img-icono-perfil">
+        </button>
         <p style="margin:0; color: #666; font-size: 0.8rem;">Última medición</p>
         <h2 id="valor-glucosa">---</h2>
         <button id="abrir-nueva">Nueva Medición</button>
@@ -223,18 +262,26 @@
             </div>
         </div>
         <ul id="lista-etapas-reporte" style="padding: 0; list-style: none;"></ul>
-        <button onclick="window.print()" style="width: 100%; background-color: var(--accent-color); margin-top: 10px; border-radius: 10px; padding: 10px;">🖨️ Imprimir / Guardar PDF</button>
     </section>
 
-    <div class="card bloque-ajustado" style="margin-top: 2rem;">
-        <h2>Backup de Datos</h2>
-        <p style="font-size: 13px; color: #64748b; margin-top: -8px;">Exporta o importa tus datos para no perderlos.</p>
-        <div class="button-row">
-            <input type="file" id="importFile" class="hidden" accept=".json" onchange="importarDatos(event)">
-            <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📤 Importar JSON</button>
-            <button class="btn-secondary" onclick="exportarDatos()">📥 Exportar JSON</button>
+    <div class="seccion-herramientas">
+        <h3 class="titulo-herramientas">Backup</h3>
+        <div class="botones-herramientas">
+            <button id="btn-importar" class="btn-herramienta">
+                <span class="icono">📂</span>
+                <span class="texto">Importar</span>
+            </button>
+            <button id="btn-exportar" class="btn-herramienta">
+                <span class="icono">💾</span>
+                <span class="texto">Exportar</span>
+            </button>
+            <button class="btn-herramienta" onclick="window.print()">
+                <span class="icono">🖨️</span>
+                <span class="texto">Print/PDF</span>
+            </button>
         </div>
     </div>
+    <input type="file" id="input-archivo-importar" accept=".json" class="hidden">
 
     <dialog id="modal-registro">
         <form id="form-registro">
@@ -284,9 +331,21 @@
             <label>Tipo de Jeringuilla</label>
             <select id="p-jeringuilla">
                 <option value="">Selecciona...</option>
-                <option value="U-40">U-40 (Tapón rojo - Caninsulin)</option>
-                <option value="U-100">U-100 (Tapón naranja - Humana)</option>
-                <option value="Otra">Otra</option>
+                <optgroup label="Jeringuillas U-40 (Veterinaria - Tapón Rojo)">
+                    <option value="U40-0.5-enteras">U-40 | 0.5 ml (Hasta 20 U. Enteras)</option>
+                    <option value="U40-0.5-medias">U-40 | 0.5 ml (Con Medias Unidades)</option>
+                    <option value="U40-1.0-enteras">U-40 | 1.0 ml (Hasta 40 U.)</option>
+                </optgroup>
+                <optgroup label="Jeringuillas U-100 (Humana - Tapón Naranja)">
+                    <option value="U100-0.3-medias">U-100 | 0.3 ml (Con Medias Unidades - Recomendada)</option>
+                    <option value="U100-0.3-enteras">U-100 | 0.3 ml (Hasta 30 U. Enteras)</option>
+                    <option value="U100-0.5-enteras">U-100 | 0.5 ml (Hasta 50 U.)</option>
+                    <option value="U100-1.0-enteras">U-100 | 1.0 ml (Hasta 100 U.)</option>
+                </optgroup>
+                <optgroup label="Otros Sistemas">
+                    <option value="Pluma">Dispositivo tipo Pluma / Pen</option>
+                    <option value="Otra">Otra especificación</option>
+                </optgroup>
             </select>
 
             <label>Dosis Habitual (Unidades)</label><input type="number" id="p-dosis" step="0.5">
@@ -312,7 +371,7 @@
             <label>Teléfono</label><input type="text" id="vet-telefono">
             <label>Email</label><input type="email" id="vet-email">
             <button type="submit" class="btn-form">Aceptar</button>
-            <button type="button" class="btn-form" style="background-color: #999;" onclick="document.getElementById('modal-vet').close()">Cancelar</button>
+            <button type="button" class="btn-form" style="background-color: #999;" onclick="cerrarVetYMantenerFondo()">Cancelar</button>
         </form>
     </dialog>
 
@@ -362,6 +421,14 @@
             reader.readAsText(file);
         }
 
+        // --- Conectar botones de Backup (LO NUEVO AÑADIDO) ---
+        document.getElementById('btn-exportar').onclick = exportarDatos;
+        document.getElementById('btn-importar').onclick = () => {
+            document.getElementById('input-archivo-importar').click();
+        };
+        document.getElementById('input-archivo-importar').onchange = importarDatos;
+        // ---------------------------------------------------
+
         // Lógica Temas
         const temas = ['', 'theme-modern', 'theme-dark'];
         function aplicarTema(tema) {
@@ -378,9 +445,17 @@
             aplicarTema(siguiente);
         };
 
-        // Lógica Modales
+        // Lógica Modales con bloqueo de rebote dinámico
         const habilitarCierreFuera = (modal) => {
-            modal.addEventListener('click', (e) => { if (e.target === modal) { modal.close(); } });
+            modal.addEventListener('click', (e) => { 
+                if (e.target === modal) { 
+                    modal.close(); 
+                    // Solo quitamos la congelación si no queda otro modal abierto debajo (ej. Perfil)
+                    if (modal.id !== 'modal-vet' || !modalPerfil.open) {
+                        document.body.classList.remove('modal-abierto');
+                    }
+                } 
+            });
         };
         habilitarCierreFuera(modalReg);
         habilitarCierreFuera(modalPerfil);
@@ -407,6 +482,11 @@
             modalVet.close();
         };
 
+        window.cerrarVetYMantenerFondo = () => {
+            modalVet.close();
+            // No removemos modal-abierto porque el de perfil sigue activo detrás
+        };
+
         window.cambiarFiltro = function(filtro) {
             filtroActual = filtro;
             document.querySelectorAll('.opcion-tiempo').forEach(el => {
@@ -425,10 +505,14 @@
             const ahora = new Date();
             document.getElementById('input-fecha').value = ahora.toISOString().split('T')[0];
             document.getElementById('input-hora').value = ahora.toTimeString().substring(0, 5);
+            document.body.classList.add('modal-abierto');
             modalReg.showModal();
         };
 
-        document.getElementById('cerrar-modal').onclick = () => modalReg.close();
+        document.getElementById('cerrar-modal').onclick = () => {
+            modalReg.close();
+            document.body.classList.remove('modal-abierto');
+        };
 
         formReg.onsubmit = (e) => {
             e.preventDefault();
@@ -454,6 +538,7 @@
 
             localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
             modalReg.close();
+            document.body.classList.remove('modal-abierto');
             actualizarInterfaz();
         };
 
@@ -468,6 +553,7 @@
             document.querySelectorAll('#input-factores input').forEach(cb => {
                 cb.checked = r.factores.includes(cb.value);
             });
+            document.body.classList.add('modal-abierto');
             modalReg.showModal();
         };
 
@@ -493,14 +579,18 @@
             document.getElementById('p-min').value = data.min || '';
             document.getElementById('p-max').value = data.max || '';
             
-            // Gestión Vet
             const vetObj = data.veterinario || {nombre: '', telefono: '', email: ''};
             document.getElementById('p-vet-data').value = JSON.stringify(vetObj);
             document.getElementById('display-vet').innerText = vetObj.nombre || "Toca para configurar...";
             
+            document.body.classList.add('modal-abierto');
             modalPerfil.showModal();
         };
-        document.getElementById('cerrar-perfil').onclick = () => modalPerfil.close();
+        
+        document.getElementById('cerrar-perfil').onclick = () => {
+            modalPerfil.close();
+            document.body.classList.remove('modal-abierto');
+        };
         
         document.getElementById('form-perfil').onsubmit = (e) => {
             e.preventDefault();
@@ -518,6 +608,7 @@
                 max: document.getElementById('p-max').value
             }));
             modalPerfil.close();
+            document.body.classList.remove('modal-abierto');
             actualizarInterfaz();
         };
 
@@ -657,6 +748,15 @@
         mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
         actualizarInterfaz();
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
+
+
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+              .then((reg) => console.log('Service Worker registrado con éxito', reg))
+              .catch((err) => console.log('Error al registrar el Service Worker', err));
+          });
+        }
     </script>
 </body>
 </html>
