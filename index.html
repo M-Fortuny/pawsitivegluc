@@ -136,7 +136,25 @@
         .btn-editar { background-color: #6cace4; color: white; }
         .btn-borrar { background-color: #FF7070; color: white; }
         
-        dialog { border: none; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 85%; max-width: 350px; opacity: 0; transition: opacity 0.3s ease; margin: 5dvh auto; max-height: 85vh; overflow-y: auto; background-color: var(--card-bg); color: var(--text-main); overscroll-behavior: contain; }
+        /* 🔥 FIX ANDROID KEYBOARD: Cambiado max-height a 85dvh y añadido padding-bottom: 3rem */
+        dialog { 
+            border: none; 
+            border-radius: 20px; 
+            padding: 1.5rem; 
+            padding-bottom: 3rem; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            width: 85%; 
+            max-width: 350px; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+            margin: 5dvh auto; 
+            max-height: 85dvh; 
+            overflow-y: auto; 
+            background-color: var(--card-bg); 
+            color: var(--text-main); 
+            overscroll-behavior: contain; 
+        }
+        
         dialog[open] { opacity: 1; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
 
@@ -317,11 +335,12 @@
         <form id="form-perfil">
             <h3 style="margin-top:0; text-align: center;">Perfil de Mascota</h3>
             
-            <label>Nombre del Perro</label>
-            <input type="text" id="p-nombre" required>
-            
             <label>Tutor / Responsable</label>
             <input type="text" id="p-tutor" required>
+
+				<label>Nombre del Perro</label>
+            <input type="text" id="p-nombre" required>
+            
             
             <div class="form-perfil-grid">
                 <div><label>Peso (kg)</label><input type="number" id="p-peso" step="0.1"></div>
@@ -476,6 +495,12 @@
         habilitarCierreFuera(modalReg);
         habilitarCierreFuera(modalPerfil);
         habilitarCierreFuera(modalVet);
+
+        // 🔥 FIX BOTÓN ATRÁS ANDROID: Limpieza garantizada del scroll al cerrar nativamente
+        const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
+        modalReg.addEventListener('close', limpiarFondoModal);
+        modalPerfil.addEventListener('close', limpiarFondoModal);
+        modalVet.addEventListener('close', limpiarFondoModal);
 
         // Lógica Veterinario
         window.abrirVetModal = () => {
@@ -646,6 +671,28 @@
             actualizarInterfaz();
         };
 
+        // --- NUEVA FUNCIÓN DE FILTRADO POR CALENDARIO ---
+        function filtrarRegistros(registros, filtro) {
+            if (filtro === 'T') return registros;
+            
+            const ahora = new Date();
+            ahora.setHours(0, 0, 0, 0); // Fijamos 'ahora' a la medianoche exacta de hoy
+            
+            return registros.filter(r => {
+                // Creamos la fecha del registro fijándola también a medianoche
+                const fechaReg = new Date(`${r.fecha}T00:00:00`); 
+                
+                // Diferencia en DÍAS ESTRICTOS de calendario
+                const diffDays = Math.round((ahora - fechaReg) / (1000 * 60 * 60 * 24));
+                
+                if (filtro === 'D') return diffDays === 0; // 0 días = Estrictamente Hoy
+                if (filtro === 'S') return diffDays >= 0 && diffDays <= 7; // Últimos 7 días
+                if (filtro === 'M') return diffDays >= 0 && diffDays <= 30; // Últimos 30 días
+                
+                return true;
+            });
+        }
+
         function calcularYMostrarInformes(regs, perfil) {
             const contenedorInformes = document.getElementById('seccion-informes');
             if (regs.length === 0) {
@@ -694,16 +741,8 @@
             if (todosLosRegs.length > 0) { display.innerText = todosLosRegs[0].valor; } 
             else { display.innerText = '---'; }
 
-            const ahora = new Date();
-            const regsFiltrados = todosLosRegs.filter(r => {
-                if (filtroActual === 'T') return true;
-                const fechaReg = new Date(`${r.fecha}T${r.hora}`);
-                const diffDays = Math.abs(ahora - fechaReg) / (1000 * 60 * 60 * 24);
-                if (filtroActual === 'D') return diffDays <= 1;
-                if (filtroActual === 'S') return diffDays <= 7;
-                if (filtroActual === 'M') return diffDays <= 30;
-                return true;
-            });
+            // Usamos la nueva función maestra de filtrado de calendario
+            const regsFiltrados = filtrarRegistros(todosLosRegs, filtroActual);
 
             if (regsFiltrados.length > 0) {
                 regsFiltrados.forEach((r) => {
@@ -766,16 +805,9 @@
             const contenedor = document.getElementById('contenedor-grafico');
             if (e.matches) {
                 const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-                const ahora = new Date();
-                const regsGrafica = todosLosRegs.filter(r => {
-                    if (filtroActual === 'T') return true;
-                    const fechaReg = new Date(`${r.fecha}T${r.hora}`);
-                    const diffDays = Math.abs(ahora - fechaReg) / (1000 * 60 * 60 * 24);
-                    if (filtroActual === 'D') return diffDays <= 1;
-                    if (filtroActual === 'S') return diffDays <= 7;
-                    if (filtroActual === 'M') return diffDays <= 30;
-                    return true;
-                });
+                
+                // Usamos la nueva función maestra aquí también
+                const regsGrafica = filtrarRegistros(todosLosRegs, filtroActual);
                 
                 if (regsGrafica.length === 0) return;
                 contenedor.style.display = 'flex';
@@ -787,6 +819,15 @@
         mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
         actualizarInterfaz();
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
+
+        // 🔥 FIX ANDROID: Auto-scroll al hacer foco en un input para que el teclado no lo tape
+        document.addEventListener('focusin', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                setTimeout(function() {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300); 
+            }
+        });
 
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
