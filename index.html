@@ -136,7 +136,7 @@
         .btn-editar { background-color: #6cace4; color: white; }
         .btn-borrar { background-color: #FF7070; color: white; }
         
-        /* 🔥 FIX ANDROID KEYBOARD: Cambiado max-height a 85dvh y añadido padding-bottom: 3rem */
+        /* 🔥 FIX ANDROID KEYBOARD */
         dialog { 
             border: none; 
             border-radius: 20px; 
@@ -290,17 +290,23 @@
                 <input type="number" id="input-valor" required inputmode="decimal" placeholder="Ej: 120">
             </div>
 
-            <div class="grupo-formulario">
-                <label for="input-insulina-registro">Insulina utilizada</label>
-                <select id="input-insulina-registro" required>
-                    <option value="" disabled selected>Selecciona una opción...</option>
-                    <option value="Caninsulin">Caninsulin (Vetsulin)</option>
-                    <option value="Lantus">Lantus (Glargina)</option>
-                    <option value="Levemir">Levemir (Detemir)</option>
-                    <option value="NPH">NPH (Humana)</option>
-                    <option value="ProZinc">ProZinc</option>
-                    <option value="Otra">Otra</option>
-                </select>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 2;">
+                    <label for="input-insulina-registro">Insulina utilizada</label>
+                    <select id="input-insulina-registro" required>
+                        <option value="" disabled selected>Selecciona...</option>
+                        <option value="Caninsulin">Caninsulin (Vetsulin)</option>
+                        <option value="Lantus">Lantus (Glargina)</option>
+                        <option value="Levemir">Levemir (Detemir)</option>
+                        <option value="NPH">NPH (Humana)</option>
+                        <option value="ProZinc">ProZinc</option>
+                        <option value="Otra">Otra</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="input-dosis-registro">Dosis (U)</label>
+                    <input type="number" id="input-dosis-registro" step="0.1" placeholder="Ej: 1.5">
+                </div>
             </div>
 
             <div style="display: flex; gap: 10px;">
@@ -543,10 +549,17 @@
             
             const ahora = new Date();
             document.getElementById('input-fecha').value = ahora.toISOString().split('T')[0];
-            document.getElementById('input-hora').value = calibrationTime = ahora.toTimeString().substring(0, 5);
+            document.getElementById('input-hora').value = ahora.toTimeString().substring(0, 5);
             
-            // Forzar selector de insulina a la opción vacía descriptiva
-            document.getElementById('input-insulina-registro').selectedIndex = 0;
+            // 🔥 Extraemos la insulina y la dosis habitual del perfil y las ponemos por defecto
+            const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            document.getElementById('input-dosis-registro').value = perfilActual.dosis || "";
+            
+            if (perfilActual.insulina) {
+                document.getElementById('input-insulina-registro').value = perfilActual.insulina;
+            } else {
+                document.getElementById('input-insulina-registro').selectedIndex = 0;
+            }
             
             document.body.classList.add('modal-abierto');
             modalReg.showModal();
@@ -564,6 +577,7 @@
             const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
             
             const nuevaInsulina = document.getElementById('input-insulina-registro').value;
+            const nuevaDosis = document.getElementById('input-dosis-registro').value;
             const perfilActual = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             
             const nuevoRegistro = {
@@ -573,7 +587,7 @@
                 factores: factores,
                 contextoClinico: {
                     insulina: nuevaInsulina || perfilActual.insulina || "No definida",
-                    dosis: perfilActual.dosis || "0"
+                    dosis: nuevaDosis || perfilActual.dosis || "0"
                 }
             };
 
@@ -604,6 +618,11 @@
             const campoInsulina = document.getElementById('input-insulina-registro');
             if (campoInsulina) {
                 campoInsulina.value = r.contextoClinico?.insulina || "";
+            }
+            
+            const campoDosis = document.getElementById('input-dosis-registro');
+            if (campoDosis) {
+                campoDosis.value = r.contextoClinico?.dosis || "";
             }
             
             document.querySelectorAll('#input-factores input').forEach(cb => {
@@ -741,7 +760,6 @@
             if (todosLosRegs.length > 0) { display.innerText = todosLosRegs[0].valor; } 
             else { display.innerText = '---'; }
 
-            // Usamos la nueva función maestra de filtrado de calendario
             const regsFiltrados = filtrarRegistros(todosLosRegs, filtroActual);
 
             if (regsFiltrados.length > 0) {
@@ -770,7 +788,6 @@
             }
             calcularYMostrarInformes(regsFiltrados, perfil);
             
-            // Actualización dinámica del gráfico si el usuario está en modo panorámico (landscape)
             if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
                 renderizarGrafica([...regsFiltrados].reverse());
             }
@@ -805,8 +822,6 @@
             const contenedor = document.getElementById('contenedor-grafico');
             if (e.matches) {
                 const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-                
-                // Usamos la nueva función maestra aquí también
                 const regsGrafica = filtrarRegistros(todosLosRegs, filtroActual);
                 
                 if (regsGrafica.length === 0) return;
