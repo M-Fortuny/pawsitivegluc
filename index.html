@@ -198,6 +198,40 @@
         .btn-perfil:active { transform: scale(0.95); }
         .btn-herramienta:active { background-color: var(--border-color); }
 
+        /* 📱 AJUSTES QUIRÚRGICOS PARA MÓVIL (Vista Retrato) */
+        @media (max-width: 768px) {
+            /* 1. Compactación del Bloque de Copias de Seguridad (Backup) */
+            .seccion-herramientas {
+                padding: 0.6rem;
+                margin-bottom: 1rem;
+            }
+            .btn-herramienta {
+                padding: 0.5rem 0.2rem;
+            }
+            .btn-herramienta .icono {
+                font-size: 1.2rem;
+                margin-bottom: 0.2rem;
+            }
+            .btn-herramienta .texto {
+                font-size: 0.7rem;
+            }
+
+            /* 2. Sello de autor: Reducción de márgenes de la firma */
+            footer {
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
+            }
+
+            /* 3. Optimización del motor de informes: Evitar solapamiento apilando en columna */
+            #lista-etapas-reporte li {
+                flex-direction: column;
+                gap: 4px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                text-align: center;
+            }
+        }
+
         /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
             body { padding: 0; height: 100vh; overflow: hidden; display: block; }
