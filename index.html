@@ -313,6 +313,10 @@
     </div>
     <input type="file" id="input-archivo-importar" accept=".json" class="hidden">
 
+    <footer style="text-align: center; margin-top: 20px; margin-bottom: 20px; color: var(--text-main); opacity: 0.5; font-size: 0.75rem; font-weight: 400; letter-spacing: 0.5px;">
+        Desarrollado por Manuel Fortuny Ruiz
+    </footer>
+
     <dialog id="modal-registro">
         <form id="form-registro">
             <input type="hidden" id="input-index">
@@ -793,10 +797,16 @@
             actualizarInterfaz();
         };
 
-        // 🧠 Motor de Doble Evaluación (Tipo y Tiempo)
+        // 🧠 Motor de Doble Evaluación Dinámica (Tipo y Tiempo anclado al último registro)
         function filtrarRegistros(registros, fTiempo, fTipo) {
-            const ahora = new Date();
-            ahora.setHours(0, 0, 0, 0); 
+            let fechaReferencia = new Date();
+            fechaReferencia.setHours(0, 0, 0, 0); 
+            
+            // Si hay registros, tomamos la fecha del más reciente como "Hoy virtual" para evitar pantallas vacías
+            if (registros.length > 0 && (fTiempo === 'D' || fTiempo === 'S' || fTiempo === 'M')) {
+                const fechaMasReciente = registros[0].fecha;
+                fechaReferencia = new Date(`${fechaMasReciente}T00:00:00`);
+            }
             
             return registros.filter(r => {
                 // 1. Evaluación de Tiempo
@@ -805,7 +815,7 @@
                     pasaTiempo = true;
                 } else {
                     const fechaReg = new Date(`${r.fecha}T00:00:00`); 
-                    const diffDays = Math.round((ahora - fechaReg) / (1000 * 60 * 60 * 24));
+                    const diffDays = Math.round((fechaReferencia - fechaReg) / (1000 * 60 * 60 * 24));
                     if (fTiempo === 'D') pasaTiempo = (diffDays === 0); 
                     else if (fTiempo === 'S') pasaTiempo = (diffDays >= 0 && diffDays <= 7); 
                     else if (fTiempo === 'M') pasaTiempo = (diffDays >= 0 && diffDays <= 30);
@@ -892,6 +902,10 @@
                     const originalIndex = todosLosRegs.indexOf(r);
                     const li = document.createElement('li');
                     
+                    // Transformación visual de la fecha a DD/MM/AA
+                    const [anio, mes, dia] = r.fecha.split('-');
+                    const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
+                    
                     let cuerpoHtml = '';
                     const tipoEfectivo = r.tipo || 'glucosa';
 
@@ -903,7 +917,7 @@
                         cuerpoHtml = `
                             <div style="flex-grow: 1;">
                                 <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
-                                <small>${r.fecha} - ${r.hora}</small><br>
+                                <small>${fechaFormateada} - ${r.hora}</small><br>
                                 ${ctxStr}
                                 ${tags}
                             </div>
@@ -913,7 +927,7 @@
                             <div style="flex-grow: 1;">
                                 <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
                                 <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
-                                <small>${r.fecha} - ${r.hora}</small>
+                                <small>${fechaFormateada} - ${r.hora}</small>
                             </div>
                         `;
                     } else if (tipoEfectivo === 'factor') {
@@ -921,7 +935,7 @@
                         cuerpoHtml = `
                             <div style="flex-grow: 1;">
                                 <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
-                                <small>${r.fecha} - ${r.hora}</small><br>
+                                <small>${fechaFormateada} - ${r.hora}</small><br>
                                 <div style="margin-top:4px;">${tags}</div>
                             </div>
                         `;
@@ -958,7 +972,10 @@
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: datosGlucosa.map(d => `${d.fecha} (${d.hora})`),
+                    labels: datosGlucosa.map(d => {
+                        const [anio, mes, dia] = d.fecha.split('-');
+                        return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
+                    }),
                     datasets: [{
                         label: 'Evolución Glucosa (mg/dL)',
                         data: datosGlucosa.map(d => d.valor),
