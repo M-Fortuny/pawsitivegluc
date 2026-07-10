@@ -49,7 +49,7 @@
         }
 
         /* 🔄 Transiciones de Tema */
-        body, h1, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, li, dialog, button, input, select {
+        body, h1, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, li, dialog, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -69,6 +69,20 @@
         body.modal-abierto { 
             overflow: hidden; 
             touch-action: pan-y; 
+        }
+
+        /* 📌 Contenedor Fijo Superior (Sticky Header + Safe Area) */
+        #contenedor-fijo-superior {
+            position: sticky;
+            top: -20px; /* Compensa el padding del body */
+            padding-top: calc(20px + env(safe-area-inset-top, 0px));
+            padding-bottom: 10px;
+            background-color: var(--bg-body);
+            z-index: 100;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         header { width: 90%; max-width: 400px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; position: relative; height: 60px; }
@@ -109,6 +123,37 @@
         #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
+        /* 📱 Botones Rápidos (Flexbox Inteligente) */
+        .contenedor-botones-rapidos {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        
+        .btn-rapido {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0;
+            padding: 10px;
+            flex: 1;
+            min-width: 90px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            color: white;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+        
+        .btn-rapido.glucosa { background-color: var(--accent-color); order: 1; }
+        .btn-rapido.insulina { background-color: #1976D2; order: 2; }
+        .btn-rapido.factor { background-color: #E65100; order: 3; }
+
         /* Botones Globales */
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         
@@ -174,8 +219,21 @@
         /* Contenedores de Aislamiento Reactivo */
         .grupo-reactivo { display: none; }
 
-        /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF) */
-        .seccion-herramientas { width: 90%; max-width: 400px; box-sizing: border-box; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem; margin-bottom: 1.5rem; }
+        /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF - Sticky Footer) */
+        .seccion-herramientas { 
+            width: 90%; 
+            max-width: 400px; 
+            box-sizing: border-box; 
+            background-color: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 14px; 
+            padding: 1rem; 
+            margin-bottom: 1.5rem; 
+            position: sticky;
+            bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+            z-index: 100;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+        }
         .titulo-herramientas { text-align: center; font-size: 0.8rem; color: var(--text-main); opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 0.8rem; }
         .botones-herramientas { display: flex; gap: 0.5rem; justify-content: space-between; }
         
@@ -204,55 +262,38 @@
         /* 📱 AJUSTES QUIRÚRGICOS PARA MÓVIL (Vista Retrato) */
         @media (max-width: 768px) {
             /* 1. Compactación del Bloque de Copias de Seguridad (Backup) */
-            .seccion-herramientas {
-                padding: 0.6rem;
-                margin-bottom: 1rem;
-            }
-            .btn-herramienta {
-                padding: 0.5rem 0.2rem;
-            }
-            .btn-herramienta .icono {
-                font-size: 1.2rem;
-                margin-bottom: 0.2rem;
-            }
-            .btn-herramienta .texto {
-                font-size: 0.7rem;
-            }
+            .seccion-herramientas { padding: 0.6rem; margin-bottom: 1rem; }
+            .btn-herramienta { padding: 0.5rem 0.2rem; }
+            .btn-herramienta .icono { font-size: 1.2rem; margin-bottom: 0.2rem; }
+            .btn-herramienta .texto { font-size: 0.7rem; }
 
             /* 2. Sello de autor: Reducción de márgenes de la firma */
-            footer {
-                margin-top: 8px !important;
-                margin-bottom: 8px !important;
-            }
+            footer { margin-top: 8px !important; margin-bottom: 8px !important; }
 
-            /* 3. Optimización del motor de informes: Dirección en columna para bloques superiores y tamaño contenido */
-            .contenedor-bloques-informe {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .contenedor-bloques-informe > div {
-                padding: 10px !important;
-            }
+            /* 3. Optimización del motor de informes */
+            .contenedor-bloques-informe { grid-template-columns: 1fr; gap: 10px; }
+            .contenedor-bloques-informe > div { padding: 10px !important; }
+            #lista-etapas-reporte li { flex-direction: column; gap: 4px; padding: 10px 14px; font-size: 0.85rem; text-align: center; }
 
-            #lista-etapas-reporte li {
-                flex-direction: column;
-                gap: 4px;
-                padding: 10px 14px;
-                font-size: 0.85rem;
-                text-align: center;
+            /* 4. Flexbox Inteligente: Salto del botón Glucosa */
+            .btn-rapido.glucosa {
+                order: 3;
+                flex: 0 0 100%;
             }
+            .btn-rapido.insulina { order: 1; }
+            .btn-rapido.factor { order: 2; }
         }
 
         /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
             body { padding: 0; height: 100vh; overflow: hidden; display: block; }
-            header, #tarjeta-glucosa, .seccion-vertical, dialog, .seccion-herramientas { display: none !important; }
+            header, #contenedor-fijo-superior, #tarjeta-glucosa, .seccion-vertical, dialog, .seccion-herramientas { display: none !important; }
             #contenedor-grafico { display: flex !important; position: fixed; top: 0; left: 0; width: 100vw !important; height: 100vh !important; margin: 0 !important; padding: 15px !important; box-sizing: border-box; background: var(--bg-body); z-index: 99999; border-radius: 0; }
         }
 
         @media print {
             body { background: white; color: black; padding: 0; }
-            header, #tarjeta-glucosa, #contenedor-grafico, button, .btn-accion, .selector-matriz, .seccion-herramientas { display: none !important; }
+            header, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-grafico, button, .btn-accion, .selector-matriz, .seccion-herramientas { display: none !important; }
             #seccion-informes { display: block !important; width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
             #lista-historial { display: block !important; width: 100% !important; }
             li { box-shadow: none !important; border-bottom: 1px solid #ccc !important; background: white !important; }
@@ -266,34 +307,36 @@
 </head>
 <body>
 
-    <header class="bloque-ajustado">
-        <h1><span id="btn-toggle-theme">Pawsitive Gluc</span></h1>
-    </header>
+    <div id="contenedor-fijo-superior">
+        <header class="bloque-ajustado">
+            <h1><span id="btn-toggle-theme">Pawsitive Gluc</span></h1>
+        </header>
 
-    <section id="tarjeta-glucosa" class="bloque-ajustado">
-        <button id="abrir-perfil" class="btn-perfil">
-            <img src="https://raw.githubusercontent.com/M-Fortuny/pawsitivegluc/refs/heads/main/icono-app.png" alt="Perfil Mascota" class="img-icono-perfil">
-        </button>
-        <p style="margin:0; color: #666; font-size: 0.8rem;">Última medición</p>
-        <h2 id="valor-glucosa">---</h2>
-        
-        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px; flex-wrap: wrap; width: 100%;">
-            <button onclick="abrirModalConTipo('glucosa')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: var(--accent-color); font-weight: bold; border: none; cursor: pointer;">
-                <span style="font-size: 1.2em;">🩸</span>
-                <span>Glucosa</span>
+        <section id="tarjeta-glucosa" class="bloque-ajustado">
+            <button id="abrir-perfil" class="btn-perfil">
+                <img src="https://raw.githubusercontent.com/M-Fortuny/pawsitivegluc/refs/heads/main/icono-app.png" alt="Perfil Mascota" class="img-icono-perfil">
             </button>
+            <p style="margin:0; color: #666; font-size: 0.8rem;">Última medición</p>
+            <h2 id="valor-glucosa">---</h2>
+            
+            <div class="contenedor-botones-rapidos">
+                <button class="btn-rapido glucosa" onclick="abrirModalConTipo('glucosa')">
+                    <span style="font-size: 1.2em;">🩸</span>
+                    <span>Glucosa</span>
+                </button>
 
-            <button onclick="abrirModalConTipo('insulina')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #1976D2; font-weight: bold; border: none; cursor: pointer; color: white;">
-                <span style="font-size: 1.2em;">💉</span>
-                <span>Insulina</span>
-            </button>
+                <button class="btn-rapido insulina" onclick="abrirModalConTipo('insulina')">
+                    <span style="font-size: 1.2em;">💉</span>
+                    <span>Insulina</span>
+                </button>
 
-            <button onclick="abrirModalConTipo('factor')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #E65100; font-weight: bold; border: none; cursor: pointer; color: white;">
-                <span style="font-size: 1.2em;">🍚</span>
-                <span>Factores</span>
-            </button>
-        </div>
-    </section>
+                <button class="btn-rapido factor" onclick="abrirModalConTipo('factor')">
+                    <span style="font-size: 1.2em;">🍚</span>
+                    <span>Factores</span>
+                </button>
+            </div>
+        </section>
+    </div>
 
     <section id="contenedor-grafico">
         <canvas id="miGrafica"></canvas>
