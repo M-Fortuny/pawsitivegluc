@@ -183,6 +183,9 @@
         .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
         .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
 
+        /* 📱 CONTAINER DE INFORMES CONTENIDO (Evita desborde en móviles) */
+        .contenedor-bloques-informe { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+
         /* 📱 CONTROL EXCLUSIVO DE HOVER */
         @media (hover: hover) {
             button:hover { background-color: var(--btn-hover); }
@@ -222,7 +225,15 @@
                 margin-bottom: 8px !important;
             }
 
-            /* 3. Optimización del motor de informes: Evitar solapamiento apilando en columna */
+            /* 3. Optimización del motor de informes: Dirección en columna para bloques superiores y tamaño contenido */
+            .contenedor-bloques-informe {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .contenedor-bloques-informe > div {
+                padding: 10px !important;
+            }
+
             #lista-etapas-reporte li {
                 flex-direction: column;
                 gap: 4px;
@@ -267,24 +278,21 @@
         <h2 id="valor-glucosa">---</h2>
         
         <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px; flex-wrap: wrap; width: 100%;">
-    
-    <button onclick="abrirModalConTipo('glucosa')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: var(--accent-color); font-weight: bold; border: none; cursor: pointer;">
-        <span style="font-size: 1.2em;">🩸</span>
-        <span>Glucosa</span>
-    </button>
+            <button onclick="abrirModalConTipo('glucosa')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: var(--accent-color); font-weight: bold; border: none; cursor: pointer;">
+                <span style="font-size: 1.2em;">🩸</span>
+                <span>Glucosa</span>
+            </button>
 
-    <button onclick="abrirModalConTipo('insulina')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #1976D2; font-weight: bold; border: none; cursor: pointer; color: white;">
-        <span style="font-size: 1.2em;">💉</span>
-        <span>Insulina</span>
-    </button>
+            <button onclick="abrirModalConTipo('insulina')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #1976D2; font-weight: bold; border: none; cursor: pointer; color: white;">
+                <span style="font-size: 1.2em;">💉</span>
+                <span>Insulina</span>
+            </button>
 
-    <button onclick="abrirModalConTipo('factor')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #E65100; font-weight: bold; border: none; cursor: pointer; color: white;">
-        <span style="font-size: 1.2em;">🍚</span>
-        <span>Factores</span>
-    </button>
-</div>
-
-
+            <button onclick="abrirModalConTipo('factor')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #E65100; font-weight: bold; border: none; cursor: pointer; color: white;">
+                <span style="font-size: 1.2em;">🍚</span>
+                <span>Factores</span>
+            </button>
+        </div>
     </section>
 
     <section id="contenedor-grafico">
@@ -315,7 +323,7 @@
 
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical" style="margin-top: 2rem;">
         <h3 style="color: var(--h1-color); margin-bottom: 15px;">📊 Motor de Informes Clínicos</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+        <div class="contenedor-bloques-informe">
             <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.8rem; color: #666;">Media Filtrada</span>
                 <div id="reporte-media" style="font-size: 1.3rem; font-weight: bold; color: var(--accent-color); margin-top: 5px;">---</div>
@@ -400,7 +408,7 @@
                 <label style="margin-top: 15px; display: block;">Factor influyente</label>
                 <div class="checkbox-grupo" id="input-factores">
                     <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
-                    <label class="chip"><input type="checkbox" name="factor" value="Insulina"> 💉 Insulina</label>
+                    <label class="chip"><input type="checkbox" name="factor" value="Golosina"> 🍬 Golosina</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Ejercicio"> 🏃 Ejercicio</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Caminata"> 🐕 Caminata</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Estrés"> 😰 Estrés</label>
@@ -693,7 +701,6 @@
 
         // 🩺 Motor de Correlatividad Retrospectiva Inteligente
         function buscarInsulinaPrevia(registroActual, todosLosRegs) {
-            // Si es un registro heredado antiguo que ya tiene contexto inyectado, lo respetamos
             if (!registroActual.tipo && registroActual.contextoClinico) {
                 return registroActual.contextoClinico;
             }
@@ -701,7 +708,6 @@
             const indexActual = todosLosRegs.indexOf(registroActual);
             if (indexActual === -1) return null;
 
-            // Recorrer el array hacia adelante (hacia los registros más antiguos)
             for (let i = indexActual + 1; i < todosLosRegs.length; i++) {
                 const r = todosLosRegs[i];
                 if (r.tipo === 'insulina') {
@@ -710,7 +716,6 @@
                     return r.contextoClinico;
                 }
             }
-            // Fallback: Si no hay inyecciones previas guardadas, extrae la del perfil base
             const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             return { insulina: perfil.insulina || "No definida", dosis: perfil.dosis || "0" };
         }
@@ -745,13 +750,12 @@
             }
 
             if (idx !== "") { 
-                // Gestión de edición preservando datos estructurales si era un registro clásico
                 const antiguoReg = regs[parseInt(idx)];
                 if (!antiguoReg.tipo && tipo === 'glucosa') {
                     nuevoRegistro.valor = document.getElementById('input-valor').value;
                     nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
                     nuevoRegistro.contextoClinico = antiguoReg.contextoClinico;
-                    delete nuevoRegistro.tipo; // Mantener retrocompatibilidad pura
+                    delete nuevoRegistro.tipo; 
                 }
                 regs[parseInt(idx)] = nuevoRegistro; 
             } else { 
@@ -836,7 +840,6 @@
             let fechaReferencia = new Date();
             fechaReferencia.setHours(0, 0, 0, 0); 
             
-            // Si hay registros, tomamos la fecha del más reciente como "Hoy virtual" para evitar pantallas vacías
             if (registros.length > 0 && (fTiempo === 'D' || fTiempo === 'S' || fTiempo === 'M')) {
                 const fechaMasReciente = registros[0].fecha;
                 fechaReferencia = new Date(`${fechaMasReciente}T00:00:00`);
@@ -857,7 +860,7 @@
 
                 // 2. Evaluación de Tipo (Matriz de Eventos)
                 let pasaTipo = false;
-                const tipoEfectivo = r.tipo || 'glucosa'; // Compatibilidad registros antiguos
+                const tipoEfectivo = r.tipo || 'glucosa'; 
                 if (fTipo === 'Todo') {
                     pasaTipo = true;
                 } else if (fTipo === 'G' && tipoEfectivo === 'glucosa') {
@@ -923,12 +926,10 @@
             const display = document.getElementById('valor-glucosa');
             lista.innerHTML = '';
             
-            // Mostrar la última lectura real de glucosa en el panel principal
             const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
             if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
             else { display.innerText = '---'; }
 
-            // Aplicamos la Doble Matriz de filtrado
             const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
 
             if (regsFiltrados.length > 0) {
@@ -997,7 +998,6 @@
 
         // 📊 Arquitectura Visual Premium de la Gráfica (Chart.js Premium)
         function renderizarGrafica(datos) {
-            // Filtrar únicamente los eventos de glucosa válidos para la curva analítica
             const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
             const ctx = document.getElementById('miGrafica').getContext('2d');
             
@@ -1013,8 +1013,8 @@
                     datasets: [{
                         label: 'Evolución Glucosa (mg/dL)',
                         data: datosGlucosa.map(d => d.valor),
-                        borderColor: '#5CA4FF', // Azul Corporativo Premium
-                        backgroundColor: 'transparent', // Sin "montaña" de fondo para lectura directa
+                        borderColor: '#5CA4FF', 
+                        backgroundColor: 'transparent', 
                         tension: 0.2,
                         fill: false,
                         borderWidth: 3,
@@ -1028,8 +1028,8 @@
                     scales: { 
                         y: { 
                             beginAtZero: false,
-                            grid: { color: 'rgba(255, 255, 255, 0.15)' }, // Cuadrícula adaptable limpia
-                            ticks: { color: '#B0B0B0' } // Tipografía anti-fatiga visual
+                            grid: { color: 'rgba(255, 255, 255, 0.15)' }, 
+                            ticks: { color: '#B0B0B0' } 
                         },
                         x: {
                             grid: { color: 'rgba(255, 255, 255, 0.15)' },
