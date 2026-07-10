@@ -233,10 +233,24 @@
         <h2 id="valor-glucosa">---</h2>
         
         <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px; flex-wrap: wrap; width: 100%;">
-            <button onclick="abrirModalConTipo('glucosa')" style="margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: var(--accent-color); font-weight: bold;">🩸 Glucosa</button>
-            <button onclick="abrirModalConTipo('insulina')" style="margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #1976D2; font-weight: bold;">💉 Insulina</button>
-            <button onclick="abrirModalConTipo('factor')" style="margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #E65100; font-weight: bold;">🍚 Factores</button>
-        </div>
+    
+    <button onclick="abrirModalConTipo('glucosa')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: var(--accent-color); font-weight: bold; border: none; cursor: pointer;">
+        <span style="font-size: 1.2em;">🩸</span>
+        <span>Glucosa</span>
+    </button>
+
+    <button onclick="abrirModalConTipo('insulina')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #1976D2; font-weight: bold; border: none; cursor: pointer; color: white;">
+        <span style="font-size: 1.2em;">💉</span>
+        <span>Insulina</span>
+    </button>
+
+    <button onclick="abrirModalConTipo('factor')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top:0; padding: 10px; flex: 1; min-width: 90px; background-color: #E65100; font-weight: bold; border: none; cursor: pointer; color: white;">
+        <span style="font-size: 1.2em;">🍚</span>
+        <span>Factores</span>
+    </button>
+</div>
+
+
     </section>
 
     <section id="contenedor-grafico">
@@ -261,6 +275,7 @@
                 </div>
             </div>
         </div>
+
         <ul id="lista-historial"></ul>
     </section>
 
@@ -307,7 +322,7 @@
             <div id="bloque-glucosa" class="grupo-reactivo">
                 <div class="grupo-formulario">
                     <label for="input-valor">Glucosa (mg/dL)</label>
-                    <input type="number" id="input-valor" inputmode="decimal" placeholder="Ej: 120">
+                    <input type="number" id="input-valor" step="any" inputmode="decimal" placeholder="Ej: 120">
                 </div>
             </div>
 
@@ -327,7 +342,7 @@
                     </div>
                     <div style="flex: 1;">
                         <label for="input-dosis-registro">Dosis (U)</label>
-                        <input type="number" id="input-dosis-registro" step="0.1" placeholder="Ej: 1.5">
+                        <input type="number" id="input-dosis-registro" step="any" inputmode="decimal" placeholder="Ej: 1.5">
                     </div>
                 </div>
             </div>
@@ -344,7 +359,7 @@
             </div>
 
             <div id="bloque-factor" class="grupo-reactivo">
-                <label style="margin-top: 15px; display: block;">Factores influyentes</label>
+                <label style="margin-top: 15px; display: block;">Factor influyente</label>
                 <div class="checkbox-grupo" id="input-factores">
                     <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Insulina"> 💉 Insulina</label>
@@ -369,12 +384,12 @@
             <label>Tutor / Responsable</label>
             <input type="text" id="p-tutor" required>
 
-			<label>Nombre del Perro</label>
+			<label>Nombre de la Mascota</label>
             <input type="text" id="p-nombre" required>
             
             <div class="form-perfil-grid">
-                <div><label>Peso (kg)</label><input type="number" id="p-peso" step="0.1"></div>
-                <div><label>Edad (años)</label><input type="number" id="p-edad"></div>
+                <div><label>Peso (kg)</label><input type="number" id="p-peso" step="any" inputmode="decimal"></div>
+                <div><label>Edad (años)</label><input type="number" id="p-edad" step="any" inputmode="decimal"></div>
             </div>
             
             <label>Fecha de Diagnóstico</label>
@@ -412,7 +427,7 @@
             </select>
 
             <label>Dosis Habitual (Unidades)</label>
-            <input type="number" id="p-dosis" step="0.5">
+            <input type="number" id="p-dosis" step="any" inputmode="decimal">
             
             <label>Veterinario / Clínica</label>
             <div id="display-vet" onclick="abrirVetModal()">Toca para configurar...</div>
@@ -420,8 +435,8 @@
 
             <label>Rango Objetivo (mg/dL)</label>
             <div class="form-perfil-grid">
-                <input type="number" id="p-min" placeholder="Mín">
-                <input type="number" id="p-max" placeholder="Máx">
+                <input type="number" id="p-min" placeholder="Mín" step="any" inputmode="decimal">
+                <input type="number" id="p-max" placeholder="Máx" step="any" inputmode="decimal">
             </div>
             
             <button type="submit" class="btn-form">Guardar Perfil</button>
@@ -590,7 +605,7 @@
             const titulos = {
                 'glucosa': 'Registrar Glucosa',
                 'insulina': 'Registrar Insulina',
-                'factor': 'Registrar Factores / Comida'
+                'factor': 'Registrar Factores Influyentes'
             };
             document.getElementById('titulo-modal').innerText = titulos[tipo] || 'Nuevo Registro';
             
@@ -905,7 +920,7 @@
                         const tags = (r.factores || []).map(f => `<span class="tags-factores" style="background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;">${f}</span>`).join('');
                         cuerpoHtml = `
                             <div style="flex-grow: 1;">
-                                <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor / Alimentación</strong><br>
+                                <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
                                 <small>${r.fecha} - ${r.hora}</small><br>
                                 <div style="margin-top:4px;">${tags}</div>
                             </div>
