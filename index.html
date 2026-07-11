@@ -486,6 +486,7 @@
         <button class="btn-form" onclick="abrirSubPerfil('basico')">Perfil de Mascota</button>
         <button class="btn-form" onclick="abrirSubPerfil('vet')" style="background-color: #1976D2;">Veterinario / Clínica</button>
         <button class="btn-form" onclick="abrirSubPerfil('pautas')" style="background-color: #E65100;">Pautas Indicadas</button>
+        <button class="btn-form" onclick="abrirSubPerfil('salud')" style="background-color: #8E24AA;">Salud Concurrente</button>
         <button type="button" class="btn-form" style="background-color: #999; margin-top: 15px;" onclick="cerrarSubModal('modal-menu-perfil')">Cancelar</button>
     </dialog>
 
@@ -556,6 +557,32 @@
         </form>
     </dialog>
 
+    <dialog id="modal-salud">
+        <form id="form-salud">
+            <h3 style="margin-top:0; text-align: center;">Salud Concurrente</h3>
+            
+            <label>Condiciones y Comorbilidades</label>
+            <div class="checkbox-grupo" id="input-condiciones">
+                <label class="chip"><input type="checkbox" name="condicion" value="Cushing"> Cushing</label>
+                <label class="chip"><input type="checkbox" name="condicion" value="Hipotiroidismo"> Hipotiroidismo</label>
+                <label class="chip"><input type="checkbox" name="condicion" value="Infecciones"> Infecciones</label>
+            </div>
+            
+            <label>Fármacos Diabetogénicos Activos</label>
+            <div class="checkbox-grupo" id="input-medicamentos">
+                <label class="chip"><input type="checkbox" name="medicamento" value="Corticosteroides"> Corticosteroides</label>
+                <label class="chip"><input type="checkbox" name="medicamento" value="Progestágenos"> Progestágenos</label>
+                <label class="chip"><input type="checkbox" name="medicamento" value="Diuréticos"> Diuréticos</label>
+            </div>
+            
+            <label>Otra Medicación (Texto libre)</label>
+            <input type="text" id="p-medicacion-otra" placeholder="Ej: Librela, Analgésicos...">
+            
+            <button type="submit" class="btn-form">Guardar Salud</button>
+            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-salud')">Cancelar</button>
+        </form>
+    </dialog>
+
     <script>
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
@@ -565,6 +592,7 @@
         const modalPerfilBasico = document.getElementById('modal-perfil-basico');
         const modalVet = document.getElementById('modal-vet');
         const modalPautas = document.getElementById('modal-pautas');
+        const modalSalud = document.getElementById('modal-salud');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
@@ -642,6 +670,7 @@
         habilitarCierreFuera(modalPerfilBasico);
         habilitarCierreFuera(modalVet);
         habilitarCierreFuera(modalPautas);
+        habilitarCierreFuera(modalSalud);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
@@ -649,6 +678,7 @@
         modalPerfilBasico.addEventListener('close', limpiarFondoModal);
         modalVet.addEventListener('close', limpiarFondoModal);
         modalPautas.addEventListener('close', limpiarFondoModal);
+        modalSalud.addEventListener('close', limpiarFondoModal);
 
         // 🧠 Controladores de la Doble Matriz
         window.cambiarFiltroTiempo = function(filtro) {
@@ -861,6 +891,19 @@
                 document.getElementById('p-min').value = data.min || '';
                 document.getElementById('p-max').value = data.max || '';
                 modalPautas.showModal();
+            } else if (tipo === 'salud') {
+                const saludObj = data.salud || {condiciones: [], medicamentos: [], medicacionOtra: ''};
+                document.getElementById('p-medicacion-otra').value = saludObj.medicacionOtra || '';
+                
+                document.querySelectorAll('#input-condiciones input').forEach(cb => {
+                    cb.checked = Array.isArray(saludObj.condiciones) ? saludObj.condiciones.includes(cb.value) : false;
+                });
+                
+                document.querySelectorAll('#input-medicamentos input').forEach(cb => {
+                    cb.checked = Array.isArray(saludObj.medicamentos) ? saludObj.medicamentos.includes(cb.value) : false;
+                });
+                
+                modalSalud.showModal();
             }
         };
 
@@ -902,6 +945,20 @@
             data.max = document.getElementById('p-max').value;
             localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
             cerrarSubModal('modal-pautas');
+            actualizarInterfaz();
+        };
+
+        // Guardado Selectivo: Salud Concurrente
+        document.getElementById('form-salud').onsubmit = (e) => {
+            e.preventDefault();
+            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            data.salud = {
+                condiciones: Array.from(document.querySelectorAll('#input-condiciones input:checked')).map(cb => cb.value),
+                medicamentos: Array.from(document.querySelectorAll('#input-medicamentos input:checked')).map(cb => cb.value),
+                medicacionOtra: document.getElementById('p-medicacion-otra').value
+            };
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
+            cerrarSubModal('modal-salud');
             actualizarInterfaz();
         };
 
