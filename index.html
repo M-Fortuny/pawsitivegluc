@@ -120,7 +120,7 @@
         #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
-        /* 📱 Botones Rápidos (Flexbox Inteligente) */
+        /* 📱 Botones Rápidos (Flexbox Inteligente y Colores Fijos) */
         .contenedor-botones-rapidos {
             display: flex;
             gap: 8px;
@@ -147,7 +147,8 @@
             transition: transform 0.2s ease, background-color 0.3s ease;
         }
         
-        .btn-rapido.glucosa { background-color: var(--accent-color); order: 1; }
+        /* Colores inquebrantables independientemente del tema */
+        .btn-rapido.glucosa { background-color: #4A7C44; order: 1; }
         .btn-rapido.insulina { background-color: #1976D2; order: 2; }
         .btn-rapido.factor { background-color: #E65100; order: 3; }
 
@@ -172,7 +173,7 @@
         .opcion-tiempo.activo, .opcion-tipo.activo { background: var(--card-bg); color: var(--accent-color); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         ul { list-style: none; padding: 0; width: 100%; }
-        li { background: var(--card-bg); padding: 12px 18px; margin-bottom: 10px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        li { background: var(--card-bg); padding: 12px 18px; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
         .tags-factores { font-size: 0.7rem; color: var(--tag-text); background: var(--tag-bg); padding: 2px 6px; border-radius: 5px; margin-right: 4px; display: inline-block; margin-top: 5px; }
         .info-contexto { font-size: 0.75rem; color: #888; display: block; margin-top: 4px; font-style: italic; }
         
@@ -235,8 +236,8 @@
         .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
         .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
 
-        /* 📱 CONTAINER DE INFORMES CONTENIDO (Evita desborde en móviles) */
-        .contenedor-bloques-informe { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        /* 📱 CONTAINER DE INFORMES CONTENIDO (Evita desborde en móviles y unifica espacios) */
+        .contenedor-bloques-informe { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
         /* 📱 CONTROL EXCLUSIVO DE HOVER */
         @media (hover: hover) {
@@ -269,10 +270,10 @@
             /* 3. Sello de autor: Reducción de márgenes de la firma */
             footer { margin-top: 8px !important; margin-bottom: 8px !important; }
 
-            /* 4. Optimización del motor de informes */
-            .contenedor-bloques-informe { grid-template-columns: 1fr; gap: 10px; }
+            /* 4. Optimización del motor de informes y unificación de espacios */
+            .contenedor-bloques-informe { grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
             .contenedor-bloques-informe > div { padding: 10px !important; }
-            #lista-etapas-reporte li { flex-direction: column; gap: 4px; padding: 10px 14px; font-size: 0.85rem; text-align: center; }
+            #lista-etapas-reporte li { flex-direction: column; gap: 4px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85rem; text-align: center; }
 
             /* 5. Flexbox Inteligente: Salto del botón Glucosa */
             .btn-rapido.glucosa {
@@ -366,11 +367,11 @@
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical" style="margin-top: 2rem;">
         <h3 style="color: var(--h1-color); margin-bottom: 15px;">📊 Motor de Informes Clínicos</h3>
         <div class="contenedor-bloques-informe">
-            <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
+            <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.8rem; color: #666;">Media Filtrada</span>
                 <div id="reporte-media" style="font-size: 1.3rem; font-weight: bold; color: var(--accent-color); margin-top: 5px;">---</div>
             </div>
-            <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
+            <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.8rem; color: #666;">Tiempo en Rango</span>
                 <div id="reporte-rango" style="font-size: 1.3rem; font-weight: bold; color: var(--h1-color); margin-top: 5px;">---</div>
             </div>
@@ -1038,10 +1039,15 @@
             }
         }
 
-        // 📊 Arquitectura Visual Premium de la Gráfica (Chart.js Premium)
+        // 📊 Arquitectura Visual Premium de la Gráfica (Chart.js Inteligente)
         function renderizarGrafica(datos) {
             const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
             const ctx = document.getElementById('miGrafica').getContext('2d');
+            
+            // 🎨 Detector Inteligente de Tema para la Cuadrícula
+            const esModoOscuro = document.body.classList.contains('theme-dark');
+            const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+            const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
             
             if (chartInstance) { chartInstance.destroy(); }
             
@@ -1070,16 +1076,16 @@
                     scales: { 
                         y: { 
                             beginAtZero: false,
-                            grid: { color: 'rgba(255, 255, 255, 0.15)' }, 
-                            ticks: { color: '#B0B0B0' } 
+                            grid: { color: colorCuadricula }, 
+                            ticks: { color: colorTextosEjes } 
                         },
                         x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.15)' },
-                            ticks: { color: '#B0B0B0' }
+                            grid: { color: colorCuadricula },
+                            ticks: { color: colorTextosEjes }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#B0B0B0' } }
+                        legend: { labels: { color: colorTextosEjes } }
                     }
                 }
             });
