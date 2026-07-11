@@ -48,8 +48,8 @@
             --border-color: #333;
         }
 
-        /* 🔄 Transiciones de Tema */
-        body, h1, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, li, dialog, button, input, select {
+        /* 🔄 Transiciones de Tema y Elementos Base */
+        body, h1, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-grafico, .seccion-herramientas, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -71,7 +71,7 @@
             touch-action: pan-y; 
         }
 
-        /* 📌 Contenedor Superior (AHORA DESBLOQUEADO - Flujo Normal) */
+        /* 📌 Contenedor Superior */
         #contenedor-fijo-superior {
             padding-top: 10px;
             padding-bottom: 10px;
@@ -171,7 +171,27 @@
         .opcion-tiempo.activo, .opcion-tipo.activo { background: var(--card-bg); color: var(--accent-color); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         ul { list-style: none; padding: 0; width: 100%; }
-        li { background: var(--card-bg); padding: 12px 18px; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        
+        /* 🔄 Animación Suave para los Registros del Historial (Efecto Acordeón/Cascada) */
+        @keyframes nacerSuave {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        li { 
+            background: var(--card-bg); 
+            padding: 12px 18px; 
+            margin-bottom: 12px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid var(--border-color);
+            animation: nacerSuave 0.3s ease-out forwards;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
         .tags-factores { font-size: 0.7rem; color: var(--tag-text); background: var(--tag-bg); padding: 2px 6px; border-radius: 5px; margin-right: 4px; display: inline-block; margin-top: 5px; }
         .info-contexto { font-size: 0.75rem; color: #888; display: block; margin-top: 4px; font-style: italic; }
         
@@ -179,7 +199,7 @@
         .btn-editar { background-color: #6cace4; color: white; }
         .btn-borrar { background-color: #FF7070; color: white; }
         
-        /* 🔥 FIX ANDROID KEYBOARD */
+        /* 🔥 FIX ANDROID KEYBOARD Y TRANSICIONES DE FORMULARIOS */
         dialog { 
             border: none; 
             border-radius: 20px; 
@@ -188,18 +208,23 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
             width: 85%; 
             max-width: 350px; 
-            opacity: 0; 
-            transition: opacity 0.3s ease; 
             margin: 5dvh auto; 
             max-height: 85dvh; 
             overflow-y: auto; 
             background-color: var(--card-bg); 
             color: var(--text-main); 
             overscroll-behavior: contain; 
+            /* 🔄 Transición fluida de opacidad y escala para Modales */
+            opacity: 0; 
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease; 
         }
         
-        dialog[open] { opacity: 1; }
-        dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
+        dialog[open] { 
+            opacity: 1; 
+            transform: scale(1);
+        }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); transition: backdrop-filter 0.3s ease; }
 
         label { display: block; font-size: 0.85rem; color: var(--text-main); margin-top: 10px; font-weight: bold; }
         input[type="number"], input[type="date"], input[type="time"], input[type="text"], input[type="email"], select { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: var(--bg-body); color: var(--text-main); }
@@ -215,7 +240,7 @@
         /* Contenedores de Aislamiento Reactivo */
         .grupo-reactivo { display: none; }
 
-        /* 💾 SECCIÓN DE HERRAMIENTAS (Backup + PDF - AHORA DESBLOQUEADA) */
+        /* 💾 SECCIÓN DE HERRAMIENTAS */
         .seccion-herramientas { 
             width: 90%; 
             max-width: 400px; 
@@ -234,7 +259,7 @@
         .btn-herramienta .icono { font-size: 1.4rem; margin-bottom: 0.3rem; }
         .btn-herramienta .texto { font-size: 0.75rem; font-weight: 500; }
 
-        /* 📱 CONTAINER DE INFORMES CONTENIDO (Evita desborde en móviles y unifica espacios) */
+        /* 📱 CONTAINER DE INFORMES CONTENIDO */
         .contenedor-bloques-informe { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
         /* 📱 CONTROL EXCLUSIVO DE HOVER */
@@ -254,30 +279,22 @@
 
         /* 📱 AJUSTES QUIRÚRGICOS PARA MÓVIL (Vista Retrato) */
         @media (max-width: 768px) {
-            /* 1. Compresión del Título y Cabecera Exclusiva para Móvil */
             #contenedor-fijo-superior { padding-top: 5px; padding-bottom: 0px; }
             header { margin-bottom: 5px; height: auto; }
             h1 { font-size: 2.2rem; }
 
-            /* 2. Compactación del Bloque de Copias de Seguridad (Backup) */
             .seccion-herramientas { padding: 0.6rem; margin-bottom: 1rem; }
             .btn-herramienta { padding: 0.5rem 0.2rem; }
             .btn-herramienta .icono { font-size: 1.2rem; margin-bottom: 0.2rem; }
             .btn-herramienta .texto { font-size: 0.7rem; }
 
-            /* 3. Sello de autor: Reducción de márgenes de la firma */
             footer { margin-top: 8px !important; margin-bottom: 8px !important; }
 
-            /* 4. Optimización del motor de informes y unificación de espacios */
             .contenedor-bloques-informe { grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
             .contenedor-bloques-informe > div { padding: 10px !important; }
             #lista-etapas-reporte li { flex-direction: column; gap: 4px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85rem; text-align: center; }
 
-            /* 5. Flexbox Inteligente: Salto del botón Glucosa */
-            .btn-rapido.glucosa {
-                order: 3;
-                flex: 0 0 100%;
-            }
+            .btn-rapido.glucosa { order: 3; flex: 0 0 100%; }
             .btn-rapido.insulina { order: 1; }
             .btn-rapido.factor { order: 2; }
         }
@@ -652,6 +669,13 @@
             actualizarInterfaz();
         };
 
+        // 🚀 Atajo Inteligente para el Último Registro (Volver a Estado Inicial)
+        window.atajoNavegacionRapida = function() {
+            cambiarFiltroTiempo('D');
+            cambiarFiltroTipo('Todo');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
         // 🧠 Aislamiento Reactivo: Inicializar Modal según el Tipo Clínico
         window.abrirModalConTipo = (tipo, index = null) => {
             formReg.reset();
@@ -979,7 +1003,7 @@
             const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
 
             if (regsFiltrados.length > 0) {
-                regsFiltrados.forEach((r) => {
+                regsFiltrados.forEach((r, indexArray) => {
                     const originalIndex = todosLosRegs.indexOf(r);
                     const li = document.createElement('li');
                     
@@ -1029,6 +1053,19 @@
                             <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
                         </div>
                     `;
+                    
+                    // 🚀 Inyección UX: Atajo de Navegación Rápida en el ÚLTIMO elemento
+                    if (indexArray === regsFiltrados.length - 1) {
+                        li.style.cursor = 'pointer';
+                        li.title = "Pulse aquí para volver a la vista inicial (Día actual / Todo)";
+                        li.onclick = function(e) {
+                            // Prevenir que se dispare si el usuario hace clic en los botones de editar o borrar
+                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                                atajoNavegacionRapida();
+                            }
+                        };
+                    }
+
                     lista.appendChild(li);
                 });
             } else {
