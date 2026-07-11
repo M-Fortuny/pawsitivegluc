@@ -155,8 +155,6 @@
         /* Botones Globales */
         button { background-color: var(--btn-bg); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         
-        #display-vet { width: 100%; padding: 10px; margin: 6px 0 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background-color: var(--bg-body); cursor: pointer; color: var(--text-main); text-align: left; }
-        
         .btn-secondary { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
         .button-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
         .hidden { display: none; }
@@ -466,14 +464,22 @@
         </form>
     </dialog> 
     
-    <dialog id="modal-perfil">
-        <form id="form-perfil">
+    <dialog id="modal-menu-perfil">
+        <h3 style="margin-top:0; text-align: center;">Opciones de Perfil</h3>
+        <button class="btn-form" onclick="abrirSubPerfil('basico')">Perfil de Mascota</button>
+        <button class="btn-form" onclick="abrirSubPerfil('vet')" style="background-color: #1976D2;">Veterinario / Clínica</button>
+        <button class="btn-form" onclick="abrirSubPerfil('pautas')" style="background-color: #E65100;">Pautas Indicadas</button>
+        <button type="button" class="btn-form" style="background-color: #999; margin-top: 15px;" onclick="cerrarSubModal('modal-menu-perfil')">Cancelar</button>
+    </dialog>
+
+    <dialog id="modal-perfil-basico">
+        <form id="form-perfil-basico">
             <h3 style="margin-top:0; text-align: center;">Perfil de Mascota</h3>
             
             <label>Tutor / Responsable</label>
             <input type="text" id="p-tutor" required>
 
-			<label>Nombre de la Mascota</label>
+            <label>Nombre de la Mascota</label>
             <input type="text" id="p-nombre" required>
             
             <div class="form-perfil-grid">
@@ -481,8 +487,32 @@
                 <div><label>Edad (años)</label><input type="number" id="p-edad" step="any" inputmode="decimal"></div>
             </div>
             
+            <button type="submit" class="btn-form">Guardar Perfil</button>
+            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-perfil-basico')">Cancelar</button>
+        </form>
+    </dialog>
+
+    <dialog id="modal-vet">
+        <form id="form-vet">
+            <h3 style="margin-top:0; text-align: center;">Veterinario / Clínica</h3>
+            <label>Nombre</label>
+            <input type="text" id="vet-nombre" required>
+            <label>Teléfono</label>
+            <input type="text" id="vet-telefono">
+            <label>Email</label>
+            <input type="email" id="vet-email">
+            
             <label>Fecha de Diagnóstico</label>
             <input type="date" id="p-diagnostico">
+            
+            <button type="submit" class="btn-form">Guardar Datos</button>
+            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-vet')">Cancelar</button>
+        </form>
+    </dialog>
+
+    <dialog id="modal-pautas">
+        <form id="form-pautas">
+            <h3 style="margin-top:0; text-align: center;">Pautas Indicadas</h3>
             
             <label>Tipo de Insulina</label>
             <select id="p-insulina">
@@ -495,55 +525,17 @@
                 <option value="Otra">Otra</option>
             </select>
 
-            <label>Tipo de Jeringuilla</label>
-            <select id="p-jeringuilla">
-                <option value="">Selecciona...</option>
-                <optgroup label="Jeringuillas U-40 (Vet - Tapón Rojo)">
-                    <option value="U40-0.5-enteras">U-40 | 0.5 ml (Hasta 20 U. Enteras)</option>
-                    <option value="U40-0.5-medias">U-40 | 0.5 ml (Con Medias Unidades)</option>
-                    <option value="U40-1.0-enteras">U-40 | 1.0 ml (Hasta 40 U.)</option>
-                </optgroup>
-                <optgroup label="Jeringuillas U-100 (Humana - Tapón Naranja)">
-                    <option value="U100-0.3-medias">U-100 | 0.3 ml (Con Medias Unidades)</option>
-                    <option value="U100-0.3-enteras">U-100 | 0.3 ml (Hasta 30 U. Enteras)</option>
-                    <option value="U100-0.5-enteras">U-100 | 0.5 ml (Hasta 50 U.)</option>
-                    <option value="U100-1.0-enteras">U-100 | 1.0 ml (Hasta 100 U.)</option>
-                </optgroup>
-                <optgroup label="Otros Sistemas">
-                    <option value="Pluma">Dispositivo tipo Pluma / Pen</option>
-                    <option value="Otra">Otra</option>
-                </optgroup>
-            </select>
-
             <label>Dosis Habitual (Unidades)</label>
             <input type="number" id="p-dosis" step="any" inputmode="decimal">
             
-            <label>Veterinario / Clínica</label>
-            <div id="display-vet" onclick="abrirVetModal()">Toca para configurar...</div>
-            <input type="hidden" id="p-vet-data">
-
             <label>Rango Objetivo (mg/dL)</label>
             <div class="form-perfil-grid">
                 <input type="number" id="p-min" placeholder="Mín" step="any" inputmode="decimal">
                 <input type="number" id="p-max" placeholder="Máx" step="any" inputmode="decimal">
             </div>
             
-            <button type="submit" class="btn-form">Guardar Perfil</button>
-            <button type="button" id="cerrar-perfil" class="btn-form" style="background-color: #999; margin-top: 8px;">Cancelar</button>
-        </form>
-    </dialog>
-
-    <dialog id="modal-vet">
-        <form id="form-vet" onsubmit="guardarVetModal(event)">
-            <h3 style="text-align: center;">Datos del Veterinario</h3>
-            <label>Nombre</label>
-            <input type="text" id="vet-nombre" required>
-            <label>Teléfono</label>
-            <input type="text" id="vet-telefono">
-            <label>Email</label>
-            <input type="email" id="vet-email">
-            <button type="submit" class="btn-form">Aceptar</button>
-            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarVetYMantenerFondo()">Cancelar</button>
+            <button type="submit" class="btn-form">Guardar Pautas</button>
+            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-pautas')">Cancelar</button>
         </form>
     </dialog>
 
@@ -552,8 +544,10 @@
         const KEY_PERFIL = 'misDatos_perfil';
         const KEY_THEME = 'theme_pref'; 
         const modalReg = document.getElementById('modal-registro');
-        const modalPerfil = document.getElementById('modal-perfil');
+        const modalMenuPerfil = document.getElementById('modal-menu-perfil');
+        const modalPerfilBasico = document.getElementById('modal-perfil-basico');
         const modalVet = document.getElementById('modal-vet');
+        const modalPautas = document.getElementById('modal-pautas');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
@@ -622,45 +616,22 @@
             modal.addEventListener('click', (e) => { 
                 if (e.target === modal) { 
                     modal.close(); 
-                    if (modal.id !== 'modal-vet' || !modalPerfil.open) {
-                        document.body.classList.remove('modal-abierto');
-                    }
+                    document.body.classList.remove('modal-abierto');
                 } 
             });
         };
         habilitarCierreFuera(modalReg);
-        habilitarCierreFuera(modalPerfil);
+        habilitarCierreFuera(modalMenuPerfil);
+        habilitarCierreFuera(modalPerfilBasico);
         habilitarCierreFuera(modalVet);
+        habilitarCierreFuera(modalPautas);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
-        modalPerfil.addEventListener('close', limpiarFondoModal);
+        modalMenuPerfil.addEventListener('close', limpiarFondoModal);
+        modalPerfilBasico.addEventListener('close', limpiarFondoModal);
         modalVet.addEventListener('close', limpiarFondoModal);
-
-        // Lógica Veterinario
-        window.abrirVetModal = () => {
-            const datosVet = JSON.parse(document.getElementById('p-vet-data').value || '{}');
-            document.getElementById('vet-nombre').value = datosVet.nombre || '';
-            document.getElementById('vet-telefono').value = datosVet.telefono || '';
-            document.getElementById('vet-email').value = datosVet.email || '';
-            modalVet.showModal();
-        };
-
-        window.guardarVetModal = (e) => {
-            e.preventDefault();
-            const nuevoVet = {
-                nombre: document.getElementById('vet-nombre').value,
-                telefono: document.getElementById('vet-telefono').value,
-                email: document.getElementById('vet-email').value
-            };
-            document.getElementById('p-vet-data').value = JSON.stringify(nuevoVet);
-            document.getElementById('display-vet').innerText = nuevoVet.nombre || "Toca para configurar...";
-            modalVet.close();
-        };
-
-        window.cerrarVetYMantenerFondo = () => {
-            modalVet.close();
-        };
+        modalPautas.addEventListener('close', limpiarFondoModal);
 
         // 🧠 Controladores de la Doble Matriz
         window.cambiarFiltroTiempo = function(filtro) {
@@ -832,49 +803,81 @@
             }
         }
 
+        /* 📋 LÓGICA DE LOS NUEVOS FORMULARIOS DE PERFIL */
         document.getElementById('abrir-perfil').onclick = () => {
-            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            document.getElementById('p-nombre').value = data.nombre || '';
-            document.getElementById('p-tutor').value = data.tutor || '';
-            document.getElementById('p-peso').value = data.peso || '';
-            document.getElementById('p-edad').value = data.edad || '';
-            document.getElementById('p-diagnostico').value = data.diagnostico || '';
-            document.getElementById('p-insulina').value = data.insulina || '';
-            document.getElementById('p-jeringuilla').value = data.jeringuilla || '';
-            document.getElementById('p-dosis').value = data.dosis || '';
-            document.getElementById('p-min').value = data.min || '';
-            document.getElementById('p-max').value = data.max || '';
-            
-            const vetObj = data.veterinario || {nombre: '', telefono: '', email: ''};
-            document.getElementById('p-vet-data').value = JSON.stringify(vetObj);
-            document.getElementById('display-vet').innerText = vetObj.nombre || "Toca para configurar...";
-            
             document.body.classList.add('modal-abierto');
-            modalPerfil.showModal();
+            modalMenuPerfil.showModal();
         };
-        
-        document.getElementById('cerrar-perfil').onclick = () => {
-            modalPerfil.close();
+
+        window.cerrarSubModal = (modalId) => {
+            document.getElementById(modalId).close();
             document.body.classList.remove('modal-abierto');
         };
-        
-        document.getElementById('form-perfil').onsubmit = (e) => {
+
+        window.abrirSubPerfil = (tipo) => {
+            modalMenuPerfil.close(); 
+            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+
+            if (tipo === 'basico') {
+                document.getElementById('p-nombre').value = data.nombre || '';
+                document.getElementById('p-tutor').value = data.tutor || '';
+                document.getElementById('p-peso').value = data.peso || '';
+                document.getElementById('p-edad').value = data.edad || '';
+                modalPerfilBasico.showModal();
+            } else if (tipo === 'vet') {
+                const vetObj = data.veterinario || {nombre: '', telefono: '', email: ''};
+                document.getElementById('vet-nombre').value = vetObj.nombre || '';
+                document.getElementById('vet-telefono').value = vetObj.telefono || '';
+                document.getElementById('vet-email').value = vetObj.email || '';
+                document.getElementById('p-diagnostico').value = data.diagnostico || '';
+                modalVet.showModal();
+            } else if (tipo === 'pautas') {
+                document.getElementById('p-insulina').value = data.insulina || '';
+                document.getElementById('p-dosis').value = data.dosis || '';
+                document.getElementById('p-min').value = data.min || '';
+                document.getElementById('p-max').value = data.max || '';
+                modalPautas.showModal();
+            }
+        };
+
+        // Guardado Selectivo: Perfil Básico
+        document.getElementById('form-perfil-basico').onsubmit = (e) => {
             e.preventDefault();
-            localStorage.setItem(KEY_PERFIL, JSON.stringify({
-                nombre: document.getElementById('p-nombre').value,
-                tutor: document.getElementById('p-tutor').value,
-                peso: document.getElementById('p-peso').value,
-                edad: document.getElementById('p-edad').value,
-                diagnostico: document.getElementById('p-diagnostico').value,
-                insulina: document.getElementById('p-insulina').value,
-                jeringuilla: document.getElementById('p-jeringuilla').value,
-                dosis: document.getElementById('p-dosis').value,
-                veterinario: JSON.parse(document.getElementById('p-vet-data').value),
-                min: document.getElementById('p-min').value,
-                max: document.getElementById('p-max').value
-            }));
-            modalPerfil.close();
-            document.body.classList.remove('modal-abierto');
+            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            data.nombre = document.getElementById('p-nombre').value;
+            data.tutor = document.getElementById('p-tutor').value;
+            data.peso = document.getElementById('p-peso').value;
+            data.edad = document.getElementById('p-edad').value;
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
+            cerrarSubModal('modal-perfil-basico');
+            actualizarInterfaz();
+        };
+
+        // Guardado Selectivo: Veterinario / Clínica
+        document.getElementById('form-vet').onsubmit = (e) => {
+            e.preventDefault();
+            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            data.veterinario = {
+                nombre: document.getElementById('vet-nombre').value,
+                telefono: document.getElementById('vet-telefono').value,
+                email: document.getElementById('vet-email').value
+            };
+            data.diagnostico = document.getElementById('p-diagnostico').value;
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
+            cerrarSubModal('modal-vet');
+            actualizarInterfaz();
+        };
+
+        // Guardado Selectivo: Pautas Indicadas
+        document.getElementById('form-pautas').onsubmit = (e) => {
+            e.preventDefault();
+            const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            data.insulina = document.getElementById('p-insulina').value;
+            data.dosis = document.getElementById('p-dosis').value;
+            data.min = document.getElementById('p-min').value;
+            data.max = document.getElementById('p-max').value;
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
+            cerrarSubModal('modal-pautas');
             actualizarInterfaz();
         };
 
