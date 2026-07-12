@@ -117,7 +117,7 @@
         
         .bloque-ajustado { width: 90%; max-width: 400px; box-sizing: border-box; }
         
-        #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2.5rem; border: 1px solid var(--border-color); }
+        #tarjeta-glucosa, .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
         #valor-glucosa { font-size: 3.5rem; color: var(--accent-color); margin: 5px 0; font-weight: 700; }
         
         /* 📱 Botones Rápidos (Flexbox Inteligente y Colores Fijos) */
@@ -172,7 +172,7 @@
 
         ul { list-style: none; padding: 0; width: 100%; }
         
-        /* 🔄 Animación Suave para los Registros del Historial (Efecto Acordeón/Cascada) */
+        /* 🔄 Animación Suave para los Registros del Historial */
         @keyframes nacerSuave {
             0% { opacity: 0; transform: translateY(-10px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -223,6 +223,29 @@
         }
         .theme-dark .btn-entendido { background-color: #665416; color: #ffda6a; }
         
+        /* 🔔 Alerta de Tomas Pendientes */
+        .alerta-pendiente {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            color: #0d47a1;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: nacerSuave 0.4s ease-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .btn-confirmar-toma { background-color: #1976d2; color: white; font-weight: bold; }
+        
+        .theme-dark .alerta-pendiente {
+            background-color: #0d2840;
+            border-color: #1565c0;
+            color: #90caf9;
+        }
+        .theme-dark .btn-confirmar-toma { background-color: #1565c0; color: white; }
+
         /* 🔥 FIX ANDROID KEYBOARD Y TRANSICIONES DE FORMULARIOS */
         dialog { 
             border: none; 
@@ -238,7 +261,6 @@
             background-color: var(--card-bg); 
             color: var(--text-main); 
             overscroll-behavior: contain; 
-            /* 🔄 Transición fluida de opacidad y escala para Modales */
             opacity: 0; 
             transform: scale(0.95);
             transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease; 
@@ -333,13 +355,13 @@
         /* 📱 Modos especiales (Landscape y Print) */
         @media (orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px) {
             body { padding: 0; height: 100vh; overflow: hidden; display: block; }
-            header, #contenedor-fijo-superior, #tarjeta-glucosa, .seccion-vertical, dialog, .seccion-herramientas { display: none !important; }
+            header, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-pendientes, .seccion-vertical, dialog, .seccion-herramientas { display: none !important; }
             #contenedor-grafico { display: flex !important; position: fixed; top: 0; left: 0; width: 100vw !important; height: 100vh !important; margin: 0 !important; padding: 15px !important; box-sizing: border-box; background: var(--bg-body); z-index: 99999; border-radius: 0; }
         }
 
         @media print {
             body { background: white; color: black; padding: 0; }
-            header, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-grafico, button, .btn-accion, .selector-matriz, .seccion-herramientas { display: none !important; }
+            header, #contenedor-fijo-superior, #tarjeta-glucosa, #contenedor-pendientes, #contenedor-grafico, button, .btn-accion, .selector-matriz, .seccion-herramientas { display: none !important; }
             #seccion-informes { display: block !important; width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
             #lista-historial { display: block !important; width: 100% !important; }
             li { box-shadow: none !important; border-bottom: 1px solid #ccc !important; background: white !important; }
@@ -385,6 +407,8 @@
                 </button>
             </div>
         </section>
+
+        <div id="contenedor-pendientes" class="bloque-ajustado" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;"></div>
     </div>
 
     <section id="contenedor-grafico">
@@ -505,6 +529,7 @@
                     <label class="chip"><input type="checkbox" name="factor" value="Paseo"> 🐕 Paseo</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Siesta"> 💤 Siesta</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Malestar"> 🤒 Malestar</label>
+                    <label class="chip"><input type="checkbox" name="factor" value="Medicación"> 💊 Medicación</label>
                 </div>
                 
                 <div id="modificadores-dinamicos" style="margin-top: 15px;"></div>
@@ -637,38 +662,94 @@
                 <label class="chip"><input type="checkbox" name="condicion" value="Infecciones"> Infecciones</label>
             </div>
             
-            <label>Fármacos Diabetogénicos Activos</label>
-            <div class="checkbox-grupo" id="input-medicamentos">
-                <label class="chip"><input type="checkbox" name="medicamento" value="Corticosteroides"> Corticosteroides</label>
-                <label class="chip"><input type="checkbox" name="medicamento" value="Progestágenos"> Progestágenos</label>
-                <label class="chip"><input type="checkbox" name="medicamento" value="Diuréticos"> Diuréticos</label>
-            </div>
+            <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 5px; border-color: var(--accent-color); color: var(--accent-color);" onclick="abrirConfigSalud()">
+                <span>⚙️</span> Configuración de Medicación Diaria
+            </button>
             
             <label>Otra Medicación (Texto libre)</label>
-            <input type="text" id="p-medicacion-otra" placeholder="Ej: Librela, Analgésicos...">
+            <input type="text" id="p-medicacion-otra" placeholder="Ej: Tratamiento puntual...">
             
-            <button type="submit" class="btn-form">Guardar Salud</button>
+            <button type="submit" class="btn-form" style="background-color: #8E24AA;">Guardar Salud</button>
             <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-salud')">Cancelar</button>
         </form>
+    </dialog>
+
+    <dialog id="modal-config-salud">
+        <h3 style="margin-top:0; text-align: center; color: #8E24AA;">Gestión de Medicación</h3>
+
+        <label>Base de Datos de Fármacos</label>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="nuevo-farmaco-nombre" placeholder="Ej: Librela, Analgésico...">
+            <button type="button" class="btn-secondary" style="background-color: #8E24AA; color: white; border: none;" onclick="añadirFarmacoCustom()">Añadir</button>
+        </div>
+        <ul id="lista-farmacos-db" style="font-size:0.8rem; max-height:120px; overflow-y:auto; margin-bottom:20px; padding:0; list-style:none; border: 1px solid var(--border-color); border-radius: 8px; padding: 5px;">
+            </ul>
+
+        <hr style="border-top:1px solid var(--border-color); margin: 15px 0;">
+
+        <label>Programar Toma Diaria (Pautas)</label>
+        <div class="form-perfil-grid" style="margin-bottom: 5px;">
+            <div class="campo-limpio">
+                <label>Fármaco</label>
+                <select id="select-pauta-farmaco"></select>
+            </div>
+            <div class="campo-limpio">
+                <label>Frecuencia</label>
+                <select id="select-pauta-freq">
+                    <option value="8">Cada 8h</option>
+                    <option value="12">Cada 12h</option>
+                    <option value="24">Cada 24h</option>
+                </select>
+            </div>
+            <div class="campo-limpio">
+                <label>Primera Toma</label>
+                <input type="time" id="input-pauta-hora">
+            </div>
+            <div class="campo-limpio" style="display:flex; align-items:flex-end;">
+                <button type="button" class="btn-secondary" style="width:100%; background-color:#8E24AA; color:white; border:none; margin-bottom: 10px;" onclick="añadirPauta()">Programar</button>
+            </div>
+        </div>
+
+        <ul id="lista-pautas-activas" style="font-size:0.85rem; margin-top:10px; padding:0; list-style:none;">
+            </ul>
+
+        <button type="button" class="btn-form" onclick="volverASaludDesdeConfig()" style="margin-top: 20px;">Volver</button>
     </dialog>
 
     <script>
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
         const KEY_THEME = 'theme_pref'; 
+        
         const modalReg = document.getElementById('modal-registro');
         const modalMenuPerfil = document.getElementById('modal-menu-perfil');
         const modalPerfilBasico = document.getElementById('modal-perfil-basico');
         const modalVet = document.getElementById('modal-vet');
         const modalPautas = document.getElementById('modal-pautas');
         const modalSalud = document.getElementById('modal-salud');
+        const modalConfigSalud = document.getElementById('modal-config-salud');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
         
-        // Variables de la Doble Matriz de Filtrado (Con estado inicial 'D' y 'Todo')
+        // Variables Doble Matriz
         let filtroTiempoActual = 'D';
         let filtroTipoActual = 'Todo';
+
+        // 💊 BASE DE DATOS MAESTRA DE FÁRMACOS (Imborrables / isDefault: true)
+        const dbFarmacosDefault = [
+            { nombre: "Corticosteroides", isDefault: true },
+            { nombre: "Progestágenos", isDefault: true },
+            { nombre: "Diuréticos", isDefault: true },
+            { nombre: "Insulina", isDefault: true },
+            { nombre: "Antibiótico", isDefault: true }
+        ];
+
+        function obtenerTodosLosFarmacos() {
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const custom = (perfil.salud && perfil.salud.farmacosCustom) ? perfil.salud.farmacosCustom : [];
+            return [...dbFarmacosDefault, ...custom];
+        }
 
         // Lógica de Backup
         function exportarDatos() {
@@ -740,6 +821,7 @@
         habilitarCierreFuera(modalVet);
         habilitarCierreFuera(modalPautas);
         habilitarCierreFuera(modalSalud);
+        habilitarCierreFuera(modalConfigSalud);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
@@ -748,8 +830,9 @@
         modalVet.addEventListener('close', limpiarFondoModal);
         modalPautas.addEventListener('close', limpiarFondoModal);
         modalSalud.addEventListener('close', limpiarFondoModal);
+        modalConfigSalud.addEventListener('close', limpiarFondoModal);
 
-        // 🧠 Controladores de la Doble Matriz
+        // Controladores de Matriz
         window.cambiarFiltroTiempo = function(filtro) {
             filtroTiempoActual = filtro;
             document.querySelectorAll('.opcion-tiempo').forEach(el => {
@@ -768,7 +851,6 @@
             actualizarInterfaz();
         };
 
-        // 🚀 Atajo Inteligente para el Último Registro
         window.atajoNavegacionRapida = function() {
             cambiarFiltroTiempo('D');
             cambiarFiltroTipo('Todo');
@@ -781,7 +863,6 @@
             const container = document.getElementById('modificadores-dinamicos');
             if(!container) return detalles;
             
-            // Evaluamos Paseo
             const dur = container.querySelector('.mod-paseo-duracion');
             const pisBtn = container.querySelector('.mod-paseo-pis .activo');
             const cacaBtn = container.querySelector('.mod-paseo-caca .activo');
@@ -793,7 +874,6 @@
                 if(cacaBtn) detalles['Paseo'].caca = cacaBtn.dataset.val;
             }
             
-            // Evaluamos Otros factores generales
             container.querySelectorAll('.mod-general-intensidad').forEach(grupo => {
                 const f = grupo.dataset.factor;
                 const btn = grupo.querySelector('.activo');
@@ -870,7 +950,6 @@
                 container.appendChild(div);
             });
             
-            // Asignar toggle a los botones generados
             container.querySelectorAll('.btn-intensidad').forEach(btn => {
                 btn.onclick = (e) => {
                     const grupo = e.target.closest('.btn-grupo-intensidad');
@@ -884,7 +963,6 @@
             });
         }
 
-        // Suscribir eventos al cambio de factores
         document.querySelectorAll('#input-factores input').forEach(cb => {
             cb.addEventListener('change', () => {
                 const estadoActual = extraerModificadores();
@@ -892,20 +970,17 @@
             });
         });
 
-        // 🧠 Aislamiento Reactivo: Inicializar Modal según el Tipo Clínico
+        // Apertura Reactiva de Registro
         window.abrirModalConTipo = (tipo, index = null) => {
             formReg.reset();
             document.getElementById('input-index').value = index !== null ? index : "";
             document.getElementById('input-tipo').value = tipo;
 
-            // Limpiamos el panel de modificadores
             const panelMods = document.getElementById('modificadores-dinamicos');
             if(panelMods) panelMods.innerHTML = '';
 
-            // Ocultar todos los bloques reactivos primero
             document.querySelectorAll('.grupo-reactivo').forEach(b => b.style.display = 'none');
 
-            // Configurar títulos y visibilidad de campos
             const titulos = {
                 'glucosa': 'Registrar Glucosa',
                 'insulina': 'Registrar Insulina',
@@ -927,7 +1002,6 @@
                 document.getElementById('input-insulina-registro').value = perfilActual.insulina || "";
             }
 
-            // Si es edición, rellenamos los datos específicos
             if (index !== null) {
                 const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
                 const r = regs[index];
@@ -942,7 +1016,6 @@
                         document.getElementById('input-dosis-registro').value = r.dosis || "";
                     }
                     
-                    // Restauración visual de Factores y sus Modificadores Dinámicos
                     if (tipo === 'factor' || (tipo === 'glucosa' && r.factores)) {
                         document.querySelectorAll('#input-factores input').forEach(cb => {
                             cb.checked = Array.isArray(r.factores) ? r.factores.includes(cb.value) : false;
@@ -955,14 +1028,12 @@
             document.body.classList.add('modal-abierto');
             modalReg.showModal();
 
-            // --- INYECCIÓN QUIRÚRGICA: GESTIÓN DE FOCOS TÁCTICOS ---
             setTimeout(() => {
                 if (tipo === 'insulina') {
                     document.getElementById('input-dosis-registro').focus();
                 } else if (tipo === 'glucosa') {
                     document.getElementById('input-valor').focus();
                 } else if (tipo === 'factor') {
-                    // El navegador móvil suele auto-enfocar el primer input (fecha), lo desenfocamos para evitar que salte el calendario
                     if (document.activeElement === document.getElementById('input-fecha')) {
                         document.activeElement.blur();
                     }
@@ -975,7 +1046,6 @@
             document.body.classList.remove('modal-abierto');
         };
 
-        // 🩺 Motor de Correlatividad Retrospectiva Inteligente
         function buscarInsulinaPrevia(registroActual, todosLosRegs) {
             if (!registroActual.tipo && registroActual.contextoClinico) {
                 return registroActual.contextoClinico;
@@ -1008,7 +1078,6 @@
                 hora: document.getElementById('input-hora').value
             };
 
-            // Validación estricta por tipo clínico y recolección de modificadores
             if (tipo === 'glucosa') {
                 const v = document.getElementById('input-valor').value;
                 if (!v) { alert('Introduce el valor de glucosa'); return; }
@@ -1016,20 +1085,23 @@
                 nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
                 nuevoRegistro.factoresDetalle = extraerModificadores();
 
-                // 🛡️ Pawsitive Guard: Alertas de Contexto Clínico
                 const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-                const umbralAlto = parseFloat(perfil.max) || 250; // Usar el límite del perfil o 250 por defecto si no está definido
+                const umbralAlto = parseFloat(perfil.max) || 250; 
                 
                 if (parseFloat(v) > umbralAlto) {
                     const salud = perfil.salud || {};
                     const tieneCondiciones = salud.condiciones && salud.condiciones.length > 0;
-                    const tieneMeds = salud.medicamentos && salud.medicamentos.length > 0;
+                    
+                    // Extraemos fármacos activos de las pautas programadas para la alerta
+                    const medsPautas = (salud.pautas || []).map(p => p.farmaco);
+                    const tieneMeds = medsPautas.length > 0;
+                    
                     const otraMed = salud.medicacionOtra && salud.medicacionOtra.trim() !== '';
 
                     if (tieneCondiciones || tieneMeds || otraMed) {
                         let advertencias = [];
                         if (tieneCondiciones) advertencias.push(...salud.condiciones);
-                        if (tieneMeds) advertencias.push(...salud.medicamentos);
+                        if (tieneMeds) advertencias.push(...medsPautas);
                         if (otraMed) advertencias.push(salud.medicacionOtra);
                         
                         nuevoRegistro.alertaContexto = `Glucosa inusualmente alta. Ten en cuenta la influencia de tu perfil: <strong>${advertencias.join(', ')}</strong>`;
@@ -1049,19 +1121,15 @@
                 nuevoRegistro.factoresDetalle = extraerModificadores();
             }
 
-            // Persistencia automática de la Duración del Paseo para comodidad del usuario
             if (nuevoRegistro.factoresDetalle && nuevoRegistro.factoresDetalle['Paseo'] && nuevoRegistro.factoresDetalle['Paseo'].duracion) {
                 localStorage.setItem('ultimaDuracionPaseo', nuevoRegistro.factoresDetalle['Paseo'].duracion);
             }
 
             if (idx !== "") { 
                 const antiguoReg = regs[parseInt(idx)];
-                
-                // Mantenemos el estado oculto de la alerta si el usuario la había descartado al editar
                 if (tipo === 'glucosa' && antiguoReg && antiguoReg.alertaOculta !== undefined) {
                     nuevoRegistro.alertaOculta = antiguoReg.alertaOculta;
                 }
-
                 if (!antiguoReg.tipo && tipo === 'glucosa') {
                     nuevoRegistro.valor = document.getElementById('input-valor').value;
                     nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
@@ -1074,7 +1142,6 @@
                 regs.unshift(nuevoRegistro); 
             }
 
-            // Ordenación Cronológica Estricta basada en hora local desde medianoche
             regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
 
             localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
@@ -1087,7 +1154,6 @@
             const regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
             const r = regs[index];
             if (!r) return; 
-            
             const tipoCuerpo = r.tipo || 'glucosa';
             abrirModalConTipo(tipoCuerpo, index);
         };
@@ -1101,7 +1167,6 @@
             }
         };
 
-        // 🛡️ Ocultar Pawsitive Guard del historial
         window.ocultarAlerta = function(index) {
             let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
             if (regs[index]) {
@@ -1111,7 +1176,7 @@
             }
         };
 
-        /* 📋 LÓGICA DE LOS NUEVOS FORMULARIOS DE PERFIL */
+        /* 📋 NAVEGACIÓN Y APERTURA DE PERFILES */
         document.getElementById('abrir-perfil').onclick = () => {
             document.body.classList.add('modal-abierto');
             modalMenuPerfil.showModal();
@@ -1135,7 +1200,6 @@
                 document.getElementById('p-levanta').value = data.levanta || '';
                 document.getElementById('p-duerme').value = data.duerme || '';
                 
-                // Disparar el evento para calcular la edad visualmente
                 const event = new Event('change');
                 document.getElementById('p-nacimiento').dispatchEvent(event);
                 
@@ -1154,22 +1218,18 @@
                 document.getElementById('p-max').value = data.max || '';
                 modalPautas.showModal();
             } else if (tipo === 'salud') {
-                const saludObj = data.salud || {condiciones: [], medicamentos: [], medicacionOtra: ''};
+                const saludObj = data.salud || {condiciones: [], medicacionOtra: ''};
                 document.getElementById('p-medicacion-otra').value = saludObj.medicacionOtra || '';
                 
                 document.querySelectorAll('#input-condiciones input').forEach(cb => {
                     cb.checked = Array.isArray(saludObj.condiciones) ? saludObj.condiciones.includes(cb.value) : false;
                 });
                 
-                document.querySelectorAll('#input-medicamentos input').forEach(cb => {
-                    cb.checked = Array.isArray(saludObj.medicamentos) ? saludObj.medicamentos.includes(cb.value) : false;
-                });
-                
                 modalSalud.showModal();
             }
         };
 
-        // Motor de cálculo de edad dinámico
+        /* 📋 FUNCIONES PERFIL BÁSICO, VET Y PAUTAS */
         document.getElementById('p-nacimiento').addEventListener('change', function(e) {
             const val = e.target.value;
             const span = document.getElementById('edad-calculada');
@@ -1229,13 +1289,225 @@
         document.getElementById('form-salud').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            data.salud = {
-                condiciones: Array.from(document.querySelectorAll('#input-condiciones input:checked')).map(cb => cb.value),
-                medicamentos: Array.from(document.querySelectorAll('#input-medicamentos input:checked')).map(cb => cb.value),
-                medicacionOtra: document.getElementById('p-medicacion-otra').value
-            };
+            if(!data.salud) data.salud = {};
+            
+            data.salud.condiciones = Array.from(document.querySelectorAll('#input-condiciones input:checked')).map(cb => cb.value);
+            data.salud.medicacionOtra = document.getElementById('p-medicacion-otra').value;
+            
             localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
             cerrarSubModal('modal-salud');
+            actualizarInterfaz();
+        };
+
+        /* 💊 LÓGICA DE CONFIGURACIÓN DE PAUTAS DE MEDICACIÓN */
+        window.abrirConfigSalud = function() {
+            modalSalud.close();
+            renderConfigSalud();
+            modalConfigSalud.showModal();
+        };
+
+        window.volverASaludDesdeConfig = function() {
+            modalConfigSalud.close();
+            abrirSubPerfil('salud'); 
+        };
+
+        window.añadirFarmacoCustom = function() {
+            const nombre = document.getElementById('nuevo-farmaco-nombre').value.trim();
+            if(!nombre) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            if(!perfil.salud) perfil.salud = {};
+            if(!perfil.salud.farmacosCustom) perfil.salud.farmacosCustom = [];
+
+            const todos = obtenerTodosLosFarmacos();
+            if(todos.find(f => f.nombre.toLowerCase() === nombre.toLowerCase())) {
+                alert('El fármaco ya existe en la base de datos.');
+                return;
+            }
+
+            perfil.salud.farmacosCustom.push({ nombre: nombre, isDefault: false });
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            document.getElementById('nuevo-farmaco-nombre').value = '';
+            renderConfigSalud();
+        };
+
+        window.borrarFarmacoCustom = function(nombre) {
+            if(!confirm('¿Eliminar fármaco de la base de datos?')) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            perfil.salud.farmacosCustom = perfil.salud.farmacosCustom.filter(f => f.nombre !== nombre);
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigSalud();
+        };
+
+        window.añadirPauta = function() {
+            const farmaco = document.getElementById('select-pauta-farmaco').value;
+            const freq = document.getElementById('select-pauta-freq').value;
+            const hora = document.getElementById('input-pauta-hora').value;
+
+            if(!farmaco || !hora) { alert('Selecciona el fármaco y la hora de la primera toma.'); return; }
+
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            if(!perfil.salud) perfil.salud = {};
+            if(!perfil.salud.pautas) perfil.salud.pautas = [];
+
+            const ahora = new Date();
+            const [h, m] = hora.split(':');
+            let siguienteToma = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), parseInt(h), parseInt(m), 0);
+
+            // Si la hora ya pasó hoy, se mostrará como pendiente para confirmar
+            perfil.salud.pautas.push({
+                farmaco: farmaco,
+                frecuencia: freq,
+                primeraToma: hora,
+                siguienteToma: siguienteToma.toISOString()
+            });
+
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigSalud();
+            actualizarInterfaz();
+        };
+
+        window.borrarPauta = function(index) {
+            if(!confirm('¿Eliminar esta pauta de medicación diaria?')) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            perfil.salud.pautas.splice(index, 1);
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigSalud();
+            actualizarInterfaz();
+        };
+
+        window.renderConfigSalud = function() {
+            const farmacos = obtenerTodosLosFarmacos();
+            const ulFarmacos = document.getElementById('lista-farmacos-db');
+            const selectPauta = document.getElementById('select-pauta-farmaco');
+
+            ulFarmacos.innerHTML = '';
+            selectPauta.innerHTML = '<option value="" disabled selected>Selecciona fármaco...</option>';
+
+            farmacos.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.nombre;
+                opt.textContent = f.nombre;
+                selectPauta.appendChild(opt);
+
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.padding = '6px 4px';
+                li.style.borderBottom = '1px solid var(--border-color)';
+
+                const nombreSpan = document.createElement('span');
+                nombreSpan.textContent = f.nombre;
+                if(f.isDefault) nombreSpan.style.color = '#888';
+
+                li.appendChild(nombreSpan);
+
+                if(!f.isDefault) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = '🗑️';
+                    btn.style.background = 'transparent';
+                    btn.style.border = 'none';
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => borrarFarmacoCustom(f.nombre);
+                    li.appendChild(btn);
+                } else {
+                    const lock = document.createElement('span');
+                    lock.textContent = '🔒';
+                    lock.style.fontSize = '0.8rem';
+                    lock.style.opacity = '0.5';
+                    li.appendChild(lock);
+                }
+                ulFarmacos.appendChild(li);
+            });
+
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas : [];
+            const ulPautas = document.getElementById('lista-pautas-activas');
+            ulPautas.innerHTML = '';
+
+            pautas.forEach((p, idx) => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.background = 'var(--bg-body)';
+                li.style.padding = '10px';
+                li.style.marginBottom = '6px';
+                li.style.borderRadius = '8px';
+                li.style.border = '1px solid var(--border-color)';
+                li.innerHTML = `
+                    <div>
+                        <strong style="color:var(--accent-color);">${p.farmaco}</strong><br>
+                        <span style="font-size:0.75rem; color:#666;">Cada ${p.frecuencia}h (Inicio: ${p.primeraToma})</span>
+                    </div>
+                    <button type="button" class="btn-accion btn-borrar" onclick="borrarPauta(${idx})">X</button>
+                `;
+                ulPautas.appendChild(li);
+            });
+        };
+
+        // 🔔 MOTOR DE TOMAS PENDIENTES
+        function actualizarPendientes() {
+            const container = document.getElementById('contenedor-pendientes');
+            container.innerHTML = '';
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas : [];
+            const ahora = new Date();
+
+            pautas.forEach((pauta, index) => {
+                if (pauta.siguienteToma) {
+                    const fechaToma = new Date(pauta.siguienteToma);
+                    if (ahora >= fechaToma) {
+                        const hrFormat = fechaToma.getHours().toString().padStart(2, '0') + ':' + fechaToma.getMinutes().toString().padStart(2, '0');
+                        
+                        const div = document.createElement('div');
+                        div.className = 'alerta-pendiente';
+                        div.innerHTML = `
+                            <span style="flex:1;">💊 <strong>Toma Pendiente:</strong> ${pauta.farmaco} (${hrFormat})</span>
+                            <button type="button" class="btn-accion btn-confirmar-toma" onclick="confirmarToma(${index})">Confirmar</button>
+                        `;
+                        container.appendChild(div);
+                    }
+                }
+            });
+        }
+
+        window.confirmarToma = function(index) {
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pauta = perfil.salud.pautas[index];
+            const ahora = new Date();
+
+            // 1. Inyectar automáticamente en el historial clínico
+            let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            const fechaActual = ahora.toISOString().split('T')[0];
+            const horaActual = ahora.toTimeString().substring(0, 5);
+
+            let nuevoRegistro = {
+                fecha: fechaActual,
+                hora: horaActual,
+                tipo: 'factor',
+                factores: ['Medicación'],
+                factoresDetalle: {
+                    'Medicación': { notas: pauta.farmaco }
+                }
+            };
+            regs.unshift(nuevoRegistro);
+            regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
+            localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+
+            // 2. Programar siguiente ciclo de pauta
+            const tomaActual = new Date(pauta.siguienteToma);
+            tomaActual.setHours(tomaActual.getHours() + parseInt(pauta.frecuencia));
+            
+            // Medida de seguridad: Si la persona ha ignorado días enteros, lo ponemos acorde al momento actual
+            if(ahora > tomaActual) {
+                tomaActual.setTime(ahora.getTime());
+                tomaActual.setHours(tomaActual.getHours() + parseInt(pauta.frecuencia));
+            }
+
+            pauta.siguienteToma = tomaActual.toISOString();
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+
             actualizarInterfaz();
         };
 
@@ -1320,7 +1592,7 @@
             }
         }
         
-        // 🏗️ Mapeador visual elegante para Tags y Modificadores Dinámicos
+        // 🏗️ Mapeador visual elegante
         function generarHtmlTags(factores, detalles, isFactorPrincipal) {
             if (!factores) return '';
             return factores.map(f => {
@@ -1334,7 +1606,10 @@
                         if (det.caca) partes.push(`Caca: ${det.caca}`);
                         if (partes.length > 0) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${partes.join(' | ')})</span>`;
                     } else {
-                        if (det.intensidad) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${det.intensidad})</span>`;
+                        let partes = [];
+                        if (det.intensidad) partes.push(det.intensidad);
+                        if (det.notas) partes.push(det.notas);
+                        if (partes.length > 0) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${partes.join(' | ')})</span>`;
                     }
                 }
                 let baseStyle = isFactorPrincipal ? 'background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;' : '';
@@ -1371,7 +1646,6 @@
                         const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
                         const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
                         
-                        // 🛡️ Renderizado de Pawsitive Guard (Cápsula Informativa)
                         let alertaHtml = '';
                         if (r.alertaContexto && !r.alertaOculta) {
                             alertaHtml = `
@@ -1418,10 +1692,9 @@
                         </div>
                     `;
                     
-                    // 🚀 Atajo de Navegación Rápida
                     if (indexArray === regsFiltrados.length - 1) {
                         li.style.cursor = 'pointer';
-                        li.title = "Pulse aquí para volver a la vista inicial (Día actual / Todo)";
+                        li.title = "Pulse aquí para volver a la vista inicial";
                         li.onclick = function(e) {
                             if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
                                 atajoNavegacionRapida();
@@ -1436,13 +1709,16 @@
             }
             
             calcularYMostrarInformes(regsFiltrados, perfil);
+            actualizarPendientes(); // Evaluamos posibles medicaciones pendientes
             
             if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
                 renderizarGrafica([...regsFiltrados].reverse());
             }
         }
 
-        // 📊 Arquitectura Visual Premium de la Gráfica
+        // Ejecutar comprobación en segundo plano por si el tutor deja la app abierta
+        setInterval(actualizarPendientes, 60000);
+
         function renderizarGrafica(datos) {
             const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
             const ctx = document.getElementById('miGrafica').getContext('2d');
@@ -1511,7 +1787,6 @@
         actualizarInterfaz();
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
 
-        // 🔥 FIX ANDROID
         document.addEventListener('focusin', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
                 setTimeout(function() {
