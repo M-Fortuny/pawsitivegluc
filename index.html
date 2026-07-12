@@ -198,6 +198,30 @@
         .btn-accion { padding: 5px 10px; font-size: 0.75rem; border-radius: 8px; margin-left: 5px; border: none; cursor: pointer; }
         .btn-editar { background-color: #6cace4; color: white; }
         .btn-borrar { background-color: #FF7070; color: white; }
+
+        /* 🛡️ Pawsitive Guard (Alertas de Contexto) */
+        .capsula-alerta {
+            background-color: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #856404;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: nacerSuave 0.4s ease-out;
+            line-height: 1.4;
+        }
+        .btn-entendido { background-color: #ffe69c; color: #856404; font-weight: bold; }
+        
+        .theme-dark .capsula-alerta {
+            background-color: #332b0a;
+            border-color: #665416;
+            color: #ffda6a;
+        }
+        .theme-dark .btn-entendido { background-color: #665416; color: #ffda6a; }
         
         /* 🔥 FIX ANDROID KEYBOARD Y TRANSICIONES DE FORMULARIOS */
         dialog { 
@@ -894,6 +918,20 @@
 
             document.body.classList.add('modal-abierto');
             modalReg.showModal();
+
+            // --- INYECCIÓN QUIRÚRGICA: GESTIÓN DE FOCOS TÁCTICOS ---
+            setTimeout(() => {
+                if (tipo === 'insulina') {
+                    document.getElementById('input-dosis-registro').focus();
+                } else if (tipo === 'glucosa') {
+                    document.getElementById('input-valor').focus();
+                } else if (tipo === 'factor') {
+                    // El navegador móvil suele auto-enfocar el primer input (fecha), lo desenfocamos para evitar que salte el calendario
+                    if (document.activeElement === document.getElementById('input-fecha')) {
+                        document.activeElement.blur();
+                    }
+                }
+            }, 10);
         };
 
         document.getElementById('cerrar-modal').onclick = () => {
@@ -939,9 +977,29 @@
                 const v = document.getElementById('input-valor').value;
                 if (!v) { alert('Introduce el valor de glucosa'); return; }
                 nuevoRegistro.valor = v;
-                // Por si el entorno mezcla factores con glucosa
                 nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
                 nuevoRegistro.factoresDetalle = extraerModificadores();
+
+                // 🛡️ Pawsitive Guard: Alertas de Contexto Clínico
+                const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+                const umbralAlto = parseFloat(perfil.max) || 250; // Usar el límite del perfil o 250 por defecto si no está definido
+                
+                if (parseFloat(v) > umbralAlto) {
+                    const salud = perfil.salud || {};
+                    const tieneCondiciones = salud.condiciones && salud.condiciones.length > 0;
+                    const tieneMeds = salud.medicamentos && salud.medicamentos.length > 0;
+                    const otraMed = salud.medicacionOtra && salud.medicacionOtra.trim() !== '';
+
+                    if (tieneCondiciones || tieneMeds || otraMed) {
+                        let advertencias = [];
+                        if (tieneCondiciones) advertencias.push(...salud.condiciones);
+                        if (tieneMeds) advertencias.push(...salud.medicamentos);
+                        if (otraMed) advertencias.push(salud.medicacionOtra);
+                        
+                        nuevoRegistro.alertaContexto = `Glucosa inusualmente alta. Ten en cuenta la influencia de tu perfil: <strong>${advertencias.join(', ')}</strong>`;
+                        nuevoRegistro.alertaOculta = false;
+                    }
+                }
             } else if (tipo === 'insulina') {
                 const ins = document.getElementById('input-insulina-registro').value;
                 const dos = document.getElementById('input-dosis-registro').value;
@@ -962,6 +1020,12 @@
 
             if (idx !== "") { 
                 const antiguoReg = regs[parseInt(idx)];
+                
+                // Mantenemos el estado oculto de la alerta si el usuario la había descartado al editar
+                if (tipo === 'glucosa' && antiguoReg && antiguoReg.alertaOculta !== undefined) {
+                    nuevoRegistro.alertaOculta = antiguoReg.alertaOculta;
+                }
+
                 if (!antiguoReg.tipo && tipo === 'glucosa') {
                     nuevoRegistro.valor = document.getElementById('input-valor').value;
                     nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
@@ -999,7 +1063,17 @@
                 localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
                 actualizarInterfaz();
             }
-        }
+        };
+
+        // 🛡️ Ocultar Pawsitive Guard del historial
+        window.ocultarAlerta = function(index) {
+            let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            if (regs[index]) {
+                regs[index].alertaOculta = true;
+                localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+                actualizarInterfaz();
+            }
+        };
 
         /* 📋 LÓGICA DE LOS NUEVOS FORMULARIOS DE PERFIL */
         document.getElementById('abrir-perfil').onclick = () => {
@@ -1234,12 +1308,24 @@
                         const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
                         const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
                         
+                        // 🛡️ Renderizado de Pawsitive Guard (Cápsula Informativa)
+                        let alertaHtml = '';
+                        if (r.alertaContexto && !r.alertaOculta) {
+                            alertaHtml = `
+                                <div class="capsula-alerta">
+                                    <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
+                                    <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
+                                </div>
+                            `;
+                        }
+
                         cuerpoHtml = `
                             <div style="flex-grow: 1;">
                                 <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
                                 <small>${fechaFormateada} - ${r.hora}</small><br>
                                 ${ctxStr}
                                 <div style="margin-top:4px;">${tags}</div>
+                                ${alertaHtml}
                             </div>
                         `;
                     } else if (tipoEfectivo === 'insulina') {
