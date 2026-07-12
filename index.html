@@ -349,6 +349,9 @@
         .form-perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .form-perfil-grid label { font-weight: normal; margin: 0; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem; padding: 8px; background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; }
         .form-perfil-grid input[type="checkbox"] { margin-right: 8px; }
+        
+        /* Ajuste específico para campos sin fondo en grid */
+        .form-perfil-grid .campo-limpio label { background-color: transparent; border: none; padding: 0; font-weight: bold; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -532,10 +535,43 @@
 
             <label>Nombre de la Mascota</label>
             <input type="text" id="p-nombre" required>
+
+            <label>Raza</label>
+            <select id="p-raza" required>
+                <option value="" disabled selected>Selecciona una raza...</option>
+                <option value="Beagle">Beagle</option>
+                <option value="Bichón Maltés">Bichón Maltés</option>
+                <option value="Bulldog Francés">Bulldog Francés</option>
+                <option value="Caniche (Poodle)">Caniche (Poodle)</option>
+                <option value="Chihuahua">Chihuahua</option>
+                <option value="Cocker Spaniel">Cocker Spaniel</option>
+                <option value="Golden Retriever">Golden Retriever</option>
+                <option value="Labrador Retriever">Labrador Retriever</option>
+                <option value="Pomerania">Pomerania</option>
+                <option value="Samoyedo">Samoyedo</option>
+                <option value="Schnauzer">Schnauzer (Miniatura/Mediano/Gigante)</option>
+                <option value="Teckel (Dachshund)">Teckel (Dachshund)</option>
+                <option value="Westy">West Highland White Terrier (Westy)</option>
+                <option value="Yorkshire Terrier">Yorkshire Terrier</option>
+                <option value="Mestizo/Cruzado">Mestizo / Cruzado</option>
+                <option value="Otra">Otra</option>
+            </select>
             
+            <div class="form-perfil-grid" style="margin-top: 10px;">
+                <div class="campo-limpio">
+                    <label>Peso (kg)</label>
+                    <input type="number" id="p-peso" step="any" inputmode="decimal">
+                </div>
+                <div class="campo-limpio">
+                    <label>Nacimiento <span id="edad-calculada" style="color:var(--accent-color); font-weight:normal; font-size:0.8rem; margin-left: 5px;"></span></label>
+                    <input type="date" id="p-nacimiento">
+                </div>
+            </div>
+
+            <strong style="display:block; margin-top:15px; margin-bottom:10px; color:var(--accent-color); font-size:0.9rem;">Rutina de Descanso Basal</strong>
             <div class="form-perfil-grid">
-                <div><label>Peso (kg)</label><input type="number" id="p-peso" step="any" inputmode="decimal"></div>
-                <div><label>Edad (años)</label><input type="number" id="p-edad" step="any" inputmode="decimal"></div>
+                <div class="campo-limpio"><label>Se Levanta</label><input type="time" id="p-levanta"></div>
+                <div class="campo-limpio"><label>Se Duerme</label><input type="time" id="p-duerme"></div>
             </div>
             
             <button type="submit" class="btn-form">Guardar Perfil</button>
@@ -1094,7 +1130,15 @@
                 document.getElementById('p-nombre').value = data.nombre || '';
                 document.getElementById('p-tutor').value = data.tutor || '';
                 document.getElementById('p-peso').value = data.peso || '';
-                document.getElementById('p-edad').value = data.edad || '';
+                document.getElementById('p-raza').value = data.raza || '';
+                document.getElementById('p-nacimiento').value = data.nacimiento || '';
+                document.getElementById('p-levanta').value = data.levanta || '';
+                document.getElementById('p-duerme').value = data.duerme || '';
+                
+                // Disparar el evento para calcular la edad visualmente
+                const event = new Event('change');
+                document.getElementById('p-nacimiento').dispatchEvent(event);
+                
                 modalPerfilBasico.showModal();
             } else if (tipo === 'vet') {
                 const vetObj = data.veterinario || {nombre: '', telefono: '', email: ''};
@@ -1125,13 +1169,32 @@
             }
         };
 
+        // Motor de cálculo de edad dinámico
+        document.getElementById('p-nacimiento').addEventListener('change', function(e) {
+            const val = e.target.value;
+            const span = document.getElementById('edad-calculada');
+            if (val) {
+                const birthDate = new Date(val);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+                span.innerText = `(${age} años)`;
+            } else {
+                span.innerText = '';
+            }
+        });
+
         document.getElementById('form-perfil-basico').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             data.nombre = document.getElementById('p-nombre').value;
             data.tutor = document.getElementById('p-tutor').value;
             data.peso = document.getElementById('p-peso').value;
-            data.edad = document.getElementById('p-edad').value;
+            data.raza = document.getElementById('p-raza').value;
+            data.nacimiento = document.getElementById('p-nacimiento').value;
+            data.levanta = document.getElementById('p-levanta').value;
+            data.duerme = document.getElementById('p-duerme').value;
             localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
             cerrarSubModal('modal-perfil-basico');
             actualizarInterfaz();
