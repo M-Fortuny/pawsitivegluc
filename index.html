@@ -237,6 +237,12 @@
 
         .btn-form { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; background-color: var(--btn-bg); color: white; border: none; }
 
+        /* Modificadores Dinámicos de Factores */
+        .btn-grupo-intensidad { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-intensidad { flex: 1; padding: 6px; font-size: 0.75rem; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: all 0.2s; user-select: none; }
+        .btn-intensidad.activo { background: var(--accent-color); color: white; font-weight: bold; border-color: var(--accent-color); }
+        #modificadores-dinamicos > div { animation: nacerSuave 0.2s ease-out forwards; }
+
         /* Contenedores de Aislamiento Reactivo */
         .grupo-reactivo { display: none; }
 
@@ -270,10 +276,11 @@
             .btn-form:hover { background-color: var(--btn-hover); }
             .chip:hover { background-color: var(--border-color); }
             .btn-herramienta:hover { background-color: var(--border-color); }
+            .btn-intensidad:hover:not(.activo) { background-color: var(--border-color); }
         }
 
         /* 📱 RESPUESTA TÁCTIL (iOS/Android) */
-        button:active, .btn-form:active, .btn-secondary:active, .btn-herramienta:active, .chip:active { transform: scale(0.98); }
+        button:active, .btn-form:active, .btn-secondary:active, .btn-herramienta:active, .chip:active, .btn-intensidad:active { transform: scale(0.98); }
         .btn-perfil:active { transform: scale(0.95); }
         .btn-herramienta:active { background-color: var(--border-color); }
 
@@ -468,10 +475,12 @@
                     <label class="chip"><input type="checkbox" name="factor" value="Comida"> 🍚 Comida</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Golosina"> 🍬 Golosina</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Ejercicio"> 🏃 Ejercicio</label>
-                    <label class="chip"><input type="checkbox" name="factor" value="Caminata"> 🐕 Caminata</label>
-                    <label class="chip"><input type="checkbox" name="factor" value="Estrés"> 😰 Estrés</label>
+                    <label class="chip"><input type="checkbox" name="factor" value="Paseo"> 🐕 Paseo</label>
+                    <label class="chip"><input type="checkbox" name="factor" value="Siesta"> 💤 Siesta</label>
                     <label class="chip"><input type="checkbox" name="factor" value="Malestar"> 🤒 Malestar</label>
                 </div>
+                
+                <div id="modificadores-dinamicos" style="margin-top: 15px;"></div>
             </div>
 
             <div style="margin-top: 20px;">
@@ -699,18 +708,139 @@
             actualizarInterfaz();
         };
 
-        // 🚀 Atajo Inteligente para el Último Registro (Volver a Estado Inicial)
+        // 🚀 Atajo Inteligente para el Último Registro
         window.atajoNavegacionRapida = function() {
             cambiarFiltroTiempo('D');
             cambiarFiltroTipo('Todo');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        /* --- MOTOR DINÁMICO DE MODIFICADORES DE FACTORES --- */
+        function extraerModificadores() {
+            const detalles = {};
+            const container = document.getElementById('modificadores-dinamicos');
+            if(!container) return detalles;
+            
+            // Evaluamos Paseo
+            const dur = container.querySelector('.mod-paseo-duracion');
+            const pisBtn = container.querySelector('.mod-paseo-pis .activo');
+            const cacaBtn = container.querySelector('.mod-paseo-caca .activo');
+            
+            if(dur || pisBtn || cacaBtn) {
+                detalles['Paseo'] = {};
+                if(dur) detalles['Paseo'].duracion = dur.value;
+                if(pisBtn) detalles['Paseo'].pis = pisBtn.dataset.val;
+                if(cacaBtn) detalles['Paseo'].caca = cacaBtn.dataset.val;
+            }
+            
+            // Evaluamos Otros factores generales
+            container.querySelectorAll('.mod-general-intensidad').forEach(grupo => {
+                const f = grupo.dataset.factor;
+                const btn = grupo.querySelector('.activo');
+                if(btn) {
+                    detalles[f] = { intensidad: btn.dataset.val };
+                }
+            });
+            
+            return detalles;
+        }
+
+        function actualizarPanelModificadores(detallesPrevios = {}) {
+            const container = document.getElementById('modificadores-dinamicos');
+            container.innerHTML = '';
+            const checked = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
+            
+            if(checked.length === 0) return;
+            
+            checked.forEach(factor => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '12px';
+                div.style.padding = '12px';
+                div.style.background = 'var(--bg-body)';
+                div.style.borderRadius = '10px';
+                div.style.border = '1px solid var(--border-color)';
+                
+                const det = detallesPrevios[factor] || {};
+                
+                if(factor === 'Paseo') {
+                    const ultimaDuracion = localStorage.getItem('ultimaDuracionPaseo') || '15';
+                    const dur = det.duracion || ultimaDuracion;
+                    const pis = det.pis || '';
+                    const caca = det.caca || '';
+                    
+                    div.innerHTML = `
+                        <strong style="font-size:0.85rem; color:var(--accent-color);">Detalles del Paseo (Opcional)</strong>
+                        <div style="margin-top:8px;">
+                            <label style="font-size:0.75rem; margin-top:0;">Duración Estimada</label>
+                            <select class="mod-paseo-duracion" data-factor="${factor}" style="padding:8px; margin:4px 0 10px 0;">
+                                <option value="5" ${dur==='5'?'selected':''}>5 minutos</option>
+                                <option value="10" ${dur==='10'?'selected':''}>10 minutos</option>
+                                <option value="15" ${dur==='15'?'selected':''}>15 minutos</option>
+                                <option value="20" ${dur==='20'?'selected':''}>20 minutos</option>
+                                <option value="25" ${dur==='25'?'selected':''}>25 minutos</option>
+                                <option value="30" ${dur==='30'?'selected':''}>30+ minutos</option>
+                            </select>
+                            
+                            <label style="font-size:0.75rem; margin-top:0;">Pis (Orina)</label>
+                            <div class="btn-grupo-intensidad mod-paseo-pis">
+                                <button type="button" class="btn-intensidad ${pis==='Poco'?'activo':''}" data-val="Poco">🔽 Poco</button>
+                                <button type="button" class="btn-intensidad ${pis==='Normal'?'activo':''}" data-val="Normal">⏺️ Normal</button>
+                                <button type="button" class="btn-intensidad ${pis==='Mucho'?'activo':''}" data-val="Mucho">🔼 Mucho</button>
+                            </div>
+                            
+                            <label style="font-size:0.75rem; margin-top:10px;">Caca (Heces)</label>
+                            <div class="btn-grupo-intensidad mod-paseo-caca">
+                                <button type="button" class="btn-intensidad ${caca==='Poco'?'activo':''}" data-val="Poco">🔽 Poco</button>
+                                <button type="button" class="btn-intensidad ${caca==='Normal'?'activo':''}" data-val="Normal">⏺️ Normal</button>
+                                <button type="button" class="btn-intensidad ${caca==='Mucho'?'activo':''}" data-val="Mucho">🔼 Mucho</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const int = det.intensidad || '';
+                    div.innerHTML = `
+                        <strong style="font-size:0.85rem; color:var(--accent-color);">Intensidad: ${factor} (Opcional)</strong>
+                        <div class="btn-grupo-intensidad mod-general-intensidad" data-factor="${factor}" style="margin-top:8px;">
+                            <button type="button" class="btn-intensidad ${int==='Poco'?'activo':''}" data-val="Poco">🔽 Poco</button>
+                            <button type="button" class="btn-intensidad ${int==='Normal'?'activo':''}" data-val="Normal">⏺️ Normal</button>
+                            <button type="button" class="btn-intensidad ${int==='Mucho'?'activo':''}" data-val="Mucho">🔼 Mucho</button>
+                        </div>
+                    `;
+                }
+                container.appendChild(div);
+            });
+            
+            // Asignar toggle a los botones generados
+            container.querySelectorAll('.btn-intensidad').forEach(btn => {
+                btn.onclick = (e) => {
+                    const grupo = e.target.closest('.btn-grupo-intensidad');
+                    if (e.target.classList.contains('activo')) {
+                        e.target.classList.remove('activo');
+                    } else {
+                        grupo.querySelectorAll('.btn-intensidad').forEach(b => b.classList.remove('activo'));
+                        e.target.classList.add('activo');
+                    }
+                };
+            });
+        }
+
+        // Suscribir eventos al cambio de factores
+        document.querySelectorAll('#input-factores input').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const estadoActual = extraerModificadores();
+                actualizarPanelModificadores(estadoActual);
+            });
+        });
+
         // 🧠 Aislamiento Reactivo: Inicializar Modal según el Tipo Clínico
         window.abrirModalConTipo = (tipo, index = null) => {
             formReg.reset();
             document.getElementById('input-index').value = index !== null ? index : "";
             document.getElementById('input-tipo').value = tipo;
+
+            // Limpiamos el panel de modificadores
+            const panelMods = document.getElementById('modificadores-dinamicos');
+            if(panelMods) panelMods.innerHTML = '';
 
             // Ocultar todos los bloques reactivos primero
             document.querySelectorAll('.grupo-reactivo').forEach(b => b.style.display = 'none');
@@ -750,10 +880,14 @@
                     } else if (tipo === 'insulina') {
                         document.getElementById('input-insulina-registro').value = r.insulina || "";
                         document.getElementById('input-dosis-registro').value = r.dosis || "";
-                    } else if (tipo === 'factor') {
+                    }
+                    
+                    // Restauración visual de Factores y sus Modificadores Dinámicos
+                    if (tipo === 'factor' || (tipo === 'glucosa' && r.factores)) {
                         document.querySelectorAll('#input-factores input').forEach(cb => {
                             cb.checked = Array.isArray(r.factores) ? r.factores.includes(cb.value) : false;
                         });
+                        actualizarPanelModificadores(r.factoresDetalle || {});
                     }
                 }
             }
@@ -800,11 +934,14 @@
                 hora: document.getElementById('input-hora').value
             };
 
-            // Validación estricta por tipo clínico
+            // Validación estricta por tipo clínico y recolección de modificadores
             if (tipo === 'glucosa') {
                 const v = document.getElementById('input-valor').value;
                 if (!v) { alert('Introduce el valor de glucosa'); return; }
                 nuevoRegistro.valor = v;
+                // Por si el entorno mezcla factores con glucosa
+                nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
+                nuevoRegistro.factoresDetalle = extraerModificadores();
             } else if (tipo === 'insulina') {
                 const ins = document.getElementById('input-insulina-registro').value;
                 const dos = document.getElementById('input-dosis-registro').value;
@@ -815,6 +952,12 @@
                 const factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
                 if (factores.length === 0) { alert('Selecciona al menos un factor'); return; }
                 nuevoRegistro.factores = factores;
+                nuevoRegistro.factoresDetalle = extraerModificadores();
+            }
+
+            // Persistencia automática de la Duración del Paseo para comodidad del usuario
+            if (nuevoRegistro.factoresDetalle && nuevoRegistro.factoresDetalle['Paseo'] && nuevoRegistro.factoresDetalle['Paseo'].duracion) {
+                localStorage.setItem('ultimaDuracionPaseo', nuevoRegistro.factoresDetalle['Paseo'].duracion);
             }
 
             if (idx !== "") { 
@@ -822,6 +965,7 @@
                 if (!antiguoReg.tipo && tipo === 'glucosa') {
                     nuevoRegistro.valor = document.getElementById('input-valor').value;
                     nuevoRegistro.factores = Array.from(document.querySelectorAll('#input-factores input:checked')).map(cb => cb.value);
+                    nuevoRegistro.factoresDetalle = extraerModificadores();
                     nuevoRegistro.contextoClinico = antiguoReg.contextoClinico;
                     delete nuevoRegistro.tipo; 
                 }
@@ -907,7 +1051,6 @@
             }
         };
 
-        // Guardado Selectivo: Perfil Básico
         document.getElementById('form-perfil-basico').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
@@ -920,7 +1063,6 @@
             actualizarInterfaz();
         };
 
-        // Guardado Selectivo: Veterinario / Clínica
         document.getElementById('form-vet').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
@@ -935,7 +1077,6 @@
             actualizarInterfaz();
         };
 
-        // Guardado Selectivo: Pautas Indicadas
         document.getElementById('form-pautas').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
@@ -948,7 +1089,6 @@
             actualizarInterfaz();
         };
 
-        // Guardado Selectivo: Salud Concurrente
         document.getElementById('form-salud').onsubmit = (e) => {
             e.preventDefault();
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
@@ -962,7 +1102,7 @@
             actualizarInterfaz();
         };
 
-        // 🧠 Motor de Doble Evaluación Dinámica (Tipo y Tiempo anclado al último registro)
+        // 🧠 Motor de Doble Evaluación Dinámica
         function filtrarRegistros(registros, fTiempo, fTipo) {
             let fechaReferencia = new Date();
             fechaReferencia.setHours(0, 0, 0, 0); 
@@ -973,7 +1113,6 @@
             }
             
             return registros.filter(r => {
-                // 1. Evaluación de Tiempo
                 let pasaTiempo = false;
                 if (fTiempo === 'T') {
                     pasaTiempo = true;
@@ -985,7 +1124,6 @@
                     else if (fTiempo === 'M') pasaTiempo = (diffDays >= 0 && diffDays <= 30);
                 }
 
-                // 2. Evaluación de Tipo (Matriz de Eventos)
                 let pasaTipo = false;
                 const tipoEfectivo = r.tipo || 'glucosa'; 
                 if (fTipo === 'Todo') {
@@ -1024,7 +1162,6 @@
             regsGlucosa.forEach(r => { const val = parseFloat(r.valor); if (val >= min && val <= max) enRango++; });
             document.getElementById('reporte-rango').innerText = `${((enRango / regsGlucosa.length) * 100).toFixed(0)}%`;
 
-            // Vincular etapas analíticas agrupando por la dosis de insulina que generó el impacto metabólico real
             const etapas = {};
             const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
             
@@ -1045,6 +1182,28 @@
                 listaEtapas.appendChild(li);
             }
         }
+        
+        // 🏗️ Mapeador visual elegante para Tags y Modificadores Dinámicos
+        function generarHtmlTags(factores, detalles, isFactorPrincipal) {
+            if (!factores) return '';
+            return factores.map(f => {
+                let detStr = '';
+                if (detalles && detalles[f]) {
+                    const det = detalles[f];
+                    if (f === 'Paseo') {
+                        let partes = [];
+                        if (det.duracion) partes.push(`${det.duracion}m`);
+                        if (det.pis) partes.push(`Pis: ${det.pis}`);
+                        if (det.caca) partes.push(`Caca: ${det.caca}`);
+                        if (partes.length > 0) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${partes.join(' | ')})</span>`;
+                    } else {
+                        if (det.intensidad) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${det.intensidad})</span>`;
+                    }
+                }
+                let baseStyle = isFactorPrincipal ? 'background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;' : '';
+                return `<span class="tags-factores" style="${baseStyle}">${f}${detStr}</span>`;
+            }).join('');
+        }
 
         function actualizarInterfaz() {
             const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
@@ -1064,7 +1223,6 @@
                     const originalIndex = todosLosRegs.indexOf(r);
                     const li = document.createElement('li');
                     
-                    // Transformación visual de la fecha a DD/MM/AA
                     const [anio, mes, dia] = r.fecha.split('-');
                     const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
                     
@@ -1073,7 +1231,7 @@
 
                     if (tipoEfectivo === 'glucosa') {
                         const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
-                        const tags = (r.factores || []).map(f => `<span class="tags-factores">${f}</span>`).join('');
+                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
                         const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
                         
                         cuerpoHtml = `
@@ -1081,7 +1239,7 @@
                                 <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
                                 <small>${fechaFormateada} - ${r.hora}</small><br>
                                 ${ctxStr}
-                                ${tags}
+                                <div style="margin-top:4px;">${tags}</div>
                             </div>
                         `;
                     } else if (tipoEfectivo === 'insulina') {
@@ -1093,7 +1251,7 @@
                             </div>
                         `;
                     } else if (tipoEfectivo === 'factor') {
-                        const tags = (r.factores || []).map(f => `<span class="tags-factores" style="background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;">${f}</span>`).join('');
+                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
                         cuerpoHtml = `
                             <div style="flex-grow: 1;">
                                 <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
@@ -1111,12 +1269,11 @@
                         </div>
                     `;
                     
-                    // 🚀 Inyección UX: Atajo de Navegación Rápida en el ÚLTIMO elemento
+                    // 🚀 Atajo de Navegación Rápida
                     if (indexArray === regsFiltrados.length - 1) {
                         li.style.cursor = 'pointer';
                         li.title = "Pulse aquí para volver a la vista inicial (Día actual / Todo)";
                         li.onclick = function(e) {
-                            // Prevenir que se dispare si el usuario hace clic en los botones de editar o borrar
                             if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
                                 atajoNavegacionRapida();
                             }
@@ -1136,12 +1293,11 @@
             }
         }
 
-        // 📊 Arquitectura Visual Premium de la Gráfica (Chart.js Inteligente)
+        // 📊 Arquitectura Visual Premium de la Gráfica
         function renderizarGrafica(datos) {
             const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
             const ctx = document.getElementById('miGrafica').getContext('2d');
             
-            // 🎨 Detector Inteligente de Tema para la Cuadrícula
             const esModoOscuro = document.body.classList.contains('theme-dark');
             const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
@@ -1206,7 +1362,7 @@
         actualizarInterfaz();
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
 
-        // 🔥 FIX ANDROID: Auto-scroll al hacer foco en un input para que el teclado no lo tape
+        // 🔥 FIX ANDROID
         document.addEventListener('focusin', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
                 setTimeout(function() {
