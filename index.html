@@ -539,6 +539,23 @@
         Desarrollado por Manuel Fortuny Ruiz
     </footer>
 
+    <dialog id="modal-opciones-toma">
+        <h3 style="margin-top:0; text-align: center; color: #1976D2;">Confirmar Toma</h3>
+        <p id="texto-toma-pendiente" style="text-align:center; font-weight:bold; font-size: 0.95rem; margin-bottom: 20px;"></p>
+        <input type="hidden" id="index-toma-pendiente">
+
+        <button class="btn-form" onclick="registrarTomaOpcion(1)" style="background-color: #4A7C44; margin-bottom:12px;">✅ Se la he dado a su hora</button>
+
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+            <button class="btn-form" onclick="registrarTomaOpcion(2)" style="background-color: #E65100; flex:2; margin:0;">🕒 A otra hora:</button>
+            <input type="time" id="hora-otra-toma" style="flex:1; margin:0;">
+        </div>
+
+        <button class="btn-form" onclick="registrarTomaOpcion(3)" style="background-color: #FF7070; margin-bottom:20px;">❌ Hoy no tomará</button>
+
+        <button type="button" class="btn-form" style="background-color: transparent; color: #888; border: 1px solid var(--border-color);" onclick="cerrarSubModal('modal-opciones-toma')">Cancelar / Mantener alerta</button>
+    </dialog>
+
     <dialog id="modal-registro">
         <form id="form-registro">
             <input type="hidden" id="input-index">
@@ -611,7 +628,7 @@
         <button class="btn-form" onclick="abrirSubPerfil('basico')">Perfil de Mascota</button>
         <button class="btn-form" onclick="abrirSubPerfil('vet')" style="background-color: #1976D2;">Veterinario / Clínica</button>
         <button class="btn-form" onclick="abrirSubPerfil('pautas')" style="background-color: #E65100;">Pautas Indicadas</button>
-        <button class="btn-form" onclick="abrirSubPerfil('salud')" style="background-color: #8E24AA;">Salud Concurrente</button>
+        <button class="btn-form" onclick="abrirSubPerfil('salud')" style="background-color: #8E24AA;">Salud y Medicación</button>
         <button class="btn-form" onclick="abrirSubPerfil('alimentacion')" style="background-color: #F57C00;">Alimentación</button>
         <button type="button" class="btn-form" style="background-color: #999; margin-top: 15px;" onclick="cerrarSubModal('modal-menu-perfil')">Cancelar</button>
     </dialog>
@@ -717,32 +734,18 @@
     </dialog>
 
     <dialog id="modal-salud">
-        <form id="form-salud">
-            <h3 style="margin-top:0; text-align: center;">Salud Concurrente</h3>
-            
-            <label>Condiciones y Comorbilidades</label>
-            <div class="checkbox-grupo" id="input-condiciones">
-                <label class="chip"><input type="checkbox" name="condicion" value="Cushing"> Cushing</label>
-                <label class="chip"><input type="checkbox" name="condicion" value="Hipotiroidismo"> Hipotiroidismo</label>
-                <label class="chip"><input type="checkbox" name="condicion" value="Infecciones"> Infecciones</label>
-            </div>
-            
-            <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 5px; border-color: var(--accent-color); color: var(--accent-color);" onclick="abrirConfigSalud()">
-                <span>⚙️</span> Configuración de Medicación Diaria
-            </button>
-            
-            <label>Otra Medicación (Texto libre)</label>
-            <input type="text" id="p-medicacion-otra" placeholder="Ej: Tratamiento puntual...">
-            
-            <button type="submit" class="btn-form" style="background-color: #8E24AA;">Guardar Salud</button>
-            <button type="button" class="btn-form" style="background-color: #999; margin-top: 8px;" onclick="cerrarSubModal('modal-salud')">Cancelar</button>
-        </form>
-    </dialog>
+        <h3 style="margin-top:0; text-align: center; color: #8E24AA;">Salud y Medicación</h3>
 
-    <dialog id="modal-config-salud">
-        <h3 style="margin-top:0; text-align: center; color: #8E24AA;">Gestión de Medicación</h3>
+        <label style="color: #8E24AA; font-size: 0.9rem;">1. Condiciones y Comorbilidades</label>
+        <div class="checkbox-grupo" id="input-condiciones" style="margin-bottom: 5px;">
+            <label class="chip"><input type="checkbox" name="condicion" value="Cushing"> Cushing</label>
+            <label class="chip"><input type="checkbox" name="condicion" value="Hipotiroidismo"> Hipotiroidismo</label>
+            <label class="chip"><input type="checkbox" name="condicion" value="Infecciones"> Infecciones</label>
+        </div>
 
-        <label>Base de Datos de Fármacos</label>
+        <hr style="border-top:1px solid var(--border-color); margin: 15px 0;">
+
+        <label style="color: #8E24AA; font-size: 0.9rem;">2. Base de Datos de Fármacos</label>
         <div style="display:flex; gap:10px; margin-bottom:10px;">
             <input type="text" id="nuevo-farmaco-nombre" placeholder="Ej: Librela, Analgésico...">
             <button type="button" class="btn-secondary" style="background-color: #8E24AA; color: white; border: none;" onclick="añadirFarmacoCustom()">Añadir</button>
@@ -752,7 +755,7 @@
 
         <hr style="border-top:1px solid var(--border-color); margin: 15px 0;">
 
-        <label>Programar Toma Diaria (Pautas)</label>
+        <label style="color: #8E24AA; font-size: 0.9rem;">3. Programar Toma Diaria (Pautas)</label>
         <div class="form-perfil-grid" style="margin-bottom: 5px;">
             <div class="campo-limpio">
                 <label>Fármaco</label>
@@ -778,7 +781,7 @@
         <ul id="lista-pautas-activas" style="font-size:0.85rem; margin-top:10px; padding:0; list-style:none;">
         </ul>
 
-        <button type="button" class="btn-form" onclick="volverASaludDesdeConfig()" style="margin-top: 20px;">Volver</button>
+        <button type="button" class="btn-form" onclick="guardarYcerrarSalud()" style="margin-top: 20px; background-color: #8E24AA;">Guardar y Cerrar</button>
     </dialog>
 
     <dialog id="modal-alimentacion">
@@ -839,8 +842,8 @@
         const modalVet = document.getElementById('modal-vet');
         const modalPautas = document.getElementById('modal-pautas');
         const modalSalud = document.getElementById('modal-salud');
-        const modalConfigSalud = document.getElementById('modal-config-salud');
         const modalAlimentacion = document.getElementById('modal-alimentacion');
+        const modalOpcionesToma = document.getElementById('modal-opciones-toma');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
@@ -898,7 +901,6 @@
             const secciones = ['acordeon-historial', 'acordeon-informes'];
             secciones.forEach(id => {
                 const estado = localStorage.getItem('estado_' + id);
-                // Si está explícitamente colapsado, lo cerramos. Si es null o 'expandido', arranca abierto por defecto.
                 if (estado === 'colapsado') {
                     document.getElementById(id).classList.add('colapsado');
                     document.getElementById('icono-' + id.split('-')[1]).innerText = '🔽';
@@ -976,8 +978,8 @@
         habilitarCierreFuera(modalVet);
         habilitarCierreFuera(modalPautas);
         habilitarCierreFuera(modalSalud);
-        habilitarCierreFuera(modalConfigSalud);
         habilitarCierreFuera(modalAlimentacion);
+        habilitarCierreFuera(modalOpcionesToma);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
@@ -986,8 +988,8 @@
         modalVet.addEventListener('close', limpiarFondoModal);
         modalPautas.addEventListener('close', limpiarFondoModal);
         modalSalud.addEventListener('close', limpiarFondoModal);
-        modalConfigSalud.addEventListener('close', limpiarFondoModal);
         modalAlimentacion.addEventListener('close', limpiarFondoModal);
+        modalOpcionesToma.addEventListener('close', limpiarFondoModal);
 
         // Controladores de Matriz
         window.cambiarFiltroTiempo = function(filtro) {
@@ -1023,12 +1025,17 @@
             const dur = container.querySelector('.mod-paseo-duracion');
             const pisBtn = container.querySelector('.mod-paseo-pis .activo');
             const cacaBtn = container.querySelector('.mod-paseo-caca .activo');
+            const medSelect = container.querySelector('.mod-medicacion-select');
             
             if(dur || pisBtn || cacaBtn) {
                 detalles['Paseo'] = {};
                 if(dur) detalles['Paseo'].duracion = dur.value;
                 if(pisBtn) detalles['Paseo'].pis = pisBtn.dataset.val;
                 if(cacaBtn) detalles['Paseo'].caca = cacaBtn.dataset.val;
+            }
+            
+            if(medSelect && medSelect.value) {
+                detalles['Medicación'] = { notas: medSelect.value };
             }
             
             container.querySelectorAll('.mod-general-intensidad').forEach(grupo => {
@@ -1092,6 +1099,31 @@
                                 <button type="button" class="btn-intensidad ${caca==='Mucho'?'activo':''}" data-val="Mucho">🔼 Mucho</button>
                             </div>
                         </div>
+                    `;
+                } else if (factor === 'Medicación') {
+                    const medPuntual = det.notas || '';
+                    const todosMeds = obtenerTodosLosFarmacos();
+                    const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+                    const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas.map(p => p.farmaco) : [];
+                    
+                    // Solo listamos para añadir puntualmente las que NO son de uso diario
+                    const medsDisponibles = todosMeds.filter(m => !pautas.includes(m.nombre));
+            
+                    let opcionesMeds = `<option value="">Selecciona fármaco...</option>`;
+                    medsDisponibles.forEach(m => {
+                        opcionesMeds += `<option value="${m.nombre}" ${medPuntual === m.nombre ? 'selected' : ''}>${m.nombre}</option>`;
+                    });
+            
+                    // Si estamos editando un historial de un medicamento diario, lo mostramos bloqueado visualmente
+                    if (pautas.includes(medPuntual) && !medsDisponibles.find(m => m.nombre === medPuntual)) {
+                        opcionesMeds += `<option value="${medPuntual}" selected>${medPuntual} (Toma Diaria)</option>`;
+                    }
+            
+                    div.innerHTML = `
+                        <strong style="font-size:0.85rem; color:#8E24AA;">💊 Medicación Administrada</strong>
+                        <select class="mod-medicacion-select" style="padding:8px; margin-top:8px; width:100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                            ${opcionesMeds}
+                        </select>
                     `;
                 } else {
                     const int = det.intensidad || '';
@@ -1249,17 +1281,13 @@
                     const salud = perfil.salud || {};
                     const tieneCondiciones = salud.condiciones && salud.condiciones.length > 0;
                     
-                    // Extraemos fármacos activos de las pautas programadas para la alerta
                     const medsPautas = (salud.pautas || []).map(p => p.farmaco);
                     const tieneMeds = medsPautas.length > 0;
                     
-                    const otraMed = salud.medicacionOtra && salud.medicacionOtra.trim() !== '';
-
-                    if (tieneCondiciones || tieneMeds || otraMed) {
+                    if (tieneCondiciones || tieneMeds) {
                         let advertencias = [];
                         if (tieneCondiciones) advertencias.push(...salud.condiciones);
                         if (tieneMeds) advertencias.push(...medsPautas);
-                        if (otraMed) advertencias.push(salud.medicacionOtra);
                         
                         nuevoRegistro.alertaContexto = `Glucosa inusualmente alta. Ten en cuenta la influencia de tu perfil: <strong>${advertencias.join(', ')}</strong>`;
                         nuevoRegistro.alertaOculta = false;
@@ -1375,13 +1403,12 @@
                 document.getElementById('p-max').value = data.max || '';
                 modalPautas.showModal();
             } else if (tipo === 'salud') {
-                const saludObj = data.salud || {condiciones: [], medicacionOtra: ''};
-                document.getElementById('p-medicacion-otra').value = saludObj.medicacionOtra || '';
-                
+                // MODAL FUSIONADO SALUD CONCURRENTE + FÁRMACOS
+                const saludObj = data.salud || {condiciones: []};
                 document.querySelectorAll('#input-condiciones input').forEach(cb => {
                     cb.checked = Array.isArray(saludObj.condiciones) ? saludObj.condiciones.includes(cb.value) : false;
                 });
-                
+                renderConfigSalud();
                 modalSalud.showModal();
             } else if (tipo === 'alimentacion') {
                 renderConfigAlimentacion();
@@ -1446,29 +1473,14 @@
             actualizarInterfaz();
         };
 
-        document.getElementById('form-salud').onsubmit = (e) => {
-            e.preventDefault();
+        /* 💊 LÓGICA DE FUSIÓN DE SALUD Y MEDICACIÓN */
+        window.guardarYcerrarSalud = function() {
             const data = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             if(!data.salud) data.salud = {};
-            
             data.salud.condiciones = Array.from(document.querySelectorAll('#input-condiciones input:checked')).map(cb => cb.value);
-            data.salud.medicacionOtra = document.getElementById('p-medicacion-otra').value;
-            
             localStorage.setItem(KEY_PERFIL, JSON.stringify(data));
             cerrarSubModal('modal-salud');
             actualizarInterfaz();
-        };
-
-        /* 💊 LÓGICA DE CONFIGURACIÓN DE PAUTAS DE MEDICACIÓN */
-        window.abrirConfigSalud = function() {
-            modalSalud.close();
-            renderConfigSalud();
-            modalConfigSalud.showModal();
-        };
-
-        window.volverASaludDesdeConfig = function() {
-            modalConfigSalud.close();
-            abrirSubPerfil('salud'); 
         };
 
         window.añadirFarmacoCustom = function() {
@@ -1513,7 +1525,6 @@
             const [h, m] = hora.split(':');
             let siguienteToma = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), parseInt(h), parseInt(m), 0);
 
-            // Si la hora ya pasó hoy, se mostrará como pendiente para confirmar
             perfil.salud.pautas.push({
                 farmaco: farmaco,
                 frecuencia: freq,
@@ -1597,7 +1608,7 @@
                 li.style.border = '1px solid var(--border-color)';
                 li.innerHTML = `
                     <div>
-                        <strong style="color:var(--accent-color);">${p.farmaco}</strong><br>
+                        <strong style="color:#8E24AA;">${p.farmaco}</strong><br>
                         <span style="font-size:0.75rem; color:#666;">Cada ${p.frecuencia}h (Inicio: ${p.primeraToma})</span>
                     </div>
                     <button type="button" class="btn-accion btn-borrar" onclick="borrarPauta(${idx})">X</button>
@@ -1761,7 +1772,7 @@
                         div.className = 'alerta-pendiente';
                         div.innerHTML = `
                             <span style="flex:1;">💊 <strong>Toma Pendiente:</strong> ${pauta.farmaco} (${hrFormat})</span>
-                            <button type="button" class="btn-accion btn-confirmar-toma" onclick="confirmarToma(${index})">Confirmar</button>
+                            <button type="button" class="btn-accion btn-confirmar-toma" onclick="abrirOpcionesToma(${index})">Registrar</button>
                         `;
                         container.appendChild(div);
                     }
@@ -1787,28 +1798,58 @@
             });
         }
 
-        window.confirmarToma = function(index) {
+        // 🛡️ LÓGICA DE LAS 3 OPCIONES PARA MEDICACIÓN
+        window.abrirOpcionesToma = function(index) {
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pauta = perfil.salud.pautas[index];
+            const fechaToma = new Date(pauta.siguienteToma);
+            const hrFormat = fechaToma.getHours().toString().padStart(2, '0') + ':' + fechaToma.getMinutes().toString().padStart(2, '0');
+
+            document.getElementById('texto-toma-pendiente').innerText = `¿Has administrado ${pauta.farmaco} de las ${hrFormat}?`;
+            document.getElementById('index-toma-pendiente').value = index;
+
+            const ahora = new Date();
+            document.getElementById('hora-otra-toma').value = ahora.toTimeString().substring(0, 5);
+
+            document.body.classList.add('modal-abierto');
+            document.getElementById('modal-opciones-toma').showModal();
+        };
+
+        window.registrarTomaOpcion = function(opcion) {
+            const index = document.getElementById('index-toma-pendiente').value;
             const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             const pauta = perfil.salud.pautas[index];
             const ahora = new Date();
-
             let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+
             const fechaActual = ahora.toISOString().split('T')[0];
-            const horaActual = ahora.toTimeString().substring(0, 5);
+            let horaRegistro = '';
 
-            let nuevoRegistro = {
-                fecha: fechaActual,
-                hora: horaActual,
-                tipo: 'factor',
-                factores: ['Medicación'],
-                factoresDetalle: {
-                    'Medicación': { notas: pauta.farmaco }
+            // Si es Opción 1 o 2, lo guardamos en el historial
+            if (opcion === 1 || opcion === 2) {
+                if (opcion === 1) {
+                    const fechaToma = new Date(pauta.siguienteToma);
+                    horaRegistro = fechaToma.getHours().toString().padStart(2, '0') + ':' + fechaToma.getMinutes().toString().padStart(2, '0');
+                } else if (opcion === 2) {
+                    horaRegistro = document.getElementById('hora-otra-toma').value;
                 }
-            };
-            regs.unshift(nuevoRegistro);
-            regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
-            localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
 
+                let nuevoRegistro = {
+                    fecha: fechaActual,
+                    hora: horaRegistro,
+                    tipo: 'factor',
+                    factores: ['Medicación'],
+                    factoresDetalle: {
+                        'Medicación': { notas: pauta.farmaco }
+                    }
+                };
+                regs.unshift(nuevoRegistro);
+                regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
+                localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+            }
+            // Si es Opción 3 (No tomará), no guardamos nada en el historial y pasa directo a calcular la siguiente.
+
+            // Calculamos la siguiente toma en todos los casos
             const tomaActual = new Date(pauta.siguienteToma);
             tomaActual.setHours(tomaActual.getHours() + parseInt(pauta.frecuencia));
             if(ahora > tomaActual) {
@@ -1818,6 +1859,7 @@
             pauta.siguienteToma = tomaActual.toISOString();
             localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
 
+            cerrarSubModal('modal-opciones-toma');
             actualizarInterfaz();
         };
 
@@ -1843,7 +1885,6 @@
             regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
             localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
 
-            // Programar el siguiente ciclo para el día siguiente (24h)
             const tomaActual = new Date(pauta.siguienteToma);
             tomaActual.setHours(tomaActual.getHours() + 24);
             if(ahora > tomaActual) {
@@ -1950,6 +1991,8 @@
                         if (det.pis) partes.push(`Pis: ${det.pis}`);
                         if (det.caca) partes.push(`Caca: ${det.caca}`);
                         if (partes.length > 0) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${partes.join(' | ')})</span>`;
+                    } else if (f === 'Medicación') {
+                        if (det.notas) detStr = ` <span style="opacity:0.85; font-size:0.9em; font-weight:normal;">(${det.notas})</span>`;
                     } else {
                         let partes = [];
                         if (det.intensidad) partes.push(det.intensidad);
@@ -1958,6 +2001,10 @@
                     }
                 }
                 let baseStyle = isFactorPrincipal ? 'background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;' : '';
+                
+                // Color específico premium para los chips de medicamentos en el historial
+                if (f === 'Medicación') baseStyle = 'background:#f3e5f5; color:#8e24aa; border:1px solid #e1bee7;';
+                
                 return `<span class="tags-factores" style="${baseStyle}">${f}${detStr}</span>`;
             }).join('');
         }
@@ -2037,7 +2084,6 @@
                         </div>
                     `;
                     
-                    // ⬇️ Funcionalidad Scroll Inverso (Primer Registro)
                     if (indexArray === 0 && regsFiltrados.length > 1) {
                         li.style.cursor = 'pointer';
                         li.title = "Pulse aquí para ir al final de la lista";
@@ -2049,7 +2095,6 @@
                         };
                     }
 
-                    // ⬆️ Funcionalidad Atajo Arriba (Último Registro)
                     if (indexArray === regsFiltrados.length - 1) {
                         li.style.cursor = 'pointer';
                         li.title = "Pulse aquí para volver a la vista inicial";
@@ -2074,7 +2119,6 @@
             }
         }
 
-        // Ejecutar comprobación en segundo plano por si el tutor deja la app abierta
         setInterval(actualizarPendientes, 60000);
 
         function renderizarGrafica(datos) {
@@ -2145,7 +2189,7 @@
         
         // Inicialización de la Interfaz
         actualizarInterfaz();
-        restaurarEstadoAcordeones(); // Restaura la preferencia de paneles abiertos o cerrados
+        restaurarEstadoAcordeones(); 
         
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
 
