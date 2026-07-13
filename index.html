@@ -162,8 +162,41 @@
         #contenedor-grafico { background: var(--card-bg); padding: 15px; border-radius: 20px; margin-bottom: 20px; width: 100%; height: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: none; box-sizing: border-box; border: 1px solid var(--border-color); }
         #contenedor-grafico canvas { width: 100% !important; height: 100% !important; }
 
-        .header-historial { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 10px; width: 100%; }
-        .header-historial h3 { color: var(--h1-color); margin: 0; }
+        /* ⬇️ ACORDEONES Y SECCIONES COLAPSABLES ⬇️ */
+        .header-colapsable {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 0; 
+            width: 100%;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .icono-colapso {
+            font-size: 1.2rem;
+            color: var(--h1-color);
+            transition: transform 0.3s ease;
+        }
+        .acordeon-container {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.3s ease-out;
+            width: 100%;
+        }
+        .acordeon-container.colapsado {
+            grid-template-rows: 0fr;
+        }
+        .acordeon-content {
+            overflow: hidden;
+            width: 100%;
+            opacity: 1;
+            transition: opacity 0.3s ease-out;
+        }
+        .acordeon-container.colapsado .acordeon-content {
+            opacity: 0;
+            visibility: hidden;
+        }
         
         /* Estilos de la Nueva Matriz Simétrica Flexbox */
         .selector-matriz { display: flex; background: var(--tag-bg); padding: 4px; border-radius: 12px; width: 100%; box-sizing: border-box; }
@@ -223,7 +256,7 @@
         }
         .theme-dark .btn-entendido { background-color: #665416; color: #ffda6a; }
         
-        /* 🔔 Alerta de Tomas Pendientes */
+        /* 🔔 Alerta de Tomas Pendientes (General) */
         .alerta-pendiente {
             background-color: #e3f2fd;
             border: 1px solid #90caf9;
@@ -245,6 +278,24 @@
             color: #90caf9;
         }
         .theme-dark .btn-confirmar-toma { background-color: #1565c0; color: white; }
+
+        /* 🔔 Alerta Específica Alimentación */
+        .alerta-comida {
+            background-color: #fff3e0;
+            border-color: #ffcc80;
+            color: #e65100;
+        }
+        .alerta-comida .btn-confirmar-toma {
+            background-color: #f57c00;
+        }
+        .theme-dark .alerta-comida {
+            background-color: #4e342e;
+            border-color: #d84315;
+            color: #ffcc80;
+        }
+        .theme-dark .alerta-comida .btn-confirmar-toma {
+            background-color: #d84315;
+        }
 
         /* 🔥 FIX ANDROID KEYBOARD Y TRANSICIONES DE FORMULARIOS */
         dialog { 
@@ -416,43 +467,56 @@
     </section>
 
     <section class="bloque-ajustado seccion-vertical">
-        <div class="header-historial">
-            <h3>Historial</h3>
-            <div style="width: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
-                <div class="selector-matriz" style="flex: 1;">
-                    <span class="opcion-tipo activo" data-tipo="Todo" onclick="cambiarFiltroTipo('Todo')">Todo</span>
-                    <span class="opcion-tipo" data-tipo="G" onclick="cambiarFiltroTipo('G')">G</span>
-                    <span class="opcion-tipo" data-tipo="I" onclick="cambiarFiltroTipo('I')">I</span>
-                    <span class="opcion-tipo" data-tipo="F" onclick="cambiarFiltroTipo('F')">F</span>
+        <div class="header-colapsable" onclick="toggleSeccion('acordeon-historial', 'icono-historial')">
+            <h3 style="margin: 0; color: var(--h1-color);">Historial</h3>
+            <span id="icono-historial" class="icono-colapso">🔼</span>
+        </div>
+        
+        <div id="acordeon-historial" class="acordeon-container">
+            <div class="acordeon-content">
+                <div style="width: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 15px;">
+                    <div class="selector-matriz" style="flex: 1;">
+                        <span class="opcion-tipo activo" data-tipo="Todo" onclick="cambiarFiltroTipo('Todo')">Todo</span>
+                        <span class="opcion-tipo" data-tipo="G" onclick="cambiarFiltroTipo('G')">G</span>
+                        <span class="opcion-tipo" data-tipo="I" onclick="cambiarFiltroTipo('I')">I</span>
+                        <span class="opcion-tipo" data-tipo="F" onclick="cambiarFiltroTipo('F')">F</span>
+                    </div>
+                    <div class="selector-matriz" style="flex: 1;">
+                        <span class="opcion-tiempo activo" data-filtro="D" onclick="cambiarFiltroTiempo('D')">D</span>
+                        <span class="opcion-tiempo" data-filtro="S" onclick="cambiarFiltroTiempo('S')">S</span>
+                        <span class="opcion-tiempo" data-filtro="M" onclick="cambiarFiltroTiempo('M')">M</span>
+                        <span class="opcion-tiempo" data-filtro="T" onclick="cambiarFiltroTiempo('T')">Todo</span>
+                    </div>
                 </div>
-                <div class="selector-matriz" style="flex: 1;">
-                    <span class="opcion-tiempo activo" data-filtro="D" onclick="cambiarFiltroTiempo('D')">D</span>
-                    <span class="opcion-tiempo" data-filtro="S" onclick="cambiarFiltroTiempo('S')">S</span>
-                    <span class="opcion-tiempo" data-filtro="M" onclick="cambiarFiltroTiempo('M')">M</span>
-                    <span class="opcion-tiempo" data-filtro="T" onclick="cambiarFiltroTiempo('T')">Todo</span>
-                </div>
+                <ul id="lista-historial"></ul>
             </div>
         </div>
-
-        <ul id="lista-historial"></ul>
     </section>
 
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical" style="margin-top: 2rem;">
-        <h3 style="color: var(--h1-color); margin-bottom: 15px;">📊 Motor de Informes Clínicos</h3>
-        <div class="contenedor-bloques-informe">
-            <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
-                <span style="font-size: 0.8rem; color: #666;">Media Filtrada</span>
-                <div id="reporte-media" style="font-size: 1.3rem; font-weight: bold; color: var(--accent-color); margin-top: 5px;">---</div>
-            </div>
-            <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
-                <span style="font-size: 0.8rem; color: #666;">Tiempo en Rango</span>
-                <div id="reporte-rango" style="font-size: 1.3rem; font-weight: bold; color: var(--h1-color); margin-top: 5px;">---</div>
+        <div class="header-colapsable" onclick="toggleSeccion('acordeon-informes', 'icono-informes')">
+            <h3 style="margin: 0; color: var(--h1-color);">📊 Motor de Informes Clínicos</h3>
+            <span id="icono-informes" class="icono-colapso">🔼</span>
+        </div>
+
+        <div id="acordeon-informes" class="acordeon-container">
+            <div class="acordeon-content">
+                <div class="contenedor-bloques-informe" style="margin-top: 15px;">
+                    <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
+                        <span style="font-size: 0.8rem; color: #666;">Media Filtrada</span>
+                        <div id="reporte-media" style="font-size: 1.3rem; font-weight: bold; color: var(--accent-color); margin-top: 5px;">---</div>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 12px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; border: 1px solid var(--border-color);">
+                        <span style="font-size: 0.8rem; color: #666;">Tiempo en Rango</span>
+                        <div id="reporte-rango" style="font-size: 1.3rem; font-weight: bold; color: var(--h1-color); margin-top: 5px;">---</div>
+                    </div>
+                </div>
+                <ul id="lista-etapas-reporte" style="padding: 0; list-style: none;"></ul>
             </div>
         </div>
-        <ul id="lista-etapas-reporte" style="padding: 0; list-style: none;"></ul>
     </section>
 
-    <div class="seccion-herramientas">
+    <div class="seccion-herramientas" style="margin-top: 20px;">
         <h3 class="titulo-herramientas">Backup</h3>
         <div class="botones-herramientas">
             <button id="btn-importar" class="btn-herramienta">
@@ -548,6 +612,7 @@
         <button class="btn-form" onclick="abrirSubPerfil('vet')" style="background-color: #1976D2;">Veterinario / Clínica</button>
         <button class="btn-form" onclick="abrirSubPerfil('pautas')" style="background-color: #E65100;">Pautas Indicadas</button>
         <button class="btn-form" onclick="abrirSubPerfil('salud')" style="background-color: #8E24AA;">Salud Concurrente</button>
+        <button class="btn-form" onclick="abrirSubPerfil('alimentacion')" style="background-color: #F57C00;">Alimentación</button>
         <button type="button" class="btn-form" style="background-color: #999; margin-top: 15px;" onclick="cerrarSubModal('modal-menu-perfil')">Cancelar</button>
     </dialog>
 
@@ -683,7 +748,7 @@
             <button type="button" class="btn-secondary" style="background-color: #8E24AA; color: white; border: none;" onclick="añadirFarmacoCustom()">Añadir</button>
         </div>
         <ul id="lista-farmacos-db" style="font-size:0.8rem; max-height:120px; overflow-y:auto; margin-bottom:20px; padding:0; list-style:none; border: 1px solid var(--border-color); border-radius: 8px; padding: 5px;">
-            </ul>
+        </ul>
 
         <hr style="border-top:1px solid var(--border-color); margin: 15px 0;">
 
@@ -711,9 +776,56 @@
         </div>
 
         <ul id="lista-pautas-activas" style="font-size:0.85rem; margin-top:10px; padding:0; list-style:none;">
-            </ul>
+        </ul>
 
         <button type="button" class="btn-form" onclick="volverASaludDesdeConfig()" style="margin-top: 20px;">Volver</button>
+    </dialog>
+
+    <dialog id="modal-alimentacion">
+        <h3 style="margin-top:0; text-align: center; color: #F57C00;">Gestión de Alimentación</h3>
+
+        <label>Base de Datos de Comidas</label>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="nueva-comida-nombre" placeholder="Ej: Pienso Renal...">
+            <button type="button" class="btn-secondary" style="background-color: #F57C00; color: white; border: none;" onclick="añadirComidaCustom()">Añadir</button>
+        </div>
+        <ul id="lista-comidas-db" style="font-size:0.8rem; max-height:120px; overflow-y:auto; margin-bottom:20px; padding:0; list-style:none; border: 1px solid var(--border-color); border-radius: 8px; padding: 5px;">
+        </ul>
+
+        <hr style="border-top:1px solid var(--border-color); margin: 15px 0;">
+
+        <label>Programar Horarios de Comida</label>
+        <div class="form-perfil-grid" style="margin-bottom: 5px;">
+            <div class="campo-limpio">
+                <label>Tipo de Comida</label>
+                <select id="select-pauta-comida"></select>
+            </div>
+            <div class="campo-limpio">
+                <label>Cantidad (g)</label>
+                <input type="number" id="input-pauta-gramos" step="any" placeholder="Ej: 150">
+            </div>
+            <div class="campo-limpio">
+                <label>Toma / Nombre</label>
+                <select id="select-pauta-nombre-comida">
+                    <option value="Desayuno">Desayuno</option>
+                    <option value="Comida">Comida</option>
+                    <option value="Cena">Cena</option>
+                    <option value="Snack">Snack</option>
+                </select>
+            </div>
+            <div class="campo-limpio">
+                <label>Hora</label>
+                <input type="time" id="input-pauta-hora-comida">
+            </div>
+            <div class="campo-limpio" style="display:flex; align-items:flex-end; grid-column: span 2;">
+                <button type="button" class="btn-secondary" style="width:100%; background-color:#F57C00; color:white; border:none; margin-bottom: 10px;" onclick="añadirPautaComida()">Programar Toma</button>
+            </div>
+        </div>
+
+        <ul id="lista-pautas-comida-activas" style="font-size:0.85rem; margin-top:10px; padding:0; list-style:none;">
+        </ul>
+
+        <button type="button" class="btn-form" style="background-color: #999; margin-top: 20px;" onclick="cerrarSubModal('modal-alimentacion')">Cerrar</button>
     </dialog>
 
     <script>
@@ -728,6 +840,7 @@
         const modalPautas = document.getElementById('modal-pautas');
         const modalSalud = document.getElementById('modal-salud');
         const modalConfigSalud = document.getElementById('modal-config-salud');
+        const modalAlimentacion = document.getElementById('modal-alimentacion');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
@@ -745,10 +858,52 @@
             { nombre: "Antibiótico", isDefault: true }
         ];
 
+        // 🥣 BASE DE DATOS MAESTRA DE ALIMENTACIÓN (Imborrables / isDefault: true)
+        const dbComidasDefault = [
+            { nombre: "Pienso Extruido", isDefault: true },
+            { nombre: "Dieta BARF (Cruda)", isDefault: true },
+            { nombre: "Comida Húmeda Comercial", isDefault: true },
+            { nombre: "Dieta Casera Cocinada", isDefault: true }
+        ];
+
         function obtenerTodosLosFarmacos() {
             const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
             const custom = (perfil.salud && perfil.salud.farmacosCustom) ? perfil.salud.farmacosCustom : [];
             return [...dbFarmacosDefault, ...custom];
+        }
+
+        function obtenerTodasLasComidas() {
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const custom = (perfil.alimentacion && perfil.alimentacion.comidasCustom) ? perfil.alimentacion.comidasCustom : [];
+            return [...dbComidasDefault, ...custom];
+        }
+
+        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR) ⬇️ */
+        window.toggleSeccion = function(containerId, iconId) {
+            const container = document.getElementById(containerId);
+            const icon = document.getElementById(iconId);
+            
+            if (container.classList.contains('colapsado')) {
+                container.classList.remove('colapsado');
+                icon.innerText = '🔼';
+                localStorage.setItem('estado_' + containerId, 'expandido');
+            } else {
+                container.classList.add('colapsado');
+                icon.innerText = '🔽';
+                localStorage.setItem('estado_' + containerId, 'colapsado');
+            }
+        };
+
+        function restaurarEstadoAcordeones() {
+            const secciones = ['acordeon-historial', 'acordeon-informes'];
+            secciones.forEach(id => {
+                const estado = localStorage.getItem('estado_' + id);
+                // Si está explícitamente colapsado, lo cerramos. Si es null o 'expandido', arranca abierto por defecto.
+                if (estado === 'colapsado') {
+                    document.getElementById(id).classList.add('colapsado');
+                    document.getElementById('icono-' + id.split('-')[1]).innerText = '🔽';
+                }
+            });
         }
 
         // Lógica de Backup
@@ -822,6 +977,7 @@
         habilitarCierreFuera(modalPautas);
         habilitarCierreFuera(modalSalud);
         habilitarCierreFuera(modalConfigSalud);
+        habilitarCierreFuera(modalAlimentacion);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
@@ -831,6 +987,7 @@
         modalPautas.addEventListener('close', limpiarFondoModal);
         modalSalud.addEventListener('close', limpiarFondoModal);
         modalConfigSalud.addEventListener('close', limpiarFondoModal);
+        modalAlimentacion.addEventListener('close', limpiarFondoModal);
 
         // Controladores de Matriz
         window.cambiarFiltroTiempo = function(filtro) {
@@ -1226,6 +1383,9 @@
                 });
                 
                 modalSalud.showModal();
+            } else if (tipo === 'alimentacion') {
+                renderConfigAlimentacion();
+                modalAlimentacion.showModal();
             }
         };
 
@@ -1446,25 +1606,180 @@
             });
         };
 
-        // 🔔 MOTOR DE TOMAS PENDIENTES
+        /* 🥣 LÓGICA DE CONFIGURACIÓN DE ALIMENTACIÓN */
+        window.añadirComidaCustom = function() {
+            const nombre = document.getElementById('nueva-comida-nombre').value.trim();
+            if(!nombre) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            if(!perfil.alimentacion) perfil.alimentacion = {};
+            if(!perfil.alimentacion.comidasCustom) perfil.alimentacion.comidasCustom = [];
+
+            const todas = obtenerTodasLasComidas();
+            if(todas.find(c => c.nombre.toLowerCase() === nombre.toLowerCase())) {
+                alert('Esta comida ya existe en la base de datos.');
+                return;
+            }
+
+            perfil.alimentacion.comidasCustom.push({ nombre: nombre, isDefault: false });
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            document.getElementById('nueva-comida-nombre').value = '';
+            renderConfigAlimentacion();
+        };
+
+        window.borrarComidaCustom = function(nombre) {
+            if(!confirm('¿Eliminar comida de la base de datos?')) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            perfil.alimentacion.comidasCustom = perfil.alimentacion.comidasCustom.filter(c => c.nombre !== nombre);
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigAlimentacion();
+        };
+
+        window.añadirPautaComida = function() {
+            const comida = document.getElementById('select-pauta-comida').value;
+            const gramos = document.getElementById('input-pauta-gramos').value;
+            const nombreToma = document.getElementById('select-pauta-nombre-comida').value;
+            const hora = document.getElementById('input-pauta-hora-comida').value;
+
+            if(!comida || !gramos || !hora) { alert('Selecciona el tipo de comida, los gramos y la hora.'); return; }
+
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            if(!perfil.alimentacion) perfil.alimentacion = {};
+            if(!perfil.alimentacion.pautas) perfil.alimentacion.pautas = [];
+
+            const ahora = new Date();
+            const [h, m] = hora.split(':');
+            let siguienteToma = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), parseInt(h), parseInt(m), 0);
+
+            perfil.alimentacion.pautas.push({
+                comida: comida,
+                gramos: gramos,
+                nombreToma: nombreToma,
+                horaConfigurada: hora,
+                siguienteToma: siguienteToma.toISOString()
+            });
+
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigAlimentacion();
+            actualizarInterfaz();
+        };
+
+        window.borrarPautaComida = function(index) {
+            if(!confirm('¿Eliminar esta toma programada?')) return;
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            perfil.alimentacion.pautas.splice(index, 1);
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
+            renderConfigAlimentacion();
+            actualizarInterfaz();
+        };
+
+        window.renderConfigAlimentacion = function() {
+            const comidas = obtenerTodasLasComidas();
+            const ulComidas = document.getElementById('lista-comidas-db');
+            const selectPauta = document.getElementById('select-pauta-comida');
+
+            ulComidas.innerHTML = '';
+            selectPauta.innerHTML = '<option value="" disabled selected>Selecciona comida...</option>';
+
+            comidas.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.nombre;
+                opt.textContent = c.nombre;
+                selectPauta.appendChild(opt);
+
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.padding = '6px 4px';
+                li.style.borderBottom = '1px solid var(--border-color)';
+
+                const nombreSpan = document.createElement('span');
+                nombreSpan.textContent = c.nombre;
+                if(c.isDefault) nombreSpan.style.color = '#888';
+
+                li.appendChild(nombreSpan);
+
+                if(!c.isDefault) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = '🗑️';
+                    btn.style.background = 'transparent';
+                    btn.style.border = 'none';
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => borrarComidaCustom(c.nombre);
+                    li.appendChild(btn);
+                } else {
+                    const lock = document.createElement('span');
+                    lock.textContent = '🔒';
+                    lock.style.fontSize = '0.8rem';
+                    lock.style.opacity = '0.5';
+                    li.appendChild(lock);
+                }
+                ulComidas.appendChild(li);
+            });
+
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pautas = (perfil.alimentacion && perfil.alimentacion.pautas) ? perfil.alimentacion.pautas : [];
+            const ulPautas = document.getElementById('lista-pautas-comida-activas');
+            ulPautas.innerHTML = '';
+
+            pautas.forEach((p, idx) => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.background = 'var(--bg-body)';
+                li.style.padding = '10px';
+                li.style.marginBottom = '6px';
+                li.style.borderRadius = '8px';
+                li.style.border = '1px solid var(--border-color)';
+                li.innerHTML = `
+                    <div>
+                        <strong style="color:#F57C00;">${p.nombreToma} (${p.horaConfigurada})</strong><br>
+                        <span style="font-size:0.75rem; color:#666;">${p.gramos}g de ${p.comida}</span>
+                    </div>
+                    <button type="button" class="btn-accion btn-borrar" onclick="borrarPautaComida(${idx})">X</button>
+                `;
+                ulPautas.appendChild(li);
+            });
+        };
+
+        // 🔔 MOTOR DE TOMAS Y COMIDAS PENDIENTES
         function actualizarPendientes() {
             const container = document.getElementById('contenedor-pendientes');
             container.innerHTML = '';
             const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas : [];
             const ahora = new Date();
 
-            pautas.forEach((pauta, index) => {
+            // 1. Procesar Medicación
+            const pautasMed = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas : [];
+            pautasMed.forEach((pauta, index) => {
                 if (pauta.siguienteToma) {
                     const fechaToma = new Date(pauta.siguienteToma);
                     if (ahora >= fechaToma) {
                         const hrFormat = fechaToma.getHours().toString().padStart(2, '0') + ':' + fechaToma.getMinutes().toString().padStart(2, '0');
-                        
                         const div = document.createElement('div');
                         div.className = 'alerta-pendiente';
                         div.innerHTML = `
                             <span style="flex:1;">💊 <strong>Toma Pendiente:</strong> ${pauta.farmaco} (${hrFormat})</span>
                             <button type="button" class="btn-accion btn-confirmar-toma" onclick="confirmarToma(${index})">Confirmar</button>
+                        `;
+                        container.appendChild(div);
+                    }
+                }
+            });
+
+            // 2. Procesar Alimentación
+            const pautasComida = (perfil.alimentacion && perfil.alimentacion.pautas) ? perfil.alimentacion.pautas : [];
+            pautasComida.forEach((pauta, index) => {
+                if (pauta.siguienteToma) {
+                    const fechaToma = new Date(pauta.siguienteToma);
+                    if (ahora >= fechaToma) {
+                        const hrFormat = fechaToma.getHours().toString().padStart(2, '0') + ':' + fechaToma.getMinutes().toString().padStart(2, '0');
+                        const div = document.createElement('div');
+                        div.className = 'alerta-pendiente alerta-comida';
+                        div.innerHTML = `
+                            <span style="flex:1;">🥣 <strong>${pauta.nombreToma}:</strong> ${pauta.gramos}g de ${pauta.comida} (${hrFormat})</span>
+                            <button type="button" class="btn-accion btn-confirmar-toma" onclick="confirmarComida(${index})">Confirmar</button>
                         `;
                         container.appendChild(div);
                     }
@@ -1477,7 +1792,6 @@
             const pauta = perfil.salud.pautas[index];
             const ahora = new Date();
 
-            // 1. Inyectar automáticamente en el historial clínico
             let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
             const fechaActual = ahora.toISOString().split('T')[0];
             const horaActual = ahora.toTimeString().substring(0, 5);
@@ -1495,16 +1809,47 @@
             regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
             localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
 
-            // 2. Programar siguiente ciclo de pauta
             const tomaActual = new Date(pauta.siguienteToma);
             tomaActual.setHours(tomaActual.getHours() + parseInt(pauta.frecuencia));
-            
-            // Medida de seguridad: Si la persona ha ignorado días enteros, lo ponemos acorde al momento actual
             if(ahora > tomaActual) {
                 tomaActual.setTime(ahora.getTime());
                 tomaActual.setHours(tomaActual.getHours() + parseInt(pauta.frecuencia));
             }
+            pauta.siguienteToma = tomaActual.toISOString();
+            localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
 
+            actualizarInterfaz();
+        };
+
+        window.confirmarComida = function(index) {
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const pauta = perfil.alimentacion.pautas[index];
+            const ahora = new Date();
+
+            let regs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            const fechaActual = ahora.toISOString().split('T')[0];
+            const horaActual = ahora.toTimeString().substring(0, 5);
+
+            let nuevoRegistro = {
+                fecha: fechaActual,
+                hora: horaActual,
+                tipo: 'factor',
+                factores: ['Comida'],
+                factoresDetalle: {
+                    'Comida': { notas: `${pauta.nombreToma}: ${pauta.gramos}g (${pauta.comida})` }
+                }
+            };
+            regs.unshift(nuevoRegistro);
+            regs.sort((a, b) => new Date(`${b.fecha}T${b.hora}`) - new Date(`${a.fecha}T${a.hora}`));
+            localStorage.setItem(KEY_GLUCOSA, JSON.stringify(regs));
+
+            // Programar el siguiente ciclo para el día siguiente (24h)
+            const tomaActual = new Date(pauta.siguienteToma);
+            tomaActual.setHours(tomaActual.getHours() + 24);
+            if(ahora > tomaActual) {
+                tomaActual.setTime(ahora.getTime());
+                tomaActual.setHours(tomaActual.getHours() + 24);
+            }
             pauta.siguienteToma = tomaActual.toISOString();
             localStorage.setItem(KEY_PERFIL, JSON.stringify(perfil));
 
@@ -1692,6 +2037,19 @@
                         </div>
                     `;
                     
+                    // ⬇️ Funcionalidad Scroll Inverso (Primer Registro)
+                    if (indexArray === 0 && regsFiltrados.length > 1) {
+                        li.style.cursor = 'pointer';
+                        li.title = "Pulse aquí para ir al final de la lista";
+                        li.onclick = function(e) {
+                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                                const lastItem = lista.lastElementChild;
+                                if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            }
+                        };
+                    }
+
+                    // ⬆️ Funcionalidad Atajo Arriba (Último Registro)
                     if (indexArray === regsFiltrados.length - 1) {
                         li.style.cursor = 'pointer';
                         li.title = "Pulse aquí para volver a la vista inicial";
@@ -1709,7 +2067,7 @@
             }
             
             calcularYMostrarInformes(regsFiltrados, perfil);
-            actualizarPendientes(); // Evaluamos posibles medicaciones pendientes
+            actualizarPendientes(); 
             
             if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
                 renderizarGrafica([...regsFiltrados].reverse());
@@ -1784,7 +2142,11 @@
             }
         }
         mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+        
+        // Inicialización de la Interfaz
         actualizarInterfaz();
+        restaurarEstadoAcordeones(); // Restaura la preferencia de paneles abiertos o cerrados
+        
         if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
 
         document.addEventListener('focusin', function(e) {
