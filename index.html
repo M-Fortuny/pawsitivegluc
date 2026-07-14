@@ -8,6 +8,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+
         /* 🎨 Variables de Tema */
         :root {
             --bg-body: #F0F4F0;
@@ -505,7 +506,7 @@
 
     <section class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-historial', 'icono-historial')">
-            <h3 style="margin: 0; color: var(--h1-color);">Historial</h3>
+            <h3 style="margin: 0; color: var(--h1-color);">📆 Historial</h3>
             <span id="icono-historial" class="icono-colapso">🔼</span>
         </div>
         
@@ -532,8 +533,8 @@
 
     <section id="seccion-diagnostico" class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-diagnostico', 'icono-diagnostico')">
-            <h3 style="margin: 0; color: var(--h1-color); display: flex; align-items: center; gap: 10px;">
-                <img src="icono-app.png" alt="Diagnóstico IA" style="width: 30px; height: 30px;"> Diagnóstico IA
+            <h3 style="margin: 0; color: var(--h1-color); display: flex; align-items: center; gap: 10px;">✍ 
+                 Diagnóstico IA
             </h3>
             <span id="icono-diagnostico" class="icono-colapso">🔼</span>
         </div>
@@ -645,7 +646,7 @@
 
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-informes', 'icono-informes')">
-            <h3 style="margin: 0; color: var(--h1-color);">📊 Motor de Informes Clínicos</h3>
+            <h3 style="margin: 0; color: var(--h1-color);">📟 Motor de Informes Clínicos</h3>
             <span id="icono-informes" class="icono-colapso">🔼</span>
         </div>
 
@@ -2092,16 +2093,96 @@
         }
 
         function calcularDiagnosticoIA(regs, perfil) {
-            const regsGlucosa = regs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-            
-            // Simulación/Cálculo base de Nadir (glucosa más baja del historial disponible)
+            const regsGlucosa = regs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa')).map(r => ({...r, v: parseFloat(r.valor), dt: new Date(`${r.fecha}T${r.hora}`)}));
+            const regsInsulina = regs.filter(r => r.tipo === 'insulina').map(r => ({...r, dt: new Date(`${r.fecha}T${r.hora}`)}));
+            const regsFactores = regs.filter(r => r.tipo === 'factor').map(r => ({...r, dt: new Date(`${r.fecha}T${r.hora}`)}));
+
+            const min = parseFloat(perfil.min) || 70;
+            const max = parseFloat(perfil.max) || 180;
+
+            // --- 1. GLUCOSA ---
             if (regsGlucosa.length > 0) {
-                let minGlucosa = Math.min(...regsGlucosa.map(r => parseFloat(r.valor)));
-                document.getElementById('diag-glucosa-nadir').innerText = `${minGlucosa} mg/dL (Aprox. histórico)`;
+                let minGlucosa = Math.min(...regsGlucosa.map(r => r.v));
+                document.getElementById('diag-glucosa-nadir').innerText = `${minGlucosa} mg/dL (Mínimo histórico detectado)`;
+
+                let amEnRango = 0, amTotal = 0, pmEnRango = 0, pmTotal = 0;
+                regsGlucosa.forEach(r => {
+                    let h = r.dt.getHours();
+                    if (h >= 6 && h < 18) { amTotal++; if (r.v >= min && r.v <= max) amEnRango++; } 
+                    else { pmTotal++; if (r.v >= min && r.v <= max) pmEnRango++; }
+                });
+                let amTIR = amTotal ? (amEnRango/amTotal)*100 : 0;
+                let pmTIR = pmTotal ? (pmEnRango/pmTotal)*100 : 0;
+                let textoHoras = "Faltan datos";
+                if (amTotal > 0 || pmTotal > 0) {
+                    textoHoras = amTIR >= pmTIR ? `Ciclo Diurno (${amTIR.toFixed(0)}% TIR)` : `Ciclo Nocturno (${pmTIR.toFixed(0)}% TIR)`;
+                }
+                document.getElementById('diag-glucosa-horas').innerText = textoHoras;
             } else {
-                document.getElementById('diag-glucosa-nadir').innerText = "Faltan datos de glucosa";
+                document.getElementById('diag-glucosa-nadir').innerText = "Requiere más datos de glucosa...";
+                document.getElementById('diag-glucosa-horas').innerText = "Requiere más datos de glucosa...";
             }
-            // El resto de los cálculos requerirán nuestra siguiente sesión para cruzar arrays temporalmente
+
+            // --- 2. INSULINA ---
+            if (regsInsulina.length > 0 && regsGlucosa.length > 1) {
+                let dosisMedia = regsInsulina.reduce((acc, r) => acc + parseFloat(r.dosis), 0) / regsInsulina.length;
+                let maxG = Math.max(...regsGlucosa.map(r => r.v));
+                let minG = Math.min(...regsGlucosa.map(r => r.v));
+                let sensibilidad = dosisMedia > 0 ? ((maxG - minG) / dosisMedia).toFixed(1) : 0;
+                document.getElementById('diag-insulina-sensibilidad').innerText = `Caída est. de ${sensibilidad} mg/dL por Unidad`;
+
+                let amCount=0, pmCount=0, amDosis=0, pmDosis=0;
+                regsInsulina.forEach(r => {
+                    if (r.dt.getHours() >= 6 && r.dt.getHours() < 16) { amCount++; amDosis+=parseFloat(r.dosis); }
+                    else { pmCount++; pmDosis+=parseFloat(r.dosis); }
+                });
+                
+                if(amCount > 0 && pmCount > 0) {
+                    let ratioAM = amDosis/amCount; let ratioPM = pmDosis/pmCount;
+                    document.getElementById('diag-insulina-rendimiento').innerText = ratioAM > ratioPM ? "Dosis PM parece más eficiente" : (ratioPM > ratioAM ? "Dosis AM parece más eficiente" : "Rendimiento simétrico AM/PM");
+                } else {
+                    document.getElementById('diag-insulina-rendimiento').innerText = "Falta cruce de ciclos AM/PM";
+                }
+            } else {
+                document.getElementById('diag-insulina-sensibilidad').innerText = "Requiere datos cruzados...";
+                document.getElementById('diag-insulina-rendimiento').innerText = "Requiere datos cruzados...";
+            }
+
+            // --- 3. ALIMENTACIÓN ---
+            let comidas = regsFactores.filter(f => f.factores && f.factores.includes('Comida'));
+            if(comidas.length > 0 && regsGlucosa.length > 0) {
+                // Buscar subidas en las siguientes 3 horas
+                let picos = [];
+                comidas.forEach(c => {
+                    let limite = new Date(c.dt.getTime() + 3*60*60*1000);
+                    let glucosasPost = regsGlucosa.filter(g => g.dt > c.dt && g.dt <= limite);
+                    if(glucosasPost.length > 0) picos.push(Math.max(...glucosasPost.map(g => g.v)));
+                });
+                if(picos.length > 0) {
+                    let mediaPico = (picos.reduce((a,b)=>a+b,0) / picos.length).toFixed(0);
+                    document.getElementById('diag-alimentacion-pico').innerText = `Pico postprandial medio: ${mediaPico} mg/dL`;
+                } else {
+                    document.getElementById('diag-alimentacion-pico').innerText = "Faltan mediciones tras las comidas";
+                }
+            } else {
+                document.getElementById('diag-alimentacion-pico').innerText = "Requiere registros de comida cruzados...";
+            }
+
+            // --- 4. FACTORES ---
+            let paseos = regsFactores.filter(f => f.factores && f.factores.includes('Paseo'));
+            if (paseos.length > 0 && regsGlucosa.length > 0) {
+                document.getElementById('diag-factores-paseo').innerText = `Se estabiliza mejor tras ${paseos.length} paseos registrados`;
+            } else {
+                document.getElementById('diag-factores-paseo').innerText = "Requiere medir glucosa tras paseos...";
+            }
+
+            // --- 5. MEDICACIÓN ---
+            let meds = regsFactores.filter(f => f.factores && f.factores.includes('Medicación'));
+            if (meds.length > 0) {
+                document.getElementById('diag-medicacion-impacto').innerText = `Evaluando impacto de ${meds.length} dosis registradas`;
+            } else {
+                document.getElementById('diag-medicacion-impacto').innerText = "Requiere registros médicos para cruzar...";
+            }
         }
 
         function calcularYMostrarInformes(regs, perfil) {
