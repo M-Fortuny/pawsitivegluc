@@ -4,8 +4,8 @@ const ASSETS = [
   './index.html', 
   './style.css', 
   './script.js', 
-  './manifest.json'
-  './icono-app.png'
+  './manifest.json',
+  './icono-app.png',
   // Si tienes imágenes o iconos, añádelos aquí también
 ];
 
