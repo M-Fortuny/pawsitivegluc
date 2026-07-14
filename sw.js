@@ -1,10 +1,11 @@
-const CACHE_NAME = 'diabetes-perros-v1';
+const CACHE_NAME = 'diabetes-perros-v2';
 const ASSETS = [
   './', 
   './index.html', 
   './style.css', 
   './script.js', 
   './manifest.json'
+  './icono-app.png'
   // Si tienes imágenes o iconos, añádelos aquí también
 ];
 
