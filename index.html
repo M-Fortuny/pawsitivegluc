@@ -376,18 +376,21 @@
         .guia-tutor { font-weight: 500; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .theme-dark .guia-tutor { background: #332b0a !important; border-left-color: #FBC02D !important; color: #ffda6a !important; }
         
-        .theme-dark .header-colapsable[onclick*="acordeon-glucosa"] { background-color: #1b3a1e !important; }
-        .theme-dark .header-colapsable[onclick*="acordeon-insulina"] { background-color: #0d2840 !important; }
-        .theme-dark .header-colapsable[onclick*="acordeon-alimentacion"], .theme-dark .header-colapsable[onclick*="acordeon-factores"] { background-color: #4e2a0e !important; }
-        .theme-dark .header-colapsable[onclick*="acordeon-medicacion"] { background-color: #381042 !important; }
-
         /* 🌙 Ajustes de legibilidad Modo Dark inyectados para Módulo IA */
+        .theme-dark .sub-acordeon {
+            border-color: #444 !important;
+            background: #1E1E1E !important;
+        }
+        .theme-dark .sub-acordeon .header-colapsable {
+            background-color: #2C2C2C !important; /* Botones a color gris oscuro en modo dark */
+            border-bottom: 1px solid #444;
+        }
         .theme-dark .sub-acordeon .header-colapsable h4, 
         .theme-dark .sub-acordeon .header-colapsable .icono-colapso {
-            color: #E0E0E0 !important;
+            color: #E0E0E0 !important; /* Textos a gris claro/blanco */
         }
         .theme-dark .dato-card {
-            background-color: #2C2C2C !important;
+            background-color: #252525 !important;
             border-color: #444 !important;
         }
         .theme-dark .dato-card span {
