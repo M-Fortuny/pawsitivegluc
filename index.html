@@ -2055,42 +2055,85 @@
         };
 
         // 🧠 Motor de Doble Evaluación Dinámica
-        function filtrarRegistros(registros, fTiempo, fTipo) {
-            let fechaReferencia = new Date();
-            fechaReferencia.setHours(0, 0, 0, 0); 
-            
-            if (registros.length > 0 && (fTiempo === 'D' || fTiempo === 'S' || fTiempo === 'M')) {
-                const fechaMasReciente = registros[0].fecha;
-                fechaReferencia = new Date(`${fechaMasReciente}T00:00:00`);
-            }
-            
-            return registros.filter(r => {
-                let pasaTiempo = false;
-                if (fTiempo === 'T') {
-                    pasaTiempo = true;
-                } else {
-                    const fechaReg = new Date(`${r.fecha}T00:00:00`); 
-                    const diffDays = Math.round((fechaReferencia - fechaReg) / (1000 * 60 * 60 * 24));
-                    if (fTiempo === 'D') pasaTiempo = (diffDays === 0); 
-                    else if (fTiempo === 'S') pasaTiempo = (diffDays >= 0 && diffDays <= 7); 
-                    else if (fTiempo === 'M') pasaTiempo = (diffDays >= 0 && diffDays <= 30);
-                }
 
-                let pasaTipo = false;
-                const tipoEfectivo = r.tipo || 'glucosa'; 
-                if (fTipo === 'Todo') {
-                    pasaTipo = true;
-                } else if (fTipo === 'G' && tipoEfectivo === 'glucosa') {
-                    pasaTipo = true;
-                } else if (fTipo === 'I' && tipoEfectivo === 'insulina') {
-                    pasaTipo = true;
-                } else if (fTipo === 'F' && tipoEfectivo === 'factor') {
-                    pasaTipo = true;
-                }
 
-                return pasaTiempo && pasaTipo;
-            });
+
+        // 🧠 Motor de Doble Evaluación Dinámica (Corregido Ciclo 7h - Formato YYYY-MM-DD)
+function filtrarRegistros(registros, fTiempo, fTipo) {
+    // ⏱️ FUNCIÓN AUXILIAR INTERNA: Calcula el "Día Operativo" restando 7 horas
+    function obtenerDiaOperativoString(fechaISO, horaTexto) {
+        if (!fechaISO || !horaTexto) return fechaISO;
+        const [anio, mes, dia] = fechaISO.split('-');
+        const [horas, minutos] = horaTexto.split(':');
+        // Creamos la fecha real con sus componentes
+        const dateObj = new Date(parseInt(anio, 10), parseInt(mes, 10) - 1, parseInt(dia, 10), parseInt(horas, 10), parseInt(minutos, 10));
+        // Restamos las 7 horas de desfase biológico
+        dateObj.setHours(dateObj.getHours() - 7);
+        // Devolvemos el formato YYYY-MM-DD que usa tu base de datos
+        const rAnio = dateObj.getFullYear();
+        const rMes = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const rDia = String(dateObj.getDate()).padStart(2, '0');
+        return `${rAnio}-${rMes}-${rDia}`;
+    }
+
+    // Calcular el día operativo de este preciso instante del reloj
+    const ahora = new Date();
+    const hoyISO = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}-${String(ahora.getDate()).padStart(2,'0')}`;
+    const hoyHora = `${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
+    let diaOperativoReferencia = obtenerDiaOperativoString(hoyISO, hoyHora);
+    
+    // Lógica Inteligente Original: Si se pide Día, Semana o Mes, buscamos si hay registros en el ciclo actual
+    if (registros.length > 0 && (fTiempo === 'D' || fTiempo === 'S' || fTiempo === 'M')) {
+        const tieneDatosCicloActual = registros.some(r => obtenerDiaOperativoString(r.fecha, r.hora) === diaOperativoReferencia);
+        // Si no hay datos en el ciclo de hoy, tomamos el ciclo operativo del registro más reciente como referencia
+        if (!tieneDatosCicloActual) {
+            diaOperativoReferencia = obtenerDiaOperativoString(registros[0].fecha, registros[0].hora);
         }
+    }
+    
+    return registros.filter(r => {
+        let pasaTiempo = false;
+        if (fTiempo === 'T') {
+            pasaTiempo = true;
+        } else {
+            // Calculamos los días operativos para comparar ciclos de 7h a 7h de forma limpia
+            const registroOperativo = obtenerDiaOperativoString(r.fecha, r.hora);
+            
+            const fechaRef = new Date(`${diaOperativoReferencia}T00:00:00`);
+            const fechaReg = new Date(`${registroOperativo}T00:00:00`); 
+            
+            const diffDays = Math.round((fechaRef - fechaReg) / (1000 * 60 * 60 * 24));
+            
+            if (fTiempo === 'D') pasaTiempo = (diffDays === 0); 
+            else if (fTiempo === 'S') pasaTiempo = (diffDays >= 0 && diffDays <= 7); 
+            else if (fTiempo === 'M') pasaTiempo = (diffDays >= 0 && diffDays <= 30);
+        }
+
+        let pasaTipo = false;
+        const tipoEfectivo = r.tipo || 'glucosa'; 
+        if (fTipo === 'Todo') {
+            pasaTipo = true;
+        } else if (fTipo === 'G' && tipoEfectivo === 'glucosa') {
+            pasaTipo = true;
+        } else if (fTipo === 'I' && tipoEfectivo === 'insulina') {
+            pasaTipo = true;
+        } else if (fTipo === 'F' && tipoEfectivo === 'factor') {
+            pasaTipo = true;
+        }
+
+        return pasaTiempo && pasaTipo;
+    });
+}
+
+
+
+
+
+
+
+
+
+
 
         function calcularDiagnosticoIA(regs, perfil) {
             const regsGlucosa = regs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa')).map(r => ({...r, v: parseFloat(r.valor), dt: new Date(`${r.fecha}T${r.hora}`)}));
@@ -2260,167 +2303,185 @@
         }
 
         function actualizarInterfaz() {
-            const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            const lista = document.getElementById('lista-historial');
-            const display = document.getElementById('valor-glucosa');
-            lista.innerHTML = '';
+    const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+    const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+    const lista = document.getElementById('lista-historial');
+    const display = document.getElementById('valor-glucosa');
+    lista.innerHTML = '';
+    
+    const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+    if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
+    else { display.innerText = '---'; }
+
+    const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+
+    // 🔄 ORDENACIÓN BIOLÓGICA DEL HISTORIAL: Obliga a que la madrugada (00:00h a 06:59h) se pinte arriba del todo en la vista diaria
+    if (filtroTiempoActual === 'D' && regsFiltrados.length > 0) {
+        regsFiltrados.sort((a, b) => {
+            const [hA, mA] = a.hora.split(':').map(Number);
+            const [hB, mB] = b.hora.split(':').map(Number);
+            const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
+            const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
+            return minutosB - minutosA; // Orden descendente (más nuevo arriba)
+        });
+    }
+
+    if (regsFiltrados.length > 0) {
+        regsFiltrados.forEach((r, indexArray) => {
+            const originalIndex = todosLosRegs.indexOf(r);
+            const li = document.createElement('li');
             
-            const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-            if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
-            else { display.innerText = '---'; }
+            const [anio, mes, dia] = r.fecha.split('-');
+            const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
+            
+            let cuerpoHtml = '';
+            const tipoEfectivo = r.tipo || 'glucosa';
 
-            const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-
-            if (regsFiltrados.length > 0) {
-                regsFiltrados.forEach((r, indexArray) => {
-                    const originalIndex = todosLosRegs.indexOf(r);
-                    const li = document.createElement('li');
-                    
-                    const [anio, mes, dia] = r.fecha.split('-');
-                    const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
-                    
-                    let cuerpoHtml = '';
-                    const tipoEfectivo = r.tipo || 'glucosa';
-
-                    if (tipoEfectivo === 'glucosa') {
-                        const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
-                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
-                        const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
-                        
-                        let alertaHtml = '';
-                        if (r.alertaContexto && !r.alertaOculta) {
-                            alertaHtml = `
-                                <div class="capsula-alerta">
-                                    <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
-                                    <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
-                                </div>
-                            `;
-                        }
-
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
-                                <small>${fechaFormateada} - ${r.hora}</small><br>
-                                ${ctxStr}
-                                <div style="margin-top:4px;">${tags}</div>
-                                ${alertaHtml}
-                            </div>
-                        `;
-                    } else if (tipoEfectivo === 'insulina') {
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
-                                <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
-                                <small>${fechaFormateada} - ${r.hora}</small>
-                            </div>
-                        `;
-                    } else if (tipoEfectivo === 'factor') {
-                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
-                                <small>${fechaFormateada} - ${r.hora}</small><br>
-                                <div style="margin-top:4px;">${tags}</div>
-                            </div>
-                        `;
-                    }
-                    
-                    li.innerHTML = `
-                        ${cuerpoHtml}
-                        <div style="display: flex; gap: 5px; align-self: center;">
-                            <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
-                            <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
+            if (tipoEfectivo === 'glucosa') {
+                const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
+                const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
+                const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
+                
+                let alertaHtml = '';
+                if (r.alertaContexto && !r.alertaOculta) {
+                    alertaHtml = `
+                        <div class="capsula-alerta">
+                            <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
+                            <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
                         </div>
                     `;
-                    
-                    if (indexArray === 0 && regsFiltrados.length > 1) {
-                        li.style.cursor = 'pointer';
-                        li.title = "Pulse aquí para ir al final de la lista";
-                        li.onclick = function(e) {
-                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                                const lastItem = lista.lastElementChild;
-                                if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                            }
-                        };
-                    }
-
-                    if (indexArray === regsFiltrados.length - 1) {
-                        li.style.cursor = 'pointer';
-                        li.title = "Pulse aquí para volver a la vista inicial";
-                        li.onclick = function(e) {
-                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                                atajoNavegacionRapida();
-                            }
-                        };
-                    }
-
-                    lista.appendChild(li);
-                });
-            } else {
-                lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
-            }
-            
-            calcularYMostrarInformes(regsFiltrados, perfil);
-            calcularDiagnosticoIA(todosLosRegs, perfil);
-            actualizarPendientes(); 
-            
-            if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
-                renderizarGrafica([...regsFiltrados].reverse());
-            }
-        }
-
-        setInterval(actualizarPendientes, 60000);
-
-        function renderizarGrafica(datos) {
-            const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
-            const ctx = document.getElementById('miGrafica').getContext('2d');
-            
-            const esModoOscuro = document.body.classList.contains('theme-dark');
-            const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
-            const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
-            
-            if (chartInstance) { chartInstance.destroy(); }
-            
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: datosGlucosa.map(d => {
-                        const [anio, mes, dia] = d.fecha.split('-');
-                        return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
-                    }),
-                    datasets: [{
-                        label: 'Evolución Glucosa (mg/dL)',
-                        data: datosGlucosa.map(d => d.valor),
-                        borderColor: '#5CA4FF', 
-                        backgroundColor: 'transparent', 
-                        tension: 0.2,
-                        fill: false,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#5CA4FF'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, 
-                    scales: { 
-                        y: { 
-                            beginAtZero: false,
-                            grid: { color: colorCuadricula }, 
-                            ticks: { color: colorTextosEjes } 
-                        },
-                        x: {
-                            grid: { color: colorCuadricula },
-                            ticks: { color: colorTextosEjes }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: colorTextosEjes } }
-                    }
                 }
-            });
+
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
+                        <small>${fechaFormateada} - ${r.hora}</small><br>
+                        ${ctxStr}
+                        <div style="margin-top:4px;">${tags}</div>
+                        ${alertaHtml}
+                    </div>
+                `;
+            } else if (tipoEfectivo === 'insulina') {
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
+                        <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
+                        <small>${fechaFormateada} - ${r.hora}</small>
+                    </div>
+                `;
+            } else if (tipoEfectivo === 'factor') {
+                const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
+                        <small>${fechaFormateada} - ${r.hora}</small><br>
+                        <div style="margin-top:4px;">${tags}</div>
+                    </div>
+                `;
+            }
+            
+            li.innerHTML = `
+                ${cuerpoHtml}
+                <div style="display: flex; gap: 5px; align-self: center;">
+                    <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
+                    <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
+                </div>
+            `;
+            
+            if (indexArray === 0 && regsFiltrados.length > 1) {
+                li.style.cursor = 'pointer';
+                li.title = "Pulse aquí para ir al final de la lista";
+                li.onclick = function(e) {
+                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                        const lastItem = lista.lastElementChild;
+                        if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }
+                };
+            }
+
+            if (indexArray === regsFiltrados.length - 1) {
+                li.style.cursor = 'pointer';
+                li.title = "Pulse aquí para volver a la vista inicial";
+                li.onclick = function(e) {
+                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                        atajoNavegacionRapida();
+                    }
+                };
+            }
+
+            lista.appendChild(li);
+        });
+    } else {
+        lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
+    }
+    
+    calcularYMostrarInformes(regsFiltrados, perfil);
+    calcularDiagnosticoIA(todosLosRegs, perfil);
+    actualizarPendientes(); 
+    
+    if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
+        renderizarGrafica([...regsFiltrados].reverse());
+    }
+}
+
+function renderizarGrafica(datos) {
+    const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
+    
+    // 📈 ORDENACIÓN BIOLÓGICA DE LA GRÁFICA: Manda la madrugada al final del eje X de izquierda a derecha (07:00h -> 06:59h)
+    if (filtroTiempoActual === 'D' && datosGlucosa.length > 0) {
+        datosGlucosa.sort((a, b) => {
+            const [hA, mA] = a.hora.split(':').map(Number);
+            const [hB, mB] = b.hora.split(':').map(Number);
+            const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
+            const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
+            return minutosA - minutosB; // Orden ascendente (cronológico de izquierda a derecha)
+        });
+    }
+
+    const ctx = document.getElementById('miGrafica').getContext('2d');
+    
+    const esModoOscuro = document.body.classList.contains('theme-dark');
+    const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+    const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
+    
+    if (chartInstance) { chartInstance.destroy(); }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datosGlucosa.map(d => {
+                const [anio, mes, dia] = d.fecha.split('-');
+                return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
+            }),
+            datasets: [{
+                label: 'Evolución Glucosa (mg/dL)',
+                data: datosGlucosa.map(d => d.valor),
+                borderColor: '#5CA4FF', 
+                backgroundColor: 'transparent', 
+                tension: 0.2,
+                fill: false,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointBackgroundColor: '#5CA4FF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, 
+            scales: { 
+                y: { 
+                    beginAtZero: false,
+                    grid: { color: colorCuadricula }, 
+                    ticks: { color: colorTextosEjes } 
+                },
+                x: {
+                    grid: { color: colorCuadricula },
+                    ticks: { color: colorTextosEjes }
+                }
+            }
         }
+    });
+}
 
         const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
         function manejarCambioOrientacion(e) {
