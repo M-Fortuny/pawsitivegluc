@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diabetes-perros-v2';
+const CACHE_NAME = 'diabetes-perros-v3';
 const ASSETS = [
   '/',                  // Abre la raíz (Esencial para Netlify)
   '/index.html',        // Tu HTML único (que ya lleva el CSS y JS dentro)
