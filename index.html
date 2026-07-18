@@ -1048,22 +1048,117 @@
             }
         };
 
+
+
+
         function restaurarEstadoAcordeones() {
-            const secciones = ['acordeon-historial', 'acordeon-informes', 'acordeon-diagnostico', 'acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
-            secciones.forEach(id => {
-                const estado = localStorage.getItem('estado_' + id);
-                if (estado === 'colapsado') {
-                    const container = document.getElementById(id);
-                    if (container) {
-                        container.classList.add('colapsado');
-                        // Extraemos la parte final del ID (ej: de 'acordeon-glucosa' saca 'glucosa') para encontrar su icono
-                        const iconId = id.replace('acordeon-', 'icono-');
-                        const iconEl = document.getElementById(iconId);
-                        if(iconEl) iconEl.innerText = '🔽';
-                    }
+    const secciones = [
+        'acordeon-historial', 
+        'acordeon-informes', 
+        'acordeon-diagnostico', 
+        'acordeon-glucosa', 
+        'acordeon-insulina', 
+        'acordeon-alimentacion', 
+        'acordeon-factores', 
+        'acordeon-medicacion'
+    ];
+    
+    secciones.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return; // Protección por si algún ID no existe en el HTML
+
+        const estado = localStorage.getItem('estado_' + id);
+        const iconId = id.replace('acordeon-', 'icono-');
+        const iconEl = document.getElementById(iconId);
+
+        // 🔄 TU LÓGICA ORIGINAL INTACTA
+        if (estado === 'abierto') {
+            container.classList.remove('colapsado');
+            if (iconEl) iconEl.innerText = '🔼'; // Icono de abierto
+        } else {
+            // Por defecto (colapsado o primera inicialización) se queda cerrado
+            container.classList.add('colapsado');
+            if (iconEl) iconEl.innerText = '🔽'; // Icono de cerrado
+        }
+    });
+}
+
+/* ⬇️ FUNCIONES ACORDEÓN (TU INTERFAZ MODULAR ORIGINAL + MEJORA IA) ⬇️ */
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // ✨ LA ÚNICA ADICIÓN INDEPENDIENTE: 
+        // Si el usuario cierra Diagnóstico IA, limpiamos visualmente sus sub-acordeones
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = ['acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
+            
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    // NO tocamos el localStorage de estos sub-acordeones para no romper tu persistencia local
                 }
             });
         }
+    }
+};
+
+
+
+
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    if (!container) return;
+    
+    // Cambiar estado actual usando tu palabra exacta 'expandido'
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        if (icon) icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        if (icon) icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
+        // Solo actúa si el usuario acaba de colapsar la sección de Diagnóstico IA
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = [
+                'acordeon-glucosa', 
+                'acordeon-insulina', 
+                'acordeon-alimentacion', 
+                'acordeon-factores', 
+                'acordeon-medicacion'
+            ];
+
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    localStorage.setItem('estado_' + subId, 'colapsado');
+                }
+            });
+        }
+    }
+};
+
+
+
 
         // Lógica de Backup
         function exportarDatos() {
@@ -2054,57 +2149,65 @@
             actualizarInterfaz();
         };
 
+
         // 🧠 Motor de Doble Evaluación Dinámica
+        // 🧠 Motor de Doble Evaluación Dinámica (Corregido Ciclo 8h - Formato YYYY-MM-DD)
 
 
-
-        // 🧠 Motor de Doble Evaluación Dinámica (Corregido Ciclo 7h - Formato YYYY-MM-DD)
 function filtrarRegistros(registros, fTiempo, fTipo) {
-    // ⏱️ FUNCIÓN AUXILIAR INTERNA: Calcula el "Día Operativo" restando 7 horas
-    function obtenerDiaOperativoString(fechaISO, horaTexto) {
-        if (!fechaISO || !horaTexto) return fechaISO;
-        const [anio, mes, dia] = fechaISO.split('-');
-        const [horas, minutos] = horaTexto.split(':');
-        // Creamos la fecha real con sus componentes
-        const dateObj = new Date(parseInt(anio, 10), parseInt(mes, 10) - 1, parseInt(dia, 10), parseInt(horas, 10), parseInt(minutos, 10));
-        // Restamos las 7 horas de desfase biológico
-        dateObj.setHours(dateObj.getHours() - 7);
-        // Devolvemos el formato YYYY-MM-DD que usa tu base de datos
-        const rAnio = dateObj.getFullYear();
-        const rMes = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const rDia = String(dateObj.getDate()).padStart(2, '0');
-        return `${rAnio}-${rMes}-${rDia}`;
+    // ⏱️ FUNCIÓN AUXILIAR INTERNA: Convierte la fecha del calendario al "Día Veterinario" real
+    function obtenerDiaVeterinario(fechaStr, horaStr) {
+        if (!fechaStr || !horaStr || typeof fechaStr !== 'string') return '1970-01-01';
+        
+        const partesHora = horaStr.split(':');
+        const horas = parseInt(partesHora[0], 10) || 0;
+        
+        // Si el registro se tomó en la madrugada (antes de las 8h), pertenece al ciclo del día anterior
+        if (horas < 8) {
+            const partesFecha = fechaStr.split('-');
+            if (partesFecha.length !== 3) return fechaStr; 
+            
+            const anio = parseInt(partesFecha[0], 10);
+            const mes = parseInt(partesFecha[1], 10);
+            const dia = parseInt(partesFecha[2], 10);
+            
+            const fechaObj = new Date(anio, mes - 1, dia);
+            fechaObj.setDate(fechaObj.getDate() - 1); // Restamos un día al calendario operativo
+            
+            const rAnio = fechaObj.getFullYear();
+            const rMes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+            const rDia = String(fechaObj.getDate()).padStart(2, '0');
+            return `${rAnio}-${rMes}-${rDia}`;
+        }
+        return fechaStr; // Si es a partir de las 8h, mantiene su fecha normal
     }
 
-    // Calcular el día operativo de este preciso instante del reloj
+    // Calcular el Día Veterinario del momento actual del reloj
     const ahora = new Date();
     const hoyISO = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}-${String(ahora.getDate()).padStart(2,'0')}`;
     const hoyHora = `${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
-    let diaOperativoReferencia = obtenerDiaOperativoString(hoyISO, hoyHora);
+    const diaVeterinarioReferencia = obtenerDiaVeterinario(hoyISO, hoyHora);
     
-    // Lógica Inteligente Original: Si se pide Día, Semana o Mes, buscamos si hay registros en el ciclo actual
-    if (registros.length > 0 && (fTiempo === 'D' || fTiempo === 'S' || fTiempo === 'M')) {
-        const tieneDatosCicloActual = registros.some(r => obtenerDiaOperativoString(r.fecha, r.hora) === diaOperativoReferencia);
-        // Si no hay datos en el ciclo de hoy, tomamos el ciclo operativo del registro más reciente como referencia
-        if (!tieneDatosCicloActual) {
-            diaOperativoReferencia = obtenerDiaOperativoString(registros[0].fecha, registros[0].hora);
-        }
-    }
-    
+    // Si no hay registros guardados en la base de datos, devolvemos un array vacío de inmediato
+    if (!Array.isArray(registros) || registros.length === 0) return [];
+
     return registros.filter(r => {
+        if (!r || !r.fecha || !r.hora) return false; // Ignorar registros corruptos
+
         let pasaTiempo = false;
         if (fTiempo === 'T') {
             pasaTiempo = true;
         } else {
-            // Calculamos los días operativos para comparar ciclos de 7h a 7h de forma limpia
-            const registroOperativo = obtenerDiaOperativoString(r.fecha, r.hora);
+            // Obtenemos el Día Veterinario de este registro concreto
+            const registroDiaVet = obtenerDiaVeterinario(r.fecha, r.hora);
             
-            const fechaRef = new Date(`${diaOperativoReferencia}T00:00:00`);
-            const fechaReg = new Date(`${registroOperativo}T00:00:00`); 
+            const fechaRef = new Date(`${diaVeterinarioReferencia}T00:00:00`);
+            const fechaReg = new Date(`${registroDiaVet}T00:00:00`); 
             
             const diffDays = Math.round((fechaRef - fechaReg) / (1000 * 60 * 60 * 24));
             
             if (fTiempo === 'D') pasaTiempo = (diffDays === 0); 
+            else if (fTiempo === 'D_AYER') pasaTiempo = (diffDays === 1); 
             else if (fTiempo === 'S') pasaTiempo = (diffDays >= 0 && diffDays <= 7); 
             else if (fTiempo === 'M') pasaTiempo = (diffDays >= 0 && diffDays <= 30);
         }
@@ -2124,8 +2227,6 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
         return pasaTiempo && pasaTipo;
     });
 }
-
-
 
 
 
@@ -2302,6 +2403,10 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
             }).join('');
         }
 
+
+
+
+
         function actualizarInterfaz() {
     const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
     const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
@@ -2419,24 +2524,47 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
     calcularDiagnosticoIA(todosLosRegs, perfil);
     actualizarPendientes(); 
     
-    if (mediaQueryLandscape.matches && regsFiltrados.length > 0) {
-        renderizarGrafica([...regsFiltrados].reverse());
+            // 🔥 CONTROL DE LA GRÁFICA INTELIGENTE DENTRO DE INTERFAZ 🔥
+    if (mediaQueryLandscape.matches) {
+        let datosParaGrafica = [...regsFiltrados];
+
+        if (filtroTiempoActual === 'D') {
+            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+
+            // Si hay 1 o ningún registro de glucosa en el nuevo ciclo de hoy, unimos ayer + hoy
+            if (glucosasHoy.length <= 1) {
+                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                
+                // Unimos poniendo el ciclo completo de AYER (que ya incluye su madrugada) primero, y el punto de HOY al final
+                datosParaGrafica = [...regsAyer, ...regsFiltrados];
+            }
+        }
+        
+        if (datosParaGrafica.length > 0) {
+            renderizarGrafica(datosParaGrafica);
+        }
     }
 }
 
+
+
+
+
+
+
+
+
 function renderizarGrafica(datos) {
+    // 1. Extraemos únicamente los registros que contengan valor de glucosa
     const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
     
-    // 📈 ORDENACIÓN BIOLÓGICA DE LA GRÁFICA: Manda la madrugada al final del eje X de izquierda a derecha (07:00h -> 06:59h)
-    if (filtroTiempoActual === 'D' && datosGlucosa.length > 0) {
-        datosGlucosa.sort((a, b) => {
-            const [hA, mA] = a.hora.split(':').map(Number);
-            const [hB, mB] = b.hora.split(':').map(Number);
-            const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
-            const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
-            return minutosA - minutosB; // Orden ascendente (cronológico de izquierda a derecha)
-        });
-    }
+    // 📈 ORDENACIÓN CRONOLÓGICA INFALIBLE (De pasado a presente)
+    // Ordenamos absolutamente TODOS los filtros (D, S, M, Todo) combinando su fecha y hora real
+    datosGlucosa.sort((a, b) => {
+        const timestampA = new Date(`${a.fecha}T${a.hora}:00`);
+        const timestampB = new Date(`${b.fecha}T${b.hora}:00`);
+        return timestampA - timestampB; // Orden ascendente: el más antiguo a la izquierda, el más nuevo a la derecha
+    });
 
     const ctx = document.getElementById('miGrafica').getContext('2d');
     
@@ -2483,35 +2611,103 @@ function renderizarGrafica(datos) {
     });
 }
 
-        const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
-        function manejarCambioOrientacion(e) {
-            const contenedor = document.getElementById('contenedor-grafico');
-            if (e.matches) {
-                const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-                const regsGrafica = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-                
-                if (regsGrafica.length === 0) return;
-                contenedor.style.display = 'flex';
-                renderizarGrafica(regsGrafica.reverse());
-            } else {
-                contenedor.style.display = 'none';
+
+
+
+
+
+// --- MANEJO DE ORIENTACIÓN Y GRÁFICA INTELIGENTE ---
+const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
+
+function manejarCambioOrientacion(e) {
+    const contenedor = document.getElementById('contenedor-grafico');
+    if (!contenedor) return;
+    
+    if (e.matches) {
+        contenedor.style.display = 'flex';
+        const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+        const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+        let datosParaGrafica = [...regsFiltrados];
+
+        if (filtroTiempoActual === 'D') {
+            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+            if (glucosasHoy.length <= 1) {
+                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                datosParaGrafica = [...regsAyer, ...regsFiltrados];
             }
         }
-        mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
         
-        // Inicialización de la Interfaz
-        actualizarInterfaz();
-        restaurarEstadoAcordeones(); 
-        
-        if (mediaQueryLandscape.matches) { setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); }
-
-        document.addEventListener('focusin', function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-                setTimeout(function() {
-                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300); 
+        if (datosParaGrafica.length > 0) {
+            renderizarGrafica(datosParaGrafica);
+        } else {
+            if (chartInstance) { 
+                chartInstance.destroy(); 
+                chartInstance = null;
             }
-        });
+        }
+    } else {
+        contenedor.style.display = 'none';
+    }
+}
+
+// Escuchador de eventos para el cambio de pantalla
+mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+
+// Inicialización de la Interfaz al cargar la App
+actualizarInterfaz();
+if (typeof restaurarEstadoAcordeones === 'function') {
+    restaurarEstadoAcordeones(); 
+}
+
+// Retardo de seguridad para asegurar el renderizado en horizontal
+if (mediaQueryLandscape.matches) { 
+    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
+}
+
+// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        setTimeout(function() {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); 
+    }
+});
+
+
+
+
+
+
+
+// Escuchador de eventos para el cambio de pantalla
+mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+
+// Inicialización de la Interfaz al cargar la App
+actualizarInterfaz();
+if (typeof restaurarEstadoAcordeones === 'function') {
+    restaurarEstadoAcordeones(); 
+}
+
+// Retardo de seguridad para asegurar el renderizado en horizontal
+if (mediaQueryLandscape.matches) { 
+    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
+}
+
+// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        setTimeout(function() {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); 
+    }
+});
+
+
+
+
+
+
+
 
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
@@ -2520,6 +2716,8 @@ function renderizarGrafica(datos) {
               .catch((err) => console.log('Error al registrar el Service Worker', err));
           });
         }
+
+
     </script>
 </body>
 </html>
