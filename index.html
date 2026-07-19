@@ -1032,8 +1032,26 @@
             return [...dbComidasDefault, ...custom];
         }
 
-        
-function restaurarEstadoAcordeones() {
+        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR) ⬇️ */
+        window.toggleSeccion = function(containerId, iconId) {
+            const container = document.getElementById(containerId);
+            const icon = document.getElementById(iconId);
+            
+            if (container.classList.contains('colapsado')) {
+                container.classList.remove('colapsado');
+                icon.innerText = '🔼';
+                localStorage.setItem('estado_' + containerId, 'expandido');
+            } else {
+                container.classList.add('colapsado');
+                icon.innerText = '🔽';
+                localStorage.setItem('estado_' + containerId, 'colapsado');
+            }
+        };
+
+
+
+
+        function restaurarEstadoAcordeones() {
     const secciones = [
         'acordeon-historial', 
         'acordeon-informes', 
@@ -1091,6 +1109,48 @@ window.toggleSeccion = function(containerId, iconId) {
                     const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
                     if (subIcon) subIcon.innerText = '🔽';
                     // NO tocamos el localStorage de estos sub-acordeones para no romper tu persistencia local
+                }
+            });
+        }
+    }
+};
+
+
+
+
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    if (!container) return;
+    
+    // Cambiar estado actual usando tu palabra exacta 'expandido'
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        if (icon) icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        if (icon) icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
+        // Solo actúa si el usuario acaba de colapsar la sección de Diagnóstico IA
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = [
+                'acordeon-glucosa', 
+                'acordeon-insulina', 
+                'acordeon-alimentacion', 
+                'acordeon-factores', 
+                'acordeon-medicacion'
+            ];
+
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    localStorage.setItem('estado_' + subId, 'colapsado');
                 }
             });
         }
