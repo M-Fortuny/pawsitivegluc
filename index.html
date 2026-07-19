@@ -1032,38 +1032,73 @@
             return [...dbComidasDefault, ...custom];
         }
 
-        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR) ⬇️ */
-        window.toggleSeccion = function(containerId, iconId) {
-            const container = document.getElementById(containerId);
-            const icon = document.getElementById(iconId);
-            
-            if (container.classList.contains('colapsado')) {
-                container.classList.remove('colapsado');
-                icon.innerText = '🔼';
-                localStorage.setItem('estado_' + containerId, 'expandido');
-            } else {
-                container.classList.add('colapsado');
-                icon.innerText = '🔽';
-                localStorage.setItem('estado_' + containerId, 'colapsado');
-            }
-        };
+        
+function restaurarEstadoAcordeones() {
+    const secciones = [
+        'acordeon-historial', 
+        'acordeon-informes', 
+        'acordeon-diagnostico', 
+        'acordeon-glucosa', 
+        'acordeon-insulina', 
+        'acordeon-alimentacion', 
+        'acordeon-factores', 
+        'acordeon-medicacion'
+    ];
+    
+    secciones.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return; // Protección por si algún ID no existe en el HTML
 
-        function restaurarEstadoAcordeones() {
-            const secciones = ['acordeon-historial', 'acordeon-informes', 'acordeon-diagnostico', 'acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
-            secciones.forEach(id => {
-                const estado = localStorage.getItem('estado_' + id);
-                if (estado === 'colapsado') {
-                    const container = document.getElementById(id);
-                    if (container) {
-                        container.classList.add('colapsado');
-                        // Extraemos la parte final del ID (ej: de 'acordeon-glucosa' saca 'glucosa') para encontrar su icono
-                        const iconId = id.replace('acordeon-', 'icono-');
-                        const iconEl = document.getElementById(iconId);
-                        if(iconEl) iconEl.innerText = '🔽';
-                    }
+        const estado = localStorage.getItem('estado_' + id);
+        const iconId = id.replace('acordeon-', 'icono-');
+        const iconEl = document.getElementById(iconId);
+
+        // 🔄 TU LÓGICA ORIGINAL INTACTA
+        if (estado === 'abierto') {
+            container.classList.remove('colapsado');
+            if (iconEl) iconEl.innerText = '🔼'; // Icono de abierto
+        } else {
+            // Por defecto (colapsado o primera inicialización) se queda cerrado
+            container.classList.add('colapsado');
+            if (iconEl) iconEl.innerText = '🔽'; // Icono de cerrado
+        }
+    });
+}
+
+/* ⬇️ FUNCIONES ACORDEÓN (TU INTERFAZ MODULAR ORIGINAL + MEJORA IA) ⬇️ */
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // ✨ LA ÚNICA ADICIÓN INDEPENDIENTE: 
+        // Si el usuario cierra Diagnóstico IA, limpiamos visualmente sus sub-acordeones
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = ['acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
+            
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    // NO tocamos el localStorage de estos sub-acordeones para no romper tu persistencia local
                 }
             });
         }
+    }
+};
+
+
+
 
         // Lógica de Backup
         function exportarDatos() {
