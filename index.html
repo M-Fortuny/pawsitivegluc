@@ -199,6 +199,7 @@
             opacity: 1;
             box-sizing: border-box;
             transition: opacity 0.3s ease-out;
+            min-height: 0; /* 🛡️ CRUCIAL para el colapso hermético de grid 0fr */
         }
         .acordeon-container.colapsado .acordeon-content {
             opacity: 0;
@@ -383,12 +384,12 @@
             background: #1E1E1E !important;
         }
         .theme-dark .sub-acordeon .header-colapsable {
-            background-color: #2C2C2C !important; /* Botones a color gris oscuro en modo dark */
+            background-color: #2C2C2C !important; 
             border-bottom: 1px solid #444;
         }
         .theme-dark .sub-acordeon .header-colapsable h4, 
         .theme-dark .sub-acordeon .header-colapsable .icono-colapso {
-            color: #E0E0E0 !important; /* Textos a gris claro/blanco */
+            color: #E0E0E0 !important; 
         }
         .theme-dark .dato-card {
             background-color: #252525 !important;
@@ -421,9 +422,10 @@
 
         /* 📱 AJUSTES QUIRÚRGICOS PARA MÓVIL (Vista Retrato) */
         @media (max-width: 768px) {
-            #contenedor-fijo-superior { padding-top: 5px; padding-bottom: 0px; }
-            header { margin-bottom: 5px; height: auto; }
-            h1 { font-size: 2.2rem; }
+            body { padding-top: 10px; } /* Ajuste fino de aire global */
+            #contenedor-fijo-superior { padding-top: 0px; padding-bottom: 0px; }
+            header { margin-top: 0px; margin-bottom: 25px; height: auto; } /* Más aire por abajo */
+            h1 { font-size: 2.2rem; margin-top: 0; line-height: 1.1; }
 
             .seccion-herramientas { padding: 0.6rem; margin-bottom: 1rem; }
             .btn-herramienta { padding: 0.5rem 0.2rem; }
@@ -463,6 +465,222 @@
         
         /* Ajuste específico para campos sin fondo en grid */
         .form-perfil-grid .campo-limpio label { background-color: transparent; border: none; padding: 0; font-weight: bold; margin-bottom: 4px; }
+
+        /* --- MÓDULO DE CONFIGURACIÓN AVANZADA --- */
+        .panel-configuracion {
+            --info-bg: #f0f6ff;
+            --info-border: #bcd6ff;
+            --btn-adv-bg: #2e7d32;
+            --btn-adv-text: #ffffff;
+            --preview-bg: #f8f9fa;
+            --text-muted: #666666;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .theme-dark .panel-configuracion {
+            --info-bg: #0d2840;
+            --info-border: #1565c0;
+            --preview-bg: #252525;
+            --text-muted: #aaaaaa;
+        }
+
+        .panel-configuracion .bloque-seccion {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-configuracion .titulo-seccion {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0 0 6px;
+            color: var(--text-main);
+        }
+
+        .panel-configuracion .subtitulo-seccion {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .panel-configuracion .fila-config {
+            display: flex;
+            flex-direction: column;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-configuracion .fila-config:last-child { border-bottom: none; }
+
+        .panel-configuracion .cabecera-fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-configuracion .info-columna {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 16px;
+        }
+
+        .panel-configuracion .titulo-opcion {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .panel-configuracion .desc-opcion {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .panel-configuracion .subcontenedor-opciones,
+        .panel-configuracion .alerta-geolocalizacion {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .panel-configuracion .subcontenedor-opciones {
+            background-color: var(--bg-body);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .panel-configuracion .alerta-geolocalizacion {
+            border: 1px solid var(--info-border);
+            background-color: var(--info-bg);
+            padding: 14px;
+            border-radius: 12px;
+            gap: 12px;
+        }
+
+        .panel-configuracion .texto-alerta {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: var(--text-main);
+        }
+
+        .panel-configuracion .grupo-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+        }
+
+        .panel-configuracion .etiqueta-selector {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .panel-configuracion .caja-vista-previa {
+            background-color: var(--preview-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 12px;
+            border-radius: 4px 8px 8px 4px;
+            margin-top: 6px;
+        }
+
+        .panel-configuracion .titulo-preview {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-configuracion .contenido-preview {
+            font-size: 0.88rem;
+            line-height: 1.35;
+            color: var(--text-main);
+        }
+
+        .panel-configuracion .btn-aceptar {
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background-color: var(--btn-adv-bg);
+            color: var(--btn-adv-text);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: background-color 0.2s ease;
+        }
+
+        .panel-configuracion .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .panel-configuracion .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .panel-configuracion .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+
+        .panel-configuracion .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .panel-configuracion .switch input:checked + .slider { background-color: var(--accent-color); }
+        .panel-configuracion .switch input:checked + .slider:before { transform: translateX(22px); }
+
+        .oculto { display: none !important; }
+
+        @media (max-width: 520px) {
+            .panel-configuracion .cabecera-fila,
+            .panel-configuracion .grupo-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .panel-configuracion select {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .panel-configuracion .btn-aceptar {
+                width: 100%;
+                align-self: stretch;
+            }
+        }
     </style>
 </head>
 <body>
@@ -507,7 +725,7 @@
     <section class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-historial', 'icono-historial')">
             <h3 style="margin: 0; color: var(--h1-color);">📆 Historial</h3>
-            <span id="icono-historial" class="icono-colapso">🔼</span>
+            <span id="icono-historial" class="icono-colapso">▲</span>
         </div>
         
         <div id="acordeon-historial" class="acordeon-container">
@@ -536,110 +754,120 @@
             <h3 style="margin: 0; color: var(--h1-color); display: flex; align-items: center; gap: 10px;">✍ 
                  Diagnóstico IA
             </h3>
-            <span id="icono-diagnostico" class="icono-colapso">🔼</span>
+            <span id="icono-diagnostico" class="icono-colapso">▲</span>
         </div>
 
         <div id="acordeon-diagnostico" class="acordeon-container">
-            <div class="acordeon-content" style="padding-top: 15px;">
-                
-                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                    <div class="header-colapsable" style="background: #e8f5e9; padding: 10px 15px;" onclick="toggleSeccion('acordeon-glucosa', 'icono-glucosa')">
-                        <h4 style="margin: 0; color: #2e7d32;">🩸 Glucosa</h4>
-                        <span id="icono-glucosa" class="icono-colapso" style="font-size: 1rem;">🔽</span>
-                    </div>
-                    <div id="acordeon-glucosa" class="acordeon-container colapsado">
-                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
-                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                <strong>💡 Tip del Asistente:</strong> Aquí analizamos las horas donde la glucosa es más estable y calculamos el "Nadir" (punto más bajo tras la insulina) para que sepas cuándo dar un snack preventivo.
-                            </div>
-                            <div class="dato-card" style="margin-bottom: 10px;">
-                                <span style="font-size: 0.8rem; color: #666;">Mejores horas (Estabilidad):</span>
-                                <div id="diag-glucosa-horas" style="font-weight: bold; color: #2e7d32;">Recopilando patrón...</div>
-                            </div>
-                            <div class="dato-card">
-                                <span style="font-size: 0.8rem; color: #666;">Nadir estimado (Punto más bajo):</span>
-                                <div id="diag-glucosa-nadir" style="font-weight: bold; color: #2e7d32;">Calculando...</div>
+            <div class="acordeon-content">
+                <div style="padding-top: 15px;">
+                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                        <div class="header-colapsable" style="background: #e8f5e9; padding: 10px 15px;" onclick="toggleSeccion('acordeon-glucosa', 'icono-glucosa')">
+                            <h4 style="margin: 0; color: #2e7d32;">🩸 Glucosa</h4>
+                            <span id="icono-glucosa" class="icono-colapso" style="font-size: 1rem;">▼</span>
+                        </div>
+                        <div id="acordeon-glucosa" class="acordeon-container colapsado">
+                            <div class="acordeon-content">
+                                <div style="padding: 15px; background: var(--card-bg);">
+                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                        <strong>💡 Tip del Asistente:</strong> Aquí analizamos las horas donde la glucosa es más estable y calculamos el "Nadir" (punto más bajo tras la insulina) para que sepas cuándo dar un snack preventivo.
+                                    </div>
+                                    <div class="dato-card" style="margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; color: #666;">Mejores horas (Estabilidad):</span>
+                                        <div id="diag-glucosa-horas" style="font-weight: bold; color: #2e7d32;">Recopilando patrón...</div>
+                                    </div>
+                                    <div class="dato-card">
+                                        <span style="font-size: 0.8rem; color: #666;">Nadir estimado (Punto más bajo):</span>
+                                        <div id="diag-glucosa-nadir" style="font-weight: bold; color: #2e7d32;">Calculando...</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                    <div class="header-colapsable" style="background: #e3f2fd; padding: 10px 15px;" onclick="toggleSeccion('acordeon-insulina', 'icono-insulina')">
-                        <h4 style="margin: 0; color: #1565c0;">💉 Insulina</h4>
-                        <span id="icono-insulina" class="icono-colapso" style="font-size: 1rem;">🔽</span>
-                    </div>
-                    <div id="acordeon-insulina" class="acordeon-container colapsado">
-                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
-                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                <strong>💡 Tip del Asistente:</strong> Medimos la sensibilidad de tu perro a la insulina. Compara el rendimiento de la dosis de la mañana con la de la noche.
-                            </div>
-                            <div class="dato-card" style="margin-bottom: 10px;">
-                                <span style="font-size: 0.8rem; color: #666;">Sensibilidad (Caída por Unidad):</span>
-                                <div id="diag-insulina-sensibilidad" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
-                            </div>
-                            <div class="dato-card">
-                                <span style="font-size: 0.8rem; color: #666;">Rendimiento AM vs PM:</span>
-                                <div id="diag-insulina-rendimiento" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
+                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                        <div class="header-colapsable" style="background: #e3f2fd; padding: 10px 15px;" onclick="toggleSeccion('acordeon-insulina', 'icono-insulina')">
+                            <h4 style="margin: 0; color: #1565c0;">💉 Insulina</h4>
+                            <span id="icono-insulina" class="icono-colapso" style="font-size: 1rem;">▼</span>
+                        </div>
+                        <div id="acordeon-insulina" class="acordeon-container colapsado">
+                            <div class="acordeon-content">
+                                <div style="padding: 15px; background: var(--card-bg);">
+                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                        <strong>💡 Tip del Asistente:</strong> Medimos la sensibilidad de tu perro a la insulina. Compara el rendimiento de la dosis de la mañana con la de la noche.
+                                    </div>
+                                    <div class="dato-card" style="margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; color: #666;">Sensibilidad (Caída por Unidad):</span>
+                                        <div id="diag-insulina-sensibilidad" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
+                                    </div>
+                                    <div class="dato-card">
+                                        <span style="font-size: 0.8rem; color: #666;">Rendimiento AM vs PM:</span>
+                                        <div id="diag-insulina-rendimiento" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                    <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-alimentacion', 'icono-alimentacion')">
-                        <h4 style="margin: 0; color: #e65100;">🍚 Alimentación</h4>
-                        <span id="icono-alimentacion" class="icono-colapso" style="font-size: 1rem;">🔽</span>
-                    </div>
-                    <div id="acordeon-alimentacion" class="acordeon-container colapsado">
-                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
-                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                <strong>💡 Tip del Asistente:</strong> Conoce qué tipo de dieta le provoca picos de glucosa más rápidos y descubre si es mejor inyectar la insulina antes o durante la comida.
-                            </div>
-                            <div class="dato-card" style="margin-bottom: 10px;">
-                                <span style="font-size: 0.8rem; color: #666;">Pico Postprandial:</span>
-                                <div id="diag-alimentacion-pico" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                        <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-alimentacion', 'icono-alimentacion')">
+                            <h4 style="margin: 0; color: #e65100;">🍚 Alimentación</h4>
+                            <span id="icono-alimentacion" class="icono-colapso" style="font-size: 1rem;">▼</span>
+                        </div>
+                        <div id="acordeon-alimentacion" class="acordeon-container colapsado">
+                            <div class="acordeon-content">
+                                <div style="padding: 15px; background: var(--card-bg);">
+                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                        <strong>💡 Tip del Asistente:</strong> Conoce qué tipo de dieta le provoca picos de glucosa más rápidos y descubre si es mejor inyectar la insulina antes o durante la comida.
+                                    </div>
+                                    <div class="dato-card" style="margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; color: #666;">Pico Postprandial:</span>
+                                        <div id="diag-alimentacion-pico" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                    <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-factores', 'icono-factores')">
-                        <h4 style="margin: 0; color: #e65100;">🏃 Factores</h4>
-                        <span id="icono-factores" class="icono-colapso" style="font-size: 1rem;">🔽</span>
-                    </div>
-                    <div id="acordeon-factores" class="acordeon-container colapsado">
-                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
-                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                <strong>💡 Tip del Asistente:</strong> Observa cuánto disminuye la glucosa tras un paseo intenso vs uno normal, o cómo las siestas largas estabilizan la curva.
-                            </div>
-                            <div class="dato-card" style="margin-bottom: 10px;">
-                                <span style="font-size: 0.8rem; color: #666;">Impacto del Paseo:</span>
-                                <div id="diag-factores-paseo" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                    
+                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                        <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-factores', 'icono-factores')">
+                            <h4 style="margin: 0; color: #e65100;">🏃 Factores</h4>
+                            <span id="icono-factores" class="icono-colapso" style="font-size: 1rem;">▼</span>
+                        </div>
+                        <div id="acordeon-factores" class="acordeon-container colapsado">
+                            <div class="acordeon-content">
+                                <div style="padding: 15px; background: var(--card-bg);">
+                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                        <strong>💡 Tip del Asistente:</strong> Observa cuánto disminuye la glucosa tras un paseo intenso vs uno normal, o cómo las siestas largas estabilizan la curva.
+                                    </div>
+                                    <div class="dato-card" style="margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; color: #666;">Impacto del Paseo:</span>
+                                        <div id="diag-factores-paseo" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="sub-acordeon" style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                    <div class="header-colapsable" style="background: #f3e5f5; padding: 10px 15px;" onclick="toggleSeccion('acordeon-medicacion', 'icono-medicacion')">
-                        <h4 style="margin: 0; color: #8e24aa;">💊 Medicación</h4>
-                        <span id="icono-medicacion" class="icono-colapso" style="font-size: 1rem;">🔽</span>
-                    </div>
-                    <div id="acordeon-medicacion" class="acordeon-container colapsado">
-                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
-                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                <strong>💡 Tip del Asistente:</strong> Descubre si algún medicamento concurrente está aumentando la media de glucosa (impacto diabetogénico) o afectando sus deposiciones.
-                            </div>
-                            <div class="dato-card" style="margin-bottom: 10px;">
-                                <span style="font-size: 0.8rem; color: #666;">Impacto Diabetogénico:</span>
-                                <div id="diag-medicacion-impacto" style="font-weight: bold; color: #8e24aa;">Requiere más datos cruzados...</div>
+                    <div class="sub-acordeon" style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                        <div class="header-colapsable" style="background: #f3e5f5; padding: 10px 15px;" onclick="toggleSeccion('acordeon-medicacion', 'icono-medicacion')">
+                            <h4 style="margin: 0; color: #8e24aa;">💊 Medicación</h4>
+                            <span id="icono-medicacion" class="icono-colapso" style="font-size: 1rem;">▼</span>
+                        </div>
+                        <div id="acordeon-medicacion" class="acordeon-container colapsado">
+                            <div class="acordeon-content">
+                                <div style="padding: 15px; background: var(--card-bg);">
+                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                        <strong>💡 Tip del Asistente:</strong> Descubre si algún medicamento concurrente está aumentando la media de glucosa (impacto diabetogénico) o afectando sus deposiciones.
+                                    </div>
+                                    <div class="dato-card" style="margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; color: #666;">Impacto Diabetogénico:</span>
+                                        <div id="diag-medicacion-impacto" style="font-weight: bold; color: #8e24aa;">Requiere más datos cruzados...</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -647,7 +875,7 @@
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-informes', 'icono-informes')">
             <h3 style="margin: 0; color: var(--h1-color);">📟 Motor de Informes Clínicos</h3>
-            <span id="icono-informes" class="icono-colapso">🔼</span>
+            <span id="icono-informes" class="icono-colapso">▲</span>
         </div>
 
         <div id="acordeon-informes" class="acordeon-container">
@@ -781,6 +1009,7 @@
         <button class="btn-form" onclick="abrirSubPerfil('pautas')" style="background-color: #E65100;">Pautas Indicadas</button>
         <button class="btn-form" onclick="abrirSubPerfil('salud')" style="background-color: #8E24AA;">Salud y Medicación</button>
         <button class="btn-form" onclick="abrirSubPerfil('alimentacion')" style="background-color: #F57C00;">Alimentación</button>
+        <button class="btn-form" onclick="abrirSubPerfil('avanzada')" style="background-color: #607D8B; margin-top: 5px;">⚙️ Configuración Avanzada</button>
         <button type="button" class="btn-form" style="background-color: #999; margin-top: 15px;" onclick="cerrarSubModal('modal-menu-perfil')">Cancelar</button>
     </dialog>
 
@@ -982,6 +1211,106 @@
         <button type="button" class="btn-form" style="background-color: #999; margin-top: 20px;" onclick="cerrarSubModal('modal-alimentacion')">Cerrar</button>
     </dialog>
 
+    <dialog id="modal-avanzada">
+        <h3 style="margin-top:0; margin-bottom:15px; text-align: center; color: var(--text-main);">⚙️ Configuración Avanzada</h3>
+        <div class="panel-configuracion">
+            <div class="bloque-seccion">
+                <div class="titulo-seccion">📍 Localización y Entorno</div>
+                <div class="subtitulo-seccion">Gestiona cómo influyen el clima y la ubicación en el metabolismo de tu mascota.</div>
+
+                <div class="fila-config">
+                    <div class="cabecera-fila">
+                        <div class="info-columna">
+                            <span class="titulo-opcion">Activar Geolocalización</span>
+                            <span class="desc-opcion">Permite registrar las coordenadas geográficas de cada toma.</span>
+                            <div id="geo-resultados" class="desc-opcion" style="margin-top: 8px; font-weight: 600; color: var(--accent-color);">
+                                Esperando activación...
+                            </div>
+                        </div>
+
+                        <label class="switch">
+                            <input type="checkbox" id="chk-geo">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="alerta-geolocalizacion" id="alerta-geo">
+                        <span class="texto-alerta">
+                            ℹ️ <strong>Información importante:</strong> Activar la geolocalización permite tener información de los registros de dónde se encuentra nuestra mascota y de la temperatura, útil para contrastar datos de una ciudad con otra. También permite saber cómo influye la temperatura en nuestra mascota cuando está fuera de casa.
+                        </span>
+                        <button type="button" class="btn-aceptar" id="btn-geo">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloque-seccion">
+                <div class="titulo-seccion">💉 Recordatorios de Insulina</div>
+                <div class="subtitulo-seccion">Configura alertas inteligentes basadas en el historial clínico biológico.</div>
+
+                <div class="fila-config">
+                    <div class="cabecera-fila">
+                        <div class="info-columna">
+                            <span class="titulo-opcion">Control de Insulina</span>
+                            <span class="desc-opcion">Calcular avisos automáticos para la próxima inyección.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="chk-insulina" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="subcontenedor-opciones" id="opciones-insulina">
+                        <div class="grupo-selector">
+                            <span class="etiqueta-selector">Pautas de aplicación:</span>
+                            <select id="sel-pauta">
+                                <option value="6">Cada 6 horas</option>
+                                <option value="12" selected>Cada 12 horas</option>
+                                <option value="24">Cada 24 horas</option>
+                            </select>
+                        </div>
+
+                        <div class="grupo-selector">
+                            <span class="etiqueta-selector">Notificación previa (Antelación):</span>
+                            <select id="sel-antelacion">
+                                <option value="5">5 minutos antes</option>
+                                <option value="10">10 minutos antes</option>
+                                <option value="15" selected>15 minutos antes</option>
+                                <option value="30">30 minutos antes</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color);">
+                            <span class="titulo-opcion" style="font-size: 0.9rem; display: block; margin-bottom: 4px;">Ejemplo de aviso en pantalla:</span>
+                            <div class="caja-vista-previa">
+                                <div class="titulo-preview">Próxima dosis</div>
+                                <div class="contenido-preview" id="preview-insulina">La insulina será notificada 15 minutos antes de la próxima pauta.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloque-seccion">
+                <div class="titulo-seccion">🛠️ Herramientas de Desarrollo</div>
+                <div class="subtitulo-seccion">Accede a utilidades avanzadas para la depuración y pruebas de la app en tiempo real.</div>
+
+                <div class="fila-config">
+                    <div class="cabecera-fila">
+                        <div class="info-columna">
+                            <span class="titulo-opcion">Activar Consola Eruda</span>
+                            <span class="desc-opcion">Inyecta la consola web para inspeccionar el DOM y depurar en iOS.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="chk-eruda">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-form" style="background-color: #999; margin-top: 20px;" onclick="cerrarSubModal('modal-avanzada')">Cerrar</button>
+    </dialog>
+
     <script>
         const KEY_GLUCOSA = 'misRegistros_v3';        
         const KEY_PERFIL = 'misDatos_perfil';
@@ -995,6 +1324,7 @@
         const modalSalud = document.getElementById('modal-salud');
         const modalAlimentacion = document.getElementById('modal-alimentacion');
         const modalOpcionesToma = document.getElementById('modal-opciones-toma');
+        const modalAvanzada = document.getElementById('modal-avanzada');
         const formReg = document.getElementById('form-registro');
         const toggleTrigger = document.getElementById('btn-toggle-theme');
         let chartInstance = null; 
@@ -1032,133 +1362,73 @@
             return [...dbComidasDefault, ...custom];
         }
 
-        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR) ⬇️ */
+        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR SANEADA) ⬇️ */
         window.toggleSeccion = function(containerId, iconId) {
             const container = document.getElementById(containerId);
             const icon = document.getElementById(iconId);
+            if (!container) return;
             
             if (container.classList.contains('colapsado')) {
                 container.classList.remove('colapsado');
-                icon.innerText = '🔼';
+                if (icon) icon.innerText = '▲';
                 localStorage.setItem('estado_' + containerId, 'expandido');
             } else {
                 container.classList.add('colapsado');
-                icon.innerText = '🔽';
+                if (icon) icon.innerText = '▼';
                 localStorage.setItem('estado_' + containerId, 'colapsado');
+                
+                // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
+                if (containerId === 'acordeon-diagnostico') {
+                    const subSeccionesIA = [
+                        'acordeon-glucosa', 
+                        'acordeon-insulina', 
+                        'acordeon-alimentacion', 
+                        'acordeon-factores', 
+                        'acordeon-medicacion'
+                    ];
+
+                    subSeccionesIA.forEach(subId => {
+                        const subContainer = document.getElementById(subId);
+                        if (subContainer) {
+                            subContainer.classList.add('colapsado');
+                            const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                            if (subIcon) subIcon.innerText = '▼';
+                            localStorage.setItem('estado_' + subId, 'colapsado');
+                        }
+                    });
+                }
             }
         };
 
-
-
-
         function restaurarEstadoAcordeones() {
-    const secciones = [
-        'acordeon-historial', 
-        'acordeon-informes', 
-        'acordeon-diagnostico', 
-        'acordeon-glucosa', 
-        'acordeon-insulina', 
-        'acordeon-alimentacion', 
-        'acordeon-factores', 
-        'acordeon-medicacion'
-    ];
-    
-    secciones.forEach(id => {
-        const container = document.getElementById(id);
-        if (!container) return; // Protección por si algún ID no existe en el HTML
-
-        const estado = localStorage.getItem('estado_' + id);
-        const iconId = id.replace('acordeon-', 'icono-');
-        const iconEl = document.getElementById(iconId);
-
-        // 🔄 TU LÓGICA ORIGINAL INTACTA
-        if (estado === 'abierto') {
-            container.classList.remove('colapsado');
-            if (iconEl) iconEl.innerText = '🔼'; // Icono de abierto
-        } else {
-            // Por defecto (colapsado o primera inicialización) se queda cerrado
-            container.classList.add('colapsado');
-            if (iconEl) iconEl.innerText = '🔽'; // Icono de cerrado
-        }
-    });
-}
-
-/* ⬇️ FUNCIONES ACORDEÓN (TU INTERFAZ MODULAR ORIGINAL + MEJORA IA) ⬇️ */
-window.toggleSeccion = function(containerId, iconId) {
-    const container = document.getElementById(containerId);
-    const icon = document.getElementById(iconId);
-    
-    if (container.classList.contains('colapsado')) {
-        container.classList.remove('colapsado');
-        icon.innerText = '🔼';
-        localStorage.setItem('estado_' + containerId, 'expandido');
-    } else {
-        container.classList.add('colapsado');
-        icon.innerText = '🔽';
-        localStorage.setItem('estado_' + containerId, 'colapsado');
-        
-        // ✨ LA ÚNICA ADICIÓN INDEPENDIENTE: 
-        // Si el usuario cierra Diagnóstico IA, limpiamos visualmente sus sub-acordeones
-        if (containerId === 'acordeon-diagnostico') {
-            const subSeccionesIA = ['acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
-            
-            subSeccionesIA.forEach(subId => {
-                const subContainer = document.getElementById(subId);
-                if (subContainer) {
-                    subContainer.classList.add('colapsado');
-                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
-                    if (subIcon) subIcon.innerText = '🔽';
-                    // NO tocamos el localStorage de estos sub-acordeones para no romper tu persistencia local
-                }
-            });
-        }
-    }
-};
-
-
-
-
-window.toggleSeccion = function(containerId, iconId) {
-    const container = document.getElementById(containerId);
-    const icon = document.getElementById(iconId);
-    if (!container) return;
-    
-    // Cambiar estado actual usando tu palabra exacta 'expandido'
-    if (container.classList.contains('colapsado')) {
-        container.classList.remove('colapsado');
-        if (icon) icon.innerText = '🔼';
-        localStorage.setItem('estado_' + containerId, 'expandido');
-    } else {
-        container.classList.add('colapsado');
-        if (icon) icon.innerText = '🔽';
-        localStorage.setItem('estado_' + containerId, 'colapsado');
-        
-        // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
-        // Solo actúa si el usuario acaba de colapsar la sección de Diagnóstico IA
-        if (containerId === 'acordeon-diagnostico') {
-            const subSeccionesIA = [
+            const secciones = [
+                'acordeon-historial', 
+                'acordeon-informes', 
+                'acordeon-diagnostico', 
                 'acordeon-glucosa', 
                 'acordeon-insulina', 
                 'acordeon-alimentacion', 
                 'acordeon-factores', 
                 'acordeon-medicacion'
             ];
+            
+            secciones.forEach(id => {
+                const container = document.getElementById(id);
+                if (!container) return; 
 
-            subSeccionesIA.forEach(subId => {
-                const subContainer = document.getElementById(subId);
-                if (subContainer) {
-                    subContainer.classList.add('colapsado');
-                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
-                    if (subIcon) subIcon.innerText = '🔽';
-                    localStorage.setItem('estado_' + subId, 'colapsado');
+                const estado = localStorage.getItem('estado_' + id);
+                const iconId = id.replace('acordeon-', 'icono-');
+                const iconEl = document.getElementById(iconId);
+
+                if (estado === 'expandido') {
+                    container.classList.remove('colapsado');
+                    if (iconEl) iconEl.innerText = '▲'; 
+                } else {
+                    container.classList.add('colapsado');
+                    if (iconEl) iconEl.innerText = '▼'; 
                 }
             });
         }
-    }
-};
-
-
-
 
         // Lógica de Backup
         function exportarDatos() {
@@ -1232,6 +1502,7 @@ window.toggleSeccion = function(containerId, iconId) {
         habilitarCierreFuera(modalSalud);
         habilitarCierreFuera(modalAlimentacion);
         habilitarCierreFuera(modalOpcionesToma);
+        habilitarCierreFuera(modalAvanzada);
 
         const limpiarFondoModal = () => document.body.classList.remove('modal-abierto');
         modalReg.addEventListener('close', limpiarFondoModal);
@@ -1242,6 +1513,7 @@ window.toggleSeccion = function(containerId, iconId) {
         modalSalud.addEventListener('close', limpiarFondoModal);
         modalAlimentacion.addEventListener('close', limpiarFondoModal);
         modalOpcionesToma.addEventListener('close', limpiarFondoModal);
+        modalAvanzada.addEventListener('close', limpiarFondoModal);
 
         // Controladores de Matriz
         window.cambiarFiltroTiempo = function(filtro) {
@@ -1358,7 +1630,6 @@ window.toggleSeccion = function(containerId, iconId) {
                     const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
                     const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas.map(p => p.farmaco) : [];
                     
-                    // Solo listamos para añadir puntualmente las que NO son de uso diario
                     const medsDisponibles = todosMeds.filter(m => !pautas.includes(m.nombre));
             
                     let opcionesMeds = `<option value="">Selecciona fármaco...</option>`;
@@ -1366,7 +1637,6 @@ window.toggleSeccion = function(containerId, iconId) {
                         opcionesMeds += `<option value="${m.nombre}" ${medPuntual === m.nombre ? 'selected' : ''}>${m.nombre}</option>`;
                     });
             
-                    // Si estamos editando un historial de un medicamento diario, lo mostramos bloqueado visualmente
                     if (pautas.includes(medPuntual) && !medsDisponibles.find(m => m.nombre === medPuntual)) {
                         opcionesMeds += `<option value="${medPuntual}" selected>${medPuntual} (Toma Diaria)</option>`;
                     }
@@ -1665,6 +1935,8 @@ window.toggleSeccion = function(containerId, iconId) {
             } else if (tipo === 'alimentacion') {
                 renderConfigAlimentacion();
                 modalAlimentacion.showModal();
+            } else if (tipo === 'avanzada') {
+                modalAvanzada.showModal();
             }
         };
 
@@ -2151,9 +2423,6 @@ window.toggleSeccion = function(containerId, iconId) {
 
 
         // 🧠 Motor de Doble Evaluación Dinámica
-        // 🧠 Motor de Doble Evaluación Dinámica (Corregido Ciclo 8h - Formato YYYY-MM-DD)
-
-
 function filtrarRegistros(registros, fTiempo, fTipo) {
     // ⏱️ FUNCIÓN AUXILIAR INTERNA: Convierte la fecha del calendario al "Día Veterinario" real
     function obtenerDiaVeterinario(fechaStr, horaStr) {
@@ -2227,14 +2496,6 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
         return pasaTiempo && pasaTipo;
     });
 }
-
-
-
-
-
-
-
-
 
         function calcularDiagnosticoIA(regs, perfil) {
             const regsGlucosa = regs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa')).map(r => ({...r, v: parseFloat(r.valor), dt: new Date(`${r.fecha}T${r.hora}`)}));
@@ -2403,311 +2664,432 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
             }).join('');
         }
 
-
-
-
-
         function actualizarInterfaz() {
-    const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-    const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-    const lista = document.getElementById('lista-historial');
-    const display = document.getElementById('valor-glucosa');
-    lista.innerHTML = '';
-    
-    const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-    if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
-    else { display.innerText = '---'; }
-
-    const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-
-    // 🔄 ORDENACIÓN BIOLÓGICA DEL HISTORIAL: Obliga a que la madrugada (00:00h a 06:59h) se pinte arriba del todo en la vista diaria
-    if (filtroTiempoActual === 'D' && regsFiltrados.length > 0) {
-        regsFiltrados.sort((a, b) => {
-            const [hA, mA] = a.hora.split(':').map(Number);
-            const [hB, mB] = b.hora.split(':').map(Number);
-            const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
-            const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
-            return minutosB - minutosA; // Orden descendente (más nuevo arriba)
-        });
-    }
-
-    if (regsFiltrados.length > 0) {
-        regsFiltrados.forEach((r, indexArray) => {
-            const originalIndex = todosLosRegs.indexOf(r);
-            const li = document.createElement('li');
+            const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+            const lista = document.getElementById('lista-historial');
+            const display = document.getElementById('valor-glucosa');
+            lista.innerHTML = '';
             
-            const [anio, mes, dia] = r.fecha.split('-');
-            const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
-            
-            let cuerpoHtml = '';
-            const tipoEfectivo = r.tipo || 'glucosa';
+            const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+            if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
+            else { display.innerText = '---'; }
 
-            if (tipoEfectivo === 'glucosa') {
-                const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
-                const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
-                const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
-                
-                let alertaHtml = '';
-                if (r.alertaContexto && !r.alertaOculta) {
-                    alertaHtml = `
-                        <div class="capsula-alerta">
-                            <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
-                            <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
+            const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+
+            // 🔄 ORDENACIÓN BIOLÓGICA DEL HISTORIAL: Obliga a que la madrugada (00:00h a 06:59h) se pinte arriba del todo en la vista diaria
+            if (filtroTiempoActual === 'D' && regsFiltrados.length > 0) {
+                regsFiltrados.sort((a, b) => {
+                    const [hA, mA] = a.hora.split(':').map(Number);
+                    const [hB, mB] = b.hora.split(':').map(Number);
+                    const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
+                    const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
+                    return minutosB - minutosA; // Orden descendente (más nuevo arriba)
+                });
+            }
+
+            if (regsFiltrados.length > 0) {
+                regsFiltrados.forEach((r, indexArray) => {
+                    const originalIndex = todosLosRegs.indexOf(r);
+                    const li = document.createElement('li');
+                    
+                    const [anio, mes, dia] = r.fecha.split('-');
+                    const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
+                    
+                    let cuerpoHtml = '';
+                    const tipoEfectivo = r.tipo || 'glucosa';
+
+                    if (tipoEfectivo === 'glucosa') {
+                        const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
+                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
+                        const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
+                        
+                        let alertaHtml = '';
+                        if (r.alertaContexto && !r.alertaOculta) {
+                            alertaHtml = `
+                                <div class="capsula-alerta">
+                                    <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
+                                    <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
+                                </div>
+                            `;
+                        }
+
+                        cuerpoHtml = `
+                            <div style="flex-grow: 1;">
+                                <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
+                                <small>${fechaFormateada} - ${r.hora}</small><br>
+                                ${ctxStr}
+                                <div style="margin-top:4px;">${tags}</div>
+                                ${alertaHtml}
+                            </div>
+                        `;
+                    } else if (tipoEfectivo === 'insulina') {
+                        cuerpoHtml = `
+                            <div style="flex-grow: 1;">
+                                <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
+                                <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
+                                <small>${fechaFormateada} - ${r.hora}</small>
+                            </div>
+                        `;
+                    } else if (tipoEfectivo === 'factor') {
+                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
+                        cuerpoHtml = `
+                            <div style="flex-grow: 1;">
+                                <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
+                                <small>${fechaFormateada} - ${r.hora}</small><br>
+                                <div style="margin-top:4px;">${tags}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    li.innerHTML = `
+                        ${cuerpoHtml}
+                        <div style="display: flex; gap: 5px; align-self: center;">
+                            <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
+                            <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
                         </div>
                     `;
-                }
+                    
+                    if (indexArray === 0 && regsFiltrados.length > 1) {
+                        li.style.cursor = 'pointer';
+                        li.title = "Pulse aquí para ir al final de la lista";
+                        li.onclick = function(e) {
+                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                                const lastItem = lista.lastElementChild;
+                                if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            }
+                        };
+                    }
 
-                cuerpoHtml = `
-                    <div style="flex-grow: 1;">
-                        <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
-                        <small>${fechaFormateada} - ${r.hora}</small><br>
-                        ${ctxStr}
-                        <div style="margin-top:4px;">${tags}</div>
-                        ${alertaHtml}
-                    </div>
-                `;
-            } else if (tipoEfectivo === 'insulina') {
-                cuerpoHtml = `
-                    <div style="flex-grow: 1;">
-                        <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
-                        <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
-                        <small>${fechaFormateada} - ${r.hora}</small>
-                    </div>
-                `;
-            } else if (tipoEfectivo === 'factor') {
-                const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
-                cuerpoHtml = `
-                    <div style="flex-grow: 1;">
-                        <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
-                        <small>${fechaFormateada} - ${r.hora}</small><br>
-                        <div style="margin-top:4px;">${tags}</div>
-                    </div>
-                `;
+                    if (indexArray === regsFiltrados.length - 1) {
+                        li.style.cursor = 'pointer';
+                        li.title = "Pulse aquí para volver a la vista inicial";
+                        li.onclick = function(e) {
+                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                                atajoNavegacionRapida();
+                            }
+                        };
+                    }
+
+                    lista.appendChild(li);
+                });
+            } else {
+                lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
             }
             
-            li.innerHTML = `
-                ${cuerpoHtml}
-                <div style="display: flex; gap: 5px; align-self: center;">
-                    <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
-                    <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
-                </div>
-            `;
+            calcularYMostrarInformes(regsFiltrados, perfil);
+            calcularDiagnosticoIA(todosLosRegs, perfil);
+            actualizarPendientes(); 
             
-            if (indexArray === 0 && regsFiltrados.length > 1) {
-                li.style.cursor = 'pointer';
-                li.title = "Pulse aquí para ir al final de la lista";
-                li.onclick = function(e) {
-                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                        const lastItem = lista.lastElementChild;
-                        if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                    }
-                };
-            }
-
-            if (indexArray === regsFiltrados.length - 1) {
-                li.style.cursor = 'pointer';
-                li.title = "Pulse aquí para volver a la vista inicial";
-                li.onclick = function(e) {
-                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                        atajoNavegacionRapida();
-                    }
-                };
-            }
-
-            lista.appendChild(li);
-        });
-    } else {
-        lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
-    }
-    
-    calcularYMostrarInformes(regsFiltrados, perfil);
-    calcularDiagnosticoIA(todosLosRegs, perfil);
-    actualizarPendientes(); 
-    
             // 🔥 CONTROL DE LA GRÁFICA INTELIGENTE DENTRO DE INTERFAZ 🔥
-    if (mediaQueryLandscape.matches) {
-        let datosParaGrafica = [...regsFiltrados];
+            if (mediaQueryLandscape.matches) {
+                let datosParaGrafica = [...regsFiltrados];
 
-        if (filtroTiempoActual === 'D') {
-            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+                if (filtroTiempoActual === 'D') {
+                    const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
 
-            // Si hay 1 o ningún registro de glucosa en el nuevo ciclo de hoy, unimos ayer + hoy
-            if (glucosasHoy.length <= 1) {
-                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                    // Si hay 1 o ningún registro de glucosa en el nuevo ciclo de hoy, unimos ayer + hoy
+                    if (glucosasHoy.length <= 1) {
+                        const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                        
+                        // Unimos poniendo el ciclo completo de AYER (que ya incluye su madrugada) primero, y el punto de HOY al final
+                        datosParaGrafica = [...regsAyer, ...regsFiltrados];
+                    }
+                }
                 
-                // Unimos poniendo el ciclo completo de AYER (que ya incluye su madrugada) primero, y el punto de HOY al final
-                datosParaGrafica = [...regsAyer, ...regsFiltrados];
-            }
-        }
-        
-        if (datosParaGrafica.length > 0) {
-            renderizarGrafica(datosParaGrafica);
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-function renderizarGrafica(datos) {
-    // 1. Extraemos únicamente los registros que contengan valor de glucosa
-    const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
-    
-    // 📈 ORDENACIÓN CRONOLÓGICA INFALIBLE (De pasado a presente)
-    // Ordenamos absolutamente TODOS los filtros (D, S, M, Todo) combinando su fecha y hora real
-    datosGlucosa.sort((a, b) => {
-        const timestampA = new Date(`${a.fecha}T${a.hora}:00`);
-        const timestampB = new Date(`${b.fecha}T${b.hora}:00`);
-        return timestampA - timestampB; // Orden ascendente: el más antiguo a la izquierda, el más nuevo a la derecha
-    });
-
-    const ctx = document.getElementById('miGrafica').getContext('2d');
-    
-    const esModoOscuro = document.body.classList.contains('theme-dark');
-    const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
-    const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
-    
-    if (chartInstance) { chartInstance.destroy(); }
-    
-    chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: datosGlucosa.map(d => {
-                const [anio, mes, dia] = d.fecha.split('-');
-                return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
-            }),
-            datasets: [{
-                label: 'Evolución Glucosa (mg/dL)',
-                data: datosGlucosa.map(d => d.valor),
-                borderColor: '#5CA4FF', 
-                backgroundColor: 'transparent', 
-                tension: 0.2,
-                fill: false,
-                borderWidth: 3,
-                pointRadius: 4,
-                pointBackgroundColor: '#5CA4FF'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false, 
-            scales: { 
-                y: { 
-                    beginAtZero: false,
-                    grid: { color: colorCuadricula }, 
-                    ticks: { color: colorTextosEjes } 
-                },
-                x: {
-                    grid: { color: colorCuadricula },
-                    ticks: { color: colorTextosEjes }
+                if (datosParaGrafica.length > 0) {
+                    renderizarGrafica(datosParaGrafica);
                 }
             }
         }
-    });
-}
 
+        function renderizarGrafica(datos) {
+            // 1. Extraemos únicamente los registros que contengan valor de glucosa
+            const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
+            
+            // 📈 ORDENACIÓN CRONOLÓGICA INFALIBLE (De pasado a presente)
+            // Ordenamos absolutamente TODOS los filtros (D, S, M, Todo) combinando su fecha y hora real
+            datosGlucosa.sort((a, b) => {
+                const timestampA = new Date(`${a.fecha}T${a.hora}:00`);
+                const timestampB = new Date(`${b.fecha}T${b.hora}:00`);
+                return timestampA - timestampB; // Orden ascendente: el más antiguo a la izquierda, el más nuevo a la derecha
+            });
 
+            const ctx = document.getElementById('miGrafica').getContext('2d');
+            
+            const esModoOscuro = document.body.classList.contains('theme-dark');
+            const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+            const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
+            
+            if (chartInstance) { chartInstance.destroy(); }
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datosGlucosa.map(d => {
+                        const [anio, mes, dia] = d.fecha.split('-');
+                        return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
+                    }),
+                    datasets: [{
+                        label: 'Evolución Glucosa (mg/dL)',
+                        data: datosGlucosa.map(d => d.valor),
+                        borderColor: '#5CA4FF', 
+                        backgroundColor: 'transparent', 
+                        tension: 0.2,
+                        fill: false,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#5CA4FF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: colorCuadricula }, 
+                            ticks: { color: colorTextosEjes } 
+                        },
+                        x: {
+                            grid: { color: colorCuadricula },
+                            ticks: { color: colorTextosEjes }
+                        }
+                    }
+                }
+            });
+        }
 
+        // --- MANEJO DE ORIENTACIÓN Y GRÁFICA INTELIGENTE ---
+        const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
 
+        function manejarCambioOrientacion(e) {
+            const contenedor = document.getElementById('contenedor-grafico');
+            if (!contenedor) return;
+            
+            if (e.matches) {
+                contenedor.style.display = 'flex';
+                const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+                const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+                let datosParaGrafica = [...regsFiltrados];
 
-
-// --- MANEJO DE ORIENTACIÓN Y GRÁFICA INTELIGENTE ---
-const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
-
-function manejarCambioOrientacion(e) {
-    const contenedor = document.getElementById('contenedor-grafico');
-    if (!contenedor) return;
-    
-    if (e.matches) {
-        contenedor.style.display = 'flex';
-        const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-        const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-        let datosParaGrafica = [...regsFiltrados];
-
-        if (filtroTiempoActual === 'D') {
-            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-            if (glucosasHoy.length <= 1) {
-                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
-                datosParaGrafica = [...regsAyer, ...regsFiltrados];
+                if (filtroTiempoActual === 'D') {
+                    const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+                    if (glucosasHoy.length <= 1) {
+                        const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                        datosParaGrafica = [...regsAyer, ...regsFiltrados];
+                    }
+                }
+                
+                if (datosParaGrafica.length > 0) {
+                    renderizarGrafica(datosParaGrafica);
+                } else {
+                    if (chartInstance) { 
+                        chartInstance.destroy(); 
+                        chartInstance = null;
+                    }
+                }
+            } else {
+                contenedor.style.display = 'none';
             }
         }
-        
-        if (datosParaGrafica.length > 0) {
-            renderizarGrafica(datosParaGrafica);
-        } else {
-            if (chartInstance) { 
-                chartInstance.destroy(); 
-                chartInstance = null;
-            }
+
+        // Escuchador de eventos para el cambio de pantalla
+        mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+
+        // Inicialización de la Interfaz al cargar la App
+        actualizarInterfaz();
+        restaurarEstadoAcordeones(); 
+
+        // Retardo de seguridad para asegurar el renderizado en horizontal
+        if (mediaQueryLandscape.matches) { 
+            setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
         }
-    } else {
-        contenedor.style.display = 'none';
-    }
-}
 
-// Escuchador de eventos para el cambio de pantalla
-mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+        // Auto-scroll adaptativo para pantallas móviles al enfocar inputs
+        document.addEventListener('focusin', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                setTimeout(function() {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300); 
+            }
+        });
 
-// Inicialización de la Interfaz al cargar la App
-actualizarInterfaz();
-if (typeof restaurarEstadoAcordeones === 'function') {
-    restaurarEstadoAcordeones(); 
-}
+        // 🔥 FUNCIONES DE CONFIGURACIÓN AVANZADA Y MÓDULOS DE DESARROLLO 🔥
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_KEY = 'ef660e654281f681e0c643a10c9407ab';
+            const CACHE_KEY = 'pawsitive_cached_clima';
+            const CACHE_TS_KEY = 'pawsitive_cached_clima_ts';
+            const CACHE_TTL = 30000;
+            const GEO_UPDATE_MS = 15000;
 
-// Retardo de seguridad para asegurar el renderizado en horizontal
-if (mediaQueryLandscape.matches) { 
-    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
-}
+            const chkGeo = document.getElementById('chk-geo');
+            const geoResultados = document.getElementById('geo-resultados');
+            const alertaGeo = document.getElementById('alerta-geo');
+            const btnGeo = document.getElementById('btn-geo');
+            const chkEruda = document.getElementById('chk-eruda');
+            const chkInsulina = document.getElementById('chk-insulina');
+            const opcionesInsulina = document.getElementById('opciones-insulina');
+            const selPauta = document.getElementById('sel-pauta');
+            const selAntelacion = document.getElementById('sel-antelacion');
+            const previewInsulina = document.getElementById('preview-insulina');
 
-// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
-document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-        setTimeout(function() {
-            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300); 
-    }
-});
+            let geoInterval = null;
+            let geoFetchPromise = null;
 
+            const save = (key, value) => localStorage.setItem(key, String(value));
 
+            const getDateTime = () => {
+                const now = new Date();
+                return `${now.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })} | ${now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+            };
 
+            const updateInsulinaPreview = () => {
+                previewInsulina.textContent = `La insulina será notificada ${selAntelacion.value} minutos antes de la pauta de cada ${selPauta.value} horas.`;
+            };
 
+            const getClima = async () => {
+                if (!navigator.geolocation) return 'Geo no soportada';
 
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+                    });
 
+                    const { latitude, longitude } = position.coords;
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}&lang=es`
+                    );
 
-// Escuchador de eventos para el cambio de pantalla
-mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+                    if (!response.ok) throw new Error('Weather request failed');
 
-// Inicialización de la Interfaz al cargar la App
-actualizarInterfaz();
-if (typeof restaurarEstadoAcordeones === 'function') {
-    restaurarEstadoAcordeones(); 
-}
+                    const data = await response.json();
+                    return `${data.name} - ${Math.round(data.main.temp)}°C`;
+                } catch {
+                    return 'Ubicación/Clima no disponible';
+                }
+            };
 
-// Retardo de seguridad para asegurar el renderizado en horizontal
-if (mediaQueryLandscape.matches) { 
-    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
-}
+            const updateGeoScreen = async () => {
+                if (!chkGeo.checked) return;
 
-// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
-document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-        setTimeout(function() {
-            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300); 
-    }
-});
+                const cached = sessionStorage.getItem(CACHE_KEY);
+                const lastFetch = Number(sessionStorage.getItem(CACHE_TS_KEY) || 0);
+                const now = Date.now();
 
+                if (cached && now - lastFetch <= CACHE_TTL) {
+                    geoResultados.innerHTML = `🕒 ${getDateTime()} <br> 🌤️ ${cached}`;
+                    return;
+                }
 
+                if (!geoFetchPromise) {
+                    geoFetchPromise = getClima().finally(() => {
+                        geoFetchPromise = null;
+                    });
+                }
 
+                const clima = await geoFetchPromise;
+                sessionStorage.setItem(CACHE_KEY, clima);
+                sessionStorage.setItem(CACHE_TS_KEY, String(Date.now()));
+                geoResultados.innerHTML = `🕒 ${getDateTime()} <br> 🌤️ ${clima}`;
+            };
 
+            const stopGeoUpdates = () => {
+                if (geoInterval) clearInterval(geoInterval);
+                geoInterval = null;
+            };
 
+            const startGeoUpdates = () => {
+                stopGeoUpdates();
+                updateGeoScreen();
+                geoInterval = setInterval(updateGeoScreen, GEO_UPDATE_MS);
+            };
 
+            const toggleGeo = () => {
+                save('pawsitive_geo_active', chkGeo.checked);
+                alertaGeo.style.display = chkGeo.checked ? 'flex' : 'none';
 
+                if (chkGeo.checked) {
+                    startGeoUpdates();
+                } else {
+                    stopGeoUpdates();
+                    geoResultados.textContent = '📍 Localización desactivada';
+                }
+            };
+
+            const loadEruda = () => {
+                if (window.eruda) {
+                    window.eruda.init();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+                script.onload = () => window.eruda && window.eruda.init();
+                document.body.appendChild(script);
+            };
+
+            chkGeo.checked = localStorage.getItem('pawsitive_geo_active') === 'true';
+            chkEruda.checked = localStorage.getItem('pawsitive_eruda_active') === 'true';
+            chkInsulina.checked = localStorage.getItem('pawsitive_insulina_active') === 'true';
+
+            const savedPauta = localStorage.getItem('pawsitive_sel_pauta');
+            const savedAntelacion = localStorage.getItem('pawsitive_sel_antelacion');
+
+            if (savedPauta) selPauta.value = savedPauta;
+            if (savedAntelacion) selAntelacion.value = savedAntelacion;
+
+            opcionesInsulina.style.display = chkInsulina.checked ? 'flex' : 'none';
+            updateInsulinaPreview();
+
+            toggleGeo();
+            if (chkEruda.checked) loadEruda();
+
+            chkGeo.addEventListener('change', toggleGeo);
+
+            btnGeo.addEventListener('click', () => {
+                alertaGeo.style.display = 'none';
+            });
+
+            chkEruda.addEventListener('change', () => {
+                if (chkEruda.checked) {
+                    // El prompt nativo detiene la interfaz un instante
+                    const pinIntroducido = prompt("🔒 Acceso Restringido.\nIntroduce el PIN numérico de desarrollador:");
+                    
+                    if (pinIntroducido === "1974") {
+                        save('pawsitive_eruda_active', 'true');
+                        // Damos 150ms para que se oculte el teclado del móvil antes de arrancar Eruda
+                        setTimeout(() => {
+                            loadEruda();
+                        }, 150);
+                    } else {
+                        alert("❌ PIN incorrecto. Acceso denegado.");
+                        chkEruda.checked = false;
+                        save('pawsitive_eruda_active', 'false');
+                    }
+                } else {
+                    save('pawsitive_eruda_active', 'false');
+                    if (window.eruda) {
+                        alert('✓ Consola desactivada. Para ocultarla por completo, recarga la pestaña.');
+                    }
+                }
+            });
+
+            chkInsulina.addEventListener('change', () => {
+                save('pawsitive_insulina_active', chkInsulina.checked);
+                opcionesInsulina.style.display = chkInsulina.checked ? 'flex' : 'none';
+            });
+
+            selPauta.addEventListener('change', () => {
+                save('pawsitive_sel_pauta', selPauta.value);
+                updateInsulinaPreview();
+            });
+
+            selAntelacion.addEventListener('change', () => {
+                save('pawsitive_sel_antelacion', selAntelacion.value);
+                updateInsulinaPreview();
+            });
+        });
 
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
@@ -2716,8 +3098,6 @@ document.addEventListener('focusin', function(e) {
               .catch((err) => console.log('Error al registrar el Service Worker', err));
           });
         }
-
-
     </script>
 </body>
 </html>
