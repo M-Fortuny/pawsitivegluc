@@ -199,7 +199,6 @@
             opacity: 1;
             box-sizing: border-box;
             transition: opacity 0.3s ease-out;
-            min-height: 0; /* 🛡️ CRUCIAL para el colapso hermético de grid 0fr */
         }
         .acordeon-container.colapsado .acordeon-content {
             opacity: 0;
@@ -384,12 +383,12 @@
             background: #1E1E1E !important;
         }
         .theme-dark .sub-acordeon .header-colapsable {
-            background-color: #2C2C2C !important; 
+            background-color: #2C2C2C !important; /* Botones a color gris oscuro en modo dark */
             border-bottom: 1px solid #444;
         }
         .theme-dark .sub-acordeon .header-colapsable h4, 
         .theme-dark .sub-acordeon .header-colapsable .icono-colapso {
-            color: #E0E0E0 !important; 
+            color: #E0E0E0 !important; /* Textos a gris claro/blanco */
         }
         .theme-dark .dato-card {
             background-color: #252525 !important;
@@ -422,10 +421,9 @@
 
         /* 📱 AJUSTES QUIRÚRGICOS PARA MÓVIL (Vista Retrato) */
         @media (max-width: 768px) {
-            body { padding-top: 10px; } /* Ajuste fino de aire global */
-            #contenedor-fijo-superior { padding-top: 0px; padding-bottom: 0px; }
-            header { margin-top: 0px; margin-bottom: 25px; height: auto; } /* Más aire por abajo */
-            h1 { font-size: 2.2rem; margin-top: 0; line-height: 1.1; }
+            #contenedor-fijo-superior { padding-top: 5px; padding-bottom: 0px; }
+            header { margin-bottom: 5px; height: auto; }
+            h1 { font-size: 2.2rem; }
 
             .seccion-herramientas { padding: 0.6rem; margin-bottom: 1rem; }
             .btn-herramienta { padding: 0.5rem 0.2rem; }
@@ -725,7 +723,7 @@
     <section class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-historial', 'icono-historial')">
             <h3 style="margin: 0; color: var(--h1-color);">📆 Historial</h3>
-            <span id="icono-historial" class="icono-colapso">▲</span>
+            <span id="icono-historial" class="icono-colapso">🔼</span>
         </div>
         
         <div id="acordeon-historial" class="acordeon-container">
@@ -754,120 +752,110 @@
             <h3 style="margin: 0; color: var(--h1-color); display: flex; align-items: center; gap: 10px;">✍ 
                  Diagnóstico IA
             </h3>
-            <span id="icono-diagnostico" class="icono-colapso">▲</span>
+            <span id="icono-diagnostico" class="icono-colapso">🔼</span>
         </div>
 
         <div id="acordeon-diagnostico" class="acordeon-container">
-            <div class="acordeon-content">
-                <div style="padding-top: 15px;">
-                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                        <div class="header-colapsable" style="background: #e8f5e9; padding: 10px 15px;" onclick="toggleSeccion('acordeon-glucosa', 'icono-glucosa')">
-                            <h4 style="margin: 0; color: #2e7d32;">🩸 Glucosa</h4>
-                            <span id="icono-glucosa" class="icono-colapso" style="font-size: 1rem;">▼</span>
-                        </div>
-                        <div id="acordeon-glucosa" class="acordeon-container colapsado">
-                            <div class="acordeon-content">
-                                <div style="padding: 15px; background: var(--card-bg);">
-                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                        <strong>💡 Tip del Asistente:</strong> Aquí analizamos las horas donde la glucosa es más estable y calculamos el "Nadir" (punto más bajo tras la insulina) para que sepas cuándo dar un snack preventivo.
-                                    </div>
-                                    <div class="dato-card" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.8rem; color: #666;">Mejores horas (Estabilidad):</span>
-                                        <div id="diag-glucosa-horas" style="font-weight: bold; color: #2e7d32;">Recopilando patrón...</div>
-                                    </div>
-                                    <div class="dato-card">
-                                        <span style="font-size: 0.8rem; color: #666;">Nadir estimado (Punto más bajo):</span>
-                                        <div id="diag-glucosa-nadir" style="font-weight: bold; color: #2e7d32;">Calculando...</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="acordeon-content" style="padding-top: 15px;">
+                
+                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                    <div class="header-colapsable" style="background: #e8f5e9; padding: 10px 15px;" onclick="toggleSeccion('acordeon-glucosa', 'icono-glucosa')">
+                        <h4 style="margin: 0; color: #2e7d32;">🩸 Glucosa</h4>
+                        <span id="icono-glucosa" class="icono-colapso" style="font-size: 1rem;">🔽</span>
                     </div>
-
-                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                        <div class="header-colapsable" style="background: #e3f2fd; padding: 10px 15px;" onclick="toggleSeccion('acordeon-insulina', 'icono-insulina')">
-                            <h4 style="margin: 0; color: #1565c0;">💉 Insulina</h4>
-                            <span id="icono-insulina" class="icono-colapso" style="font-size: 1rem;">▼</span>
-                        </div>
-                        <div id="acordeon-insulina" class="acordeon-container colapsado">
-                            <div class="acordeon-content">
-                                <div style="padding: 15px; background: var(--card-bg);">
-                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                        <strong>💡 Tip del Asistente:</strong> Medimos la sensibilidad de tu perro a la insulina. Compara el rendimiento de la dosis de la mañana con la de la noche.
-                                    </div>
-                                    <div class="dato-card" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.8rem; color: #666;">Sensibilidad (Caída por Unidad):</span>
-                                        <div id="diag-insulina-sensibilidad" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
-                                    </div>
-                                    <div class="dato-card">
-                                        <span style="font-size: 0.8rem; color: #666;">Rendimiento AM vs PM:</span>
-                                        <div id="diag-insulina-rendimiento" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
-                                    </div>
-                                </div>
+                    <div id="acordeon-glucosa" class="acordeon-container colapsado">
+                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
+                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                <strong>💡 Tip del Asistente:</strong> Aquí analizamos las horas donde la glucosa es más estable y calculamos el "Nadir" (punto más bajo tras la insulina) para que sepas cuándo dar un snack preventivo.
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                        <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-alimentacion', 'icono-alimentacion')">
-                            <h4 style="margin: 0; color: #e65100;">🍚 Alimentación</h4>
-                            <span id="icono-alimentacion" class="icono-colapso" style="font-size: 1rem;">▼</span>
-                        </div>
-                        <div id="acordeon-alimentacion" class="acordeon-container colapsado">
-                            <div class="acordeon-content">
-                                <div style="padding: 15px; background: var(--card-bg);">
-                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                        <strong>💡 Tip del Asistente:</strong> Conoce qué tipo de dieta le provoca picos de glucosa más rápidos y descubre si es mejor inyectar la insulina antes o durante la comida.
-                                    </div>
-                                    <div class="dato-card" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.8rem; color: #666;">Pico Postprandial:</span>
-                                        <div id="diag-alimentacion-pico" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
-                                    </div>
-                                </div>
+                            <div class="dato-card" style="margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #666;">Mejores horas (Estabilidad):</span>
+                                <div id="diag-glucosa-horas" style="font-weight: bold; color: #2e7d32;">Recopilando patrón...</div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                        <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-factores', 'icono-factores')">
-                            <h4 style="margin: 0; color: #e65100;">🏃 Factores</h4>
-                            <span id="icono-factores" class="icono-colapso" style="font-size: 1rem;">▼</span>
-                        </div>
-                        <div id="acordeon-factores" class="acordeon-container colapsado">
-                            <div class="acordeon-content">
-                                <div style="padding: 15px; background: var(--card-bg);">
-                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                        <strong>💡 Tip del Asistente:</strong> Observa cuánto disminuye la glucosa tras un paseo intenso vs uno normal, o cómo las siestas largas estabilizan la curva.
-                                    </div>
-                                    <div class="dato-card" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.8rem; color: #666;">Impacto del Paseo:</span>
-                                        <div id="diag-factores-paseo" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sub-acordeon" style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
-                        <div class="header-colapsable" style="background: #f3e5f5; padding: 10px 15px;" onclick="toggleSeccion('acordeon-medicacion', 'icono-medicacion')">
-                            <h4 style="margin: 0; color: #8e24aa;">💊 Medicación</h4>
-                            <span id="icono-medicacion" class="icono-colapso" style="font-size: 1rem;">▼</span>
-                        </div>
-                        <div id="acordeon-medicacion" class="acordeon-container colapsado">
-                            <div class="acordeon-content">
-                                <div style="padding: 15px; background: var(--card-bg);">
-                                    <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
-                                        <strong>💡 Tip del Asistente:</strong> Descubre si algún medicamento concurrente está aumentando la media de glucosa (impacto diabetogénico) o afectando sus deposiciones.
-                                    </div>
-                                    <div class="dato-card" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.8rem; color: #666;">Impacto Diabetogénico:</span>
-                                        <div id="diag-medicacion-impacto" style="font-weight: bold; color: #8e24aa;">Requiere más datos cruzados...</div>
-                                    </div>
-                                </div>
+                            <div class="dato-card">
+                                <span style="font-size: 0.8rem; color: #666;">Nadir estimado (Punto más bajo):</span>
+                                <div id="diag-glucosa-nadir" style="font-weight: bold; color: #2e7d32;">Calculando...</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                    <div class="header-colapsable" style="background: #e3f2fd; padding: 10px 15px;" onclick="toggleSeccion('acordeon-insulina', 'icono-insulina')">
+                        <h4 style="margin: 0; color: #1565c0;">💉 Insulina</h4>
+                        <span id="icono-insulina" class="icono-colapso" style="font-size: 1rem;">🔽</span>
+                    </div>
+                    <div id="acordeon-insulina" class="acordeon-container colapsado">
+                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
+                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                <strong>💡 Tip del Asistente:</strong> Medimos la sensibilidad de tu perro a la insulina. Compara el rendimiento de la dosis de la mañana con la de la noche.
+                            </div>
+                            <div class="dato-card" style="margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #666;">Sensibilidad (Caída por Unidad):</span>
+                                <div id="diag-insulina-sensibilidad" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
+                            </div>
+                            <div class="dato-card">
+                                <span style="font-size: 0.8rem; color: #666;">Rendimiento AM vs PM:</span>
+                                <div id="diag-insulina-rendimiento" style="font-weight: bold; color: #1565c0;">Requiere más datos cruzados...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                    <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-alimentacion', 'icono-alimentacion')">
+                        <h4 style="margin: 0; color: #e65100;">🍚 Alimentación</h4>
+                        <span id="icono-alimentacion" class="icono-colapso" style="font-size: 1rem;">🔽</span>
+                    </div>
+                    <div id="acordeon-alimentacion" class="acordeon-container colapsado">
+                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
+                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                <strong>💡 Tip del Asistente:</strong> Conoce qué tipo de dieta le provoca picos de glucosa más rápidos y descubre si es mejor inyectar la insulina antes o durante la comida.
+                            </div>
+                            <div class="dato-card" style="margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #666;">Pico Postprandial:</span>
+                                <div id="diag-alimentacion-pico" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sub-acordeon" style="margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                    <div class="header-colapsable" style="background: #fff3e0; padding: 10px 15px;" onclick="toggleSeccion('acordeon-factores', 'icono-factores')">
+                        <h4 style="margin: 0; color: #e65100;">🏃 Factores</h4>
+                        <span id="icono-factores" class="icono-colapso" style="font-size: 1rem;">🔽</span>
+                    </div>
+                    <div id="acordeon-factores" class="acordeon-container colapsado">
+                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
+                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                <strong>💡 Tip del Asistente:</strong> Observa cuánto disminuye la glucosa tras un paseo intenso vs uno normal, o cómo las siestas largas estabilizan la curva.
+                            </div>
+                            <div class="dato-card" style="margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #666;">Impacto del Paseo:</span>
+                                <div id="diag-factores-paseo" style="font-weight: bold; color: #e65100;">Requiere más datos cruzados...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-acordeon" style="border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                    <div class="header-colapsable" style="background: #f3e5f5; padding: 10px 15px;" onclick="toggleSeccion('acordeon-medicacion', 'icono-medicacion')">
+                        <h4 style="margin: 0; color: #8e24aa;">💊 Medicación</h4>
+                        <span id="icono-medicacion" class="icono-colapso" style="font-size: 1rem;">🔽</span>
+                    </div>
+                    <div id="acordeon-medicacion" class="acordeon-container colapsado">
+                        <div class="acordeon-content" style="padding: 15px; background: var(--card-bg);">
+                            <div class="guia-tutor" style="background: #FFF9C4; border-left: 4px solid #FBC02D; padding: 10px; border-radius: 4px; font-size: 0.85rem; color: #5c5c5c; margin-bottom: 15px;">
+                                <strong>💡 Tip del Asistente:</strong> Descubre si algún medicamento concurrente está aumentando la media de glucosa (impacto diabetogénico) o afectando sus deposiciones.
+                            </div>
+                            <div class="dato-card" style="margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #666;">Impacto Diabetogénico:</span>
+                                <div id="diag-medicacion-impacto" style="font-weight: bold; color: #8e24aa;">Requiere más datos cruzados...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -875,7 +863,7 @@
     <section id="seccion-informes" class="bloque-ajustado seccion-vertical">
         <div class="header-colapsable" onclick="toggleSeccion('acordeon-informes', 'icono-informes')">
             <h3 style="margin: 0; color: var(--h1-color);">📟 Motor de Informes Clínicos</h3>
-            <span id="icono-informes" class="icono-colapso">▲</span>
+            <span id="icono-informes" class="icono-colapso">🔼</span>
         </div>
 
         <div id="acordeon-informes" class="acordeon-container">
@@ -1362,73 +1350,133 @@
             return [...dbComidasDefault, ...custom];
         }
 
-        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR SANEADA) ⬇️ */
+        /* ⬇️ FUNCIONES ACORDEÓN (INTERFAZ MODULAR) ⬇️ */
         window.toggleSeccion = function(containerId, iconId) {
             const container = document.getElementById(containerId);
             const icon = document.getElementById(iconId);
-            if (!container) return;
             
             if (container.classList.contains('colapsado')) {
                 container.classList.remove('colapsado');
-                if (icon) icon.innerText = '▲';
+                icon.innerText = '🔼';
                 localStorage.setItem('estado_' + containerId, 'expandido');
             } else {
                 container.classList.add('colapsado');
-                if (icon) icon.innerText = '▼';
+                icon.innerText = '🔽';
                 localStorage.setItem('estado_' + containerId, 'colapsado');
-                
-                // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
-                if (containerId === 'acordeon-diagnostico') {
-                    const subSeccionesIA = [
-                        'acordeon-glucosa', 
-                        'acordeon-insulina', 
-                        'acordeon-alimentacion', 
-                        'acordeon-factores', 
-                        'acordeon-medicacion'
-                    ];
-
-                    subSeccionesIA.forEach(subId => {
-                        const subContainer = document.getElementById(subId);
-                        if (subContainer) {
-                            subContainer.classList.add('colapsado');
-                            const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
-                            if (subIcon) subIcon.innerText = '▼';
-                            localStorage.setItem('estado_' + subId, 'colapsado');
-                        }
-                    });
-                }
             }
         };
 
+
+
+
         function restaurarEstadoAcordeones() {
-            const secciones = [
-                'acordeon-historial', 
-                'acordeon-informes', 
-                'acordeon-diagnostico', 
+    const secciones = [
+        'acordeon-historial', 
+        'acordeon-informes', 
+        'acordeon-diagnostico', 
+        'acordeon-glucosa', 
+        'acordeon-insulina', 
+        'acordeon-alimentacion', 
+        'acordeon-factores', 
+        'acordeon-medicacion'
+    ];
+    
+    secciones.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return; // Protección por si algún ID no existe en el HTML
+
+        const estado = localStorage.getItem('estado_' + id);
+        const iconId = id.replace('acordeon-', 'icono-');
+        const iconEl = document.getElementById(iconId);
+
+        // 🔄 TU LÓGICA ORIGINAL INTACTA
+        if (estado === 'abierto') {
+            container.classList.remove('colapsado');
+            if (iconEl) iconEl.innerText = '🔼'; // Icono de abierto
+        } else {
+            // Por defecto (colapsado o primera inicialización) se queda cerrado
+            container.classList.add('colapsado');
+            if (iconEl) iconEl.innerText = '🔽'; // Icono de cerrado
+        }
+    });
+}
+
+/* ⬇️ FUNCIONES ACORDEÓN (TU INTERFAZ MODULAR ORIGINAL + MEJORA IA) ⬇️ */
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // ✨ LA ÚNICA ADICIÓN INDEPENDIENTE: 
+        // Si el usuario cierra Diagnóstico IA, limpiamos visualmente sus sub-acordeones
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = ['acordeon-glucosa', 'acordeon-insulina', 'acordeon-alimentacion', 'acordeon-factores', 'acordeon-medicacion'];
+            
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    // NO tocamos el localStorage de estos sub-acordeones para no romper tu persistencia local
+                }
+            });
+        }
+    }
+};
+
+
+
+
+window.toggleSeccion = function(containerId, iconId) {
+    const container = document.getElementById(containerId);
+    const icon = document.getElementById(iconId);
+    if (!container) return;
+    
+    // Cambiar estado actual usando tu palabra exacta 'expandido'
+    if (container.classList.contains('colapsado')) {
+        container.classList.remove('colapsado');
+        if (icon) icon.innerText = '🔼';
+        localStorage.setItem('estado_' + containerId, 'expandido');
+    } else {
+        container.classList.add('colapsado');
+        if (icon) icon.innerText = '🔽';
+        localStorage.setItem('estado_' + containerId, 'colapsado');
+        
+        // 🧠 REGLA DE ORO DE DIAGNÓSTICO IA: Cierre automático en cadena
+        // Solo actúa si el usuario acaba de colapsar la sección de Diagnóstico IA
+        if (containerId === 'acordeon-diagnostico') {
+            const subSeccionesIA = [
                 'acordeon-glucosa', 
                 'acordeon-insulina', 
                 'acordeon-alimentacion', 
                 'acordeon-factores', 
                 'acordeon-medicacion'
             ];
-            
-            secciones.forEach(id => {
-                const container = document.getElementById(id);
-                if (!container) return; 
 
-                const estado = localStorage.getItem('estado_' + id);
-                const iconId = id.replace('acordeon-', 'icono-');
-                const iconEl = document.getElementById(iconId);
-
-                if (estado === 'expandido') {
-                    container.classList.remove('colapsado');
-                    if (iconEl) iconEl.innerText = '▲'; 
-                } else {
-                    container.classList.add('colapsado');
-                    if (iconEl) iconEl.innerText = '▼'; 
+            subSeccionesIA.forEach(subId => {
+                const subContainer = document.getElementById(subId);
+                if (subContainer) {
+                    subContainer.classList.add('colapsado');
+                    const subIcon = document.getElementById(subId.replace('acordeon-', 'icono-'));
+                    if (subIcon) subIcon.innerText = '🔽';
+                    localStorage.setItem('estado_' + subId, 'colapsado');
                 }
             });
         }
+    }
+};
+
+
+
 
         // Lógica de Backup
         function exportarDatos() {
@@ -1630,6 +1678,7 @@
                     const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
                     const pautas = (perfil.salud && perfil.salud.pautas) ? perfil.salud.pautas.map(p => p.farmaco) : [];
                     
+                    // Solo listamos para añadir puntualmente las que NO son de uso diario
                     const medsDisponibles = todosMeds.filter(m => !pautas.includes(m.nombre));
             
                     let opcionesMeds = `<option value="">Selecciona fármaco...</option>`;
@@ -1637,6 +1686,7 @@
                         opcionesMeds += `<option value="${m.nombre}" ${medPuntual === m.nombre ? 'selected' : ''}>${m.nombre}</option>`;
                     });
             
+                    // Si estamos editando un historial de un medicamento diario, lo mostramos bloqueado visualmente
                     if (pautas.includes(medPuntual) && !medsDisponibles.find(m => m.nombre === medPuntual)) {
                         opcionesMeds += `<option value="${medPuntual}" selected>${medPuntual} (Toma Diaria)</option>`;
                     }
@@ -2423,6 +2473,9 @@
 
 
         // 🧠 Motor de Doble Evaluación Dinámica
+        // 🧠 Motor de Doble Evaluación Dinámica (Corregido Ciclo 8h - Formato YYYY-MM-DD)
+
+
 function filtrarRegistros(registros, fTiempo, fTipo) {
     // ⏱️ FUNCIÓN AUXILIAR INTERNA: Convierte la fecha del calendario al "Día Veterinario" real
     function obtenerDiaVeterinario(fechaStr, horaStr) {
@@ -2496,6 +2549,14 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
         return pasaTiempo && pasaTipo;
     });
 }
+
+
+
+
+
+
+
+
 
         function calcularDiagnosticoIA(regs, perfil) {
             const regsGlucosa = regs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa')).map(r => ({...r, v: parseFloat(r.valor), dt: new Date(`${r.fecha}T${r.hora}`)}));
@@ -2664,256 +2725,304 @@ function filtrarRegistros(registros, fTiempo, fTipo) {
             }).join('');
         }
 
+
+
+
+
         function actualizarInterfaz() {
-            const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-            const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
-            const lista = document.getElementById('lista-historial');
-            const display = document.getElementById('valor-glucosa');
-            lista.innerHTML = '';
+    const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+    const perfil = JSON.parse(localStorage.getItem(KEY_PERFIL) || '{}');
+    const lista = document.getElementById('lista-historial');
+    const display = document.getElementById('valor-glucosa');
+    lista.innerHTML = '';
+    
+    const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+    if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
+    else { display.innerText = '---'; }
+
+    const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+
+    // 🔄 ORDENACIÓN BIOLÓGICA DEL HISTORIAL: Obliga a que la madrugada (00:00h a 06:59h) se pinte arriba del todo en la vista diaria
+    if (filtroTiempoActual === 'D' && regsFiltrados.length > 0) {
+        regsFiltrados.sort((a, b) => {
+            const [hA, mA] = a.hora.split(':').map(Number);
+            const [hB, mB] = b.hora.split(':').map(Number);
+            const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
+            const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
+            return minutosB - minutosA; // Orden descendente (más nuevo arriba)
+        });
+    }
+
+    if (regsFiltrados.length > 0) {
+        regsFiltrados.forEach((r, indexArray) => {
+            const originalIndex = todosLosRegs.indexOf(r);
+            const li = document.createElement('li');
             
-            const ultimasGlucosas = todosLosRegs.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-            if (ultimasGlucosas.length > 0) { display.innerText = ultimasGlucosas[0].valor; } 
-            else { display.innerText = '---'; }
+            const [anio, mes, dia] = r.fecha.split('-');
+            const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
+            
+            let cuerpoHtml = '';
+            const tipoEfectivo = r.tipo || 'glucosa';
 
-            const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-
-            // 🔄 ORDENACIÓN BIOLÓGICA DEL HISTORIAL: Obliga a que la madrugada (00:00h a 06:59h) se pinte arriba del todo en la vista diaria
-            if (filtroTiempoActual === 'D' && regsFiltrados.length > 0) {
-                regsFiltrados.sort((a, b) => {
-                    const [hA, mA] = a.hora.split(':').map(Number);
-                    const [hB, mB] = b.hora.split(':').map(Number);
-                    const minutosA = (hA < 7 ? hA + 24 : hA) * 60 + mA;
-                    const minutosB = (hB < 7 ? hB + 24 : hB) * 60 + mB;
-                    return minutosB - minutosA; // Orden descendente (más nuevo arriba)
-                });
-            }
-
-            if (regsFiltrados.length > 0) {
-                regsFiltrados.forEach((r, indexArray) => {
-                    const originalIndex = todosLosRegs.indexOf(r);
-                    const li = document.createElement('li');
-                    
-                    const [anio, mes, dia] = r.fecha.split('-');
-                    const fechaFormateada = `${dia}/${mes}/${anio.slice(2)}`;
-                    
-                    let cuerpoHtml = '';
-                    const tipoEfectivo = r.tipo || 'glucosa';
-
-                    if (tipoEfectivo === 'glucosa') {
-                        const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
-                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
-                        const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
-                        
-                        let alertaHtml = '';
-                        if (r.alertaContexto && !r.alertaOculta) {
-                            alertaHtml = `
-                                <div class="capsula-alerta">
-                                    <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
-                                    <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
-                                </div>
-                            `;
-                        }
-
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
-                                <small>${fechaFormateada} - ${r.hora}</small><br>
-                                ${ctxStr}
-                                <div style="margin-top:4px;">${tags}</div>
-                                ${alertaHtml}
-                            </div>
-                        `;
-                    } else if (tipoEfectivo === 'insulina') {
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
-                                <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
-                                <small>${fechaFormateada} - ${r.hora}</small>
-                            </div>
-                        `;
-                    } else if (tipoEfectivo === 'factor') {
-                        const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
-                        cuerpoHtml = `
-                            <div style="flex-grow: 1;">
-                                <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
-                                <small>${fechaFormateada} - ${r.hora}</small><br>
-                                <div style="margin-top:4px;">${tags}</div>
-                            </div>
-                        `;
-                    }
-                    
-                    li.innerHTML = `
-                        ${cuerpoHtml}
-                        <div style="display: flex; gap: 5px; align-self: center;">
-                            <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
-                            <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
+            if (tipoEfectivo === 'glucosa') {
+                const ctxIns = buscarInsulinaPrevia(r, todosLosRegs);
+                const tags = generarHtmlTags(r.factores, r.factoresDetalle, false);
+                const ctxStr = ctxIns ? `<span class="info-contexto">Insulina Activa Previa: ${ctxIns.insulina} | Dosis: ${ctxIns.dosis}U</span>` : '<span class="info-contexto">Sin inyección previa detectada</span>';
+                
+                let alertaHtml = '';
+                if (r.alertaContexto && !r.alertaOculta) {
+                    alertaHtml = `
+                        <div class="capsula-alerta">
+                            <span style="flex:1;">⚠️ <strong>Pawsitive Guard:</strong> ${r.alertaContexto}</span>
+                            <button type="button" class="btn-accion btn-entendido" onclick="ocultarAlerta(${originalIndex}); event.stopPropagation();">Entendido</button>
                         </div>
                     `;
-                    
-                    if (indexArray === 0 && regsFiltrados.length > 1) {
-                        li.style.cursor = 'pointer';
-                        li.title = "Pulse aquí para ir al final de la lista";
-                        li.onclick = function(e) {
-                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                                const lastItem = lista.lastElementChild;
-                                if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                            }
-                        };
-                    }
+                }
 
-                    if (indexArray === regsFiltrados.length - 1) {
-                        li.style.cursor = 'pointer';
-                        li.title = "Pulse aquí para volver a la vista inicial";
-                        li.onclick = function(e) {
-                            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
-                                atajoNavegacionRapida();
-                            }
-                        };
-                    }
-
-                    lista.appendChild(li);
-                });
-            } else {
-                lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: var(--accent-color); font-size: 1.2rem;">🩸 ${r.valor} mg/dL</strong><br>
+                        <small>${fechaFormateada} - ${r.hora}</small><br>
+                        ${ctxStr}
+                        <div style="margin-top:4px;">${tags}</div>
+                        ${alertaHtml}
+                    </div>
+                `;
+            } else if (tipoEfectivo === 'insulina') {
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: #1976D2; font-size: 1.1rem;">💉 Inyección de Insulina</strong><br>
+                        <span style="font-weight:600; font-size:0.9rem;">${r.insulina} — Dosis: ${r.dosis} U</span><br>
+                        <small>${fechaFormateada} - ${r.hora}</small>
+                    </div>
+                `;
+            } else if (tipoEfectivo === 'factor') {
+                const tags = generarHtmlTags(r.factores, r.factoresDetalle, true);
+                cuerpoHtml = `
+                    <div style="flex-grow: 1;">
+                        <strong style="color: #E65100; font-size: 1.1rem;">🍚 Factor Influyente</strong><br>
+                        <small>${fechaFormateada} - ${r.hora}</small><br>
+                        <div style="margin-top:4px;">${tags}</div>
+                    </div>
+                `;
             }
             
-            calcularYMostrarInformes(regsFiltrados, perfil);
-            calcularDiagnosticoIA(todosLosRegs, perfil);
-            actualizarPendientes(); 
+            li.innerHTML = `
+                ${cuerpoHtml}
+                <div style="display: flex; gap: 5px; align-self: center;">
+                    <button class="btn-accion btn-editar" onclick="editar(${originalIndex})">✎</button>
+                    <button class="btn-accion btn-borrar" onclick="borrar(${originalIndex})">X</button>
+                </div>
+            `;
             
-            // 🔥 CONTROL DE LA GRÁFICA INTELIGENTE DENTRO DE INTERFAZ 🔥
-            if (mediaQueryLandscape.matches) {
-                let datosParaGrafica = [...regsFiltrados];
-
-                if (filtroTiempoActual === 'D') {
-                    const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-
-                    // Si hay 1 o ningún registro de glucosa en el nuevo ciclo de hoy, unimos ayer + hoy
-                    if (glucosasHoy.length <= 1) {
-                        const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
-                        
-                        // Unimos poniendo el ciclo completo de AYER (que ya incluye su madrugada) primero, y el punto de HOY al final
-                        datosParaGrafica = [...regsAyer, ...regsFiltrados];
+            if (indexArray === 0 && regsFiltrados.length > 1) {
+                li.style.cursor = 'pointer';
+                li.title = "Pulse aquí para ir al final de la lista";
+                li.onclick = function(e) {
+                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                        const lastItem = lista.lastElementChild;
+                        if(lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
                     }
-                }
-                
-                if (datosParaGrafica.length > 0) {
-                    renderizarGrafica(datosParaGrafica);
-                }
+                };
             }
-        }
 
-        function renderizarGrafica(datos) {
-            // 1. Extraemos únicamente los registros que contengan valor de glucosa
-            const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
-            
-            // 📈 ORDENACIÓN CRONOLÓGICA INFALIBLE (De pasado a presente)
-            // Ordenamos absolutamente TODOS los filtros (D, S, M, Todo) combinando su fecha y hora real
-            datosGlucosa.sort((a, b) => {
-                const timestampA = new Date(`${a.fecha}T${a.hora}:00`);
-                const timestampB = new Date(`${b.fecha}T${b.hora}:00`);
-                return timestampA - timestampB; // Orden ascendente: el más antiguo a la izquierda, el más nuevo a la derecha
-            });
-
-            const ctx = document.getElementById('miGrafica').getContext('2d');
-            
-            const esModoOscuro = document.body.classList.contains('theme-dark');
-            const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
-            const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
-            
-            if (chartInstance) { chartInstance.destroy(); }
-            
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: datosGlucosa.map(d => {
-                        const [anio, mes, dia] = d.fecha.split('-');
-                        return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
-                    }),
-                    datasets: [{
-                        label: 'Evolución Glucosa (mg/dL)',
-                        data: datosGlucosa.map(d => d.valor),
-                        borderColor: '#5CA4FF', 
-                        backgroundColor: 'transparent', 
-                        tension: 0.2,
-                        fill: false,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#5CA4FF'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, 
-                    scales: { 
-                        y: { 
-                            beginAtZero: false,
-                            grid: { color: colorCuadricula }, 
-                            ticks: { color: colorTextosEjes } 
-                        },
-                        x: {
-                            grid: { color: colorCuadricula },
-                            ticks: { color: colorTextosEjes }
-                        }
+            if (indexArray === regsFiltrados.length - 1) {
+                li.style.cursor = 'pointer';
+                li.title = "Pulse aquí para volver a la vista inicial";
+                li.onclick = function(e) {
+                    if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('btn-accion')) {
+                        atajoNavegacionRapida();
                     }
-                }
-            });
-        }
-
-        // --- MANEJO DE ORIENTACIÓN Y GRÁFICA INTELIGENTE ---
-        const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
-
-        function manejarCambioOrientacion(e) {
-            const contenedor = document.getElementById('contenedor-grafico');
-            if (!contenedor) return;
-            
-            if (e.matches) {
-                contenedor.style.display = 'flex';
-                const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
-                const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
-                let datosParaGrafica = [...regsFiltrados];
-
-                if (filtroTiempoActual === 'D') {
-                    const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
-                    if (glucosasHoy.length <= 1) {
-                        const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
-                        datosParaGrafica = [...regsAyer, ...regsFiltrados];
-                    }
-                }
-                
-                if (datosParaGrafica.length > 0) {
-                    renderizarGrafica(datosParaGrafica);
-                } else {
-                    if (chartInstance) { 
-                        chartInstance.destroy(); 
-                        chartInstance = null;
-                    }
-                }
-            } else {
-                contenedor.style.display = 'none';
+                };
             }
-        }
 
-        // Escuchador de eventos para el cambio de pantalla
-        mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
-
-        // Inicialización de la Interfaz al cargar la App
-        actualizarInterfaz();
-        restaurarEstadoAcordeones(); 
-
-        // Retardo de seguridad para asegurar el renderizado en horizontal
-        if (mediaQueryLandscape.matches) { 
-            setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
-        }
-
-        // Auto-scroll adaptativo para pantallas móviles al enfocar inputs
-        document.addEventListener('focusin', function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-                setTimeout(function() {
-                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300); 
-            }
+            lista.appendChild(li);
         });
+    } else {
+        lista.innerHTML = '<li style="justify-content: center; color: #888; font-size: 0.9rem;">No hay registros para este filtro</li>';
+    }
+    
+    calcularYMostrarInformes(regsFiltrados, perfil);
+    calcularDiagnosticoIA(todosLosRegs, perfil);
+    actualizarPendientes(); 
+    
+            // 🔥 CONTROL DE LA GRÁFICA INTELIGENTE DENTRO DE INTERFAZ 🔥
+    if (mediaQueryLandscape.matches) {
+        let datosParaGrafica = [...regsFiltrados];
+
+        if (filtroTiempoActual === 'D') {
+            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+
+            // Si hay 1 o ningún registro de glucosa en el nuevo ciclo de hoy, unimos ayer + hoy
+            if (glucosasHoy.length <= 1) {
+                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                
+                // Unimos poniendo el ciclo completo de AYER (que ya incluye su madrugada) primero, y el punto de HOY al final
+                datosParaGrafica = [...regsAyer, ...regsFiltrados];
+            }
+        }
+        
+        if (datosParaGrafica.length > 0) {
+            renderizarGrafica(datosParaGrafica);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+function renderizarGrafica(datos) {
+    // 1. Extraemos únicamente los registros que contengan valor de glucosa
+    const datosGlucosa = datos.filter(d => d.valor && (!d.tipo || d.tipo === 'glucosa'));
+    
+    // 📈 ORDENACIÓN CRONOLÓGICA INFALIBLE (De pasado a presente)
+    // Ordenamos absolutamente TODOS los filtros (D, S, M, Todo) combinando su fecha y hora real
+    datosGlucosa.sort((a, b) => {
+        const timestampA = new Date(`${a.fecha}T${a.hora}:00`);
+        const timestampB = new Date(`${b.fecha}T${b.hora}:00`);
+        return timestampA - timestampB; // Orden ascendente: el más antiguo a la izquierda, el más nuevo a la derecha
+    });
+
+    const ctx = document.getElementById('miGrafica').getContext('2d');
+    
+    const esModoOscuro = document.body.classList.contains('theme-dark');
+    const colorCuadricula = esModoOscuro ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+    const colorTextosEjes = esModoOscuro ? '#B0B0B0' : '#666666';
+    
+    if (chartInstance) { chartInstance.destroy(); }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datosGlucosa.map(d => {
+                const [anio, mes, dia] = d.fecha.split('-');
+                return `${dia}/${mes}/${anio.slice(2)} (${d.hora})`;
+            }),
+            datasets: [{
+                label: 'Evolución Glucosa (mg/dL)',
+                data: datosGlucosa.map(d => d.valor),
+                borderColor: '#5CA4FF', 
+                backgroundColor: 'transparent', 
+                tension: 0.2,
+                fill: false,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointBackgroundColor: '#5CA4FF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, 
+            scales: { 
+                y: { 
+                    beginAtZero: false,
+                    grid: { color: colorCuadricula }, 
+                    ticks: { color: colorTextosEjes } 
+                },
+                x: {
+                    grid: { color: colorCuadricula },
+                    ticks: { color: colorTextosEjes }
+                }
+            }
+        }
+    });
+}
+
+
+
+
+
+
+// --- MANEJO DE ORIENTACIÓN Y GRÁFICA INTELIGENTE ---
+const mediaQueryLandscape = window.matchMedia('(orientation: landscape) and (max-device-width: 950px), (orientation: landscape) and (max-height: 550px)');
+
+function manejarCambioOrientacion(e) {
+    const contenedor = document.getElementById('contenedor-grafico');
+    if (!contenedor) return;
+    
+    if (e.matches) {
+        contenedor.style.display = 'flex';
+        const todosLosRegs = JSON.parse(localStorage.getItem(KEY_GLUCOSA) || '[]');
+        const regsFiltrados = filtrarRegistros(todosLosRegs, filtroTiempoActual, filtroTipoActual);
+        let datosParaGrafica = [...regsFiltrados];
+
+        if (filtroTiempoActual === 'D') {
+            const glucosasHoy = regsFiltrados.filter(r => r.valor && (!r.tipo || r.tipo === 'glucosa'));
+            if (glucosasHoy.length <= 1) {
+                const regsAyer = filtrarRegistros(todosLosRegs, 'D_AYER', filtroTipoActual); 
+                datosParaGrafica = [...regsAyer, ...regsFiltrados];
+            }
+        }
+        
+        if (datosParaGrafica.length > 0) {
+            renderizarGrafica(datosParaGrafica);
+        } else {
+            if (chartInstance) { 
+                chartInstance.destroy(); 
+                chartInstance = null;
+            }
+        }
+    } else {
+        contenedor.style.display = 'none';
+    }
+}
+
+// Escuchador de eventos para el cambio de pantalla
+mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+
+// Inicialización de la Interfaz al cargar la App
+actualizarInterfaz();
+if (typeof restaurarEstadoAcordeones === 'function') {
+    restaurarEstadoAcordeones(); 
+}
+
+// Retardo de seguridad para asegurar el renderizado en horizontal
+if (mediaQueryLandscape.matches) { 
+    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
+}
+
+// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        setTimeout(function() {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); 
+    }
+});
+
+
+
+
+
+
+
+// Escuchador de eventos para el cambio de pantalla
+mediaQueryLandscape.addEventListener('change', manejarCambioOrientacion);
+
+// Inicialización de la Interfaz al cargar la App
+actualizarInterfaz();
+if (typeof restaurarEstadoAcordeones === 'function') {
+    restaurarEstadoAcordeones(); 
+}
+
+// Retardo de seguridad para asegurar el renderizado en horizontal
+if (mediaQueryLandscape.matches) { 
+    setTimeout(() => manejarCambioOrientacion(mediaQueryLandscape), 300); 
+}
+
+// Auto-scroll adaptativo para pantallas móviles al enfocar inputs
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        setTimeout(function() {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); 
+    }
+});
 
         // 🔥 FUNCIONES DE CONFIGURACIÓN AVANZADA Y MÓDULOS DE DESARROLLO 🔥
         document.addEventListener('DOMContentLoaded', () => {
