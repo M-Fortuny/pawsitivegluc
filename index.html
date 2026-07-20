@@ -3145,156 +3145,115 @@ window.toggleSeccion = function(containerId, iconId) {
             }
         });
 
-        // 🔄 REGISTRO NATIVO SANEADO (SIN ESPACIOS INVISIBLES)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('Service Worker activo en maestro con éxito.', reg))
-                    .catch((err) => console.log('Error al registrar SW en maestro.', err));
-            });
-        }
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    /* ==========================================================================
-       1. REGISTRO DEL SERVICE WORKER
-       ========================================================================== */
-    if ('serviceWorker' in navigator) {
+        /* ==========================================================================
+   1. REGISTRO DEL SERVICE WORKER (Al final de tu script)
+   ========================================================================== */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registrado con éxito.', reg))
-        .catch(err => console.error('Error al registrar el Service Worker:', err));
+            .then((reg) => console.log('Service Worker activo en maestro con éxito.', reg))
+            .catch((err) => console.log('Error al registrar SW en maestro.', err));
+    });
+}
+
+/* ==========================================================================
+   2. MOTOR DE INSULINA INTELIGENTE (Modo Diagnóstico)
+   ========================================================================== */
+async function sincronizarAlarmaInsulinaAutomatica() {
+    console.log("🕵️‍♂️ INICIANDO DIAGNÓSTICO DE ALARMA...");
+
+    const controlActivo = localStorage.getItem('pawsitive_insulina_active') === 'true';
+    if (!controlActivo) {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ accion: 'cancelarAlarmaInsulina' });
+        }
+        return;
     }
 
-    /* ==========================================================================
-       2. UTILIDADES BÁSICAS
-       ========================================================================== */
-    const save = (key, value) => localStorage.setItem(key, String(value));
+    const pautaHoras = parseInt(localStorage.getItem('pawsitive_pauta_insulina') || '12', 10);
+    const antelacionMinutos = parseInt(localStorage.getItem('pawsitive_antelacion_insulina') || '15', 10);
+    
+    const historialRaw = localStorage.getItem('pawsitive_historial');
+    if (!historialRaw) return;
 
-    // 🧹 LIMPIEZA: Función Acordeón ÚNICA y definitiva (Sin duplicados)
-    window.toggleSeccion = function(containerId, iconId) {
-        const container = document.getElementById(containerId);
-        const icon = document.getElementById(iconId);
-        if (container.style.display === "none" || container.style.display === "") {
-            container.style.display = "block";
-            if (icon) icon.textContent = "▲";
-        } else {
-            container.style.display = "none";
-            if (icon) icon.textContent = "▼";
-        }
-    };
+    let historial = [];
+    try { historial = JSON.parse(historialRaw); } catch (e) { return; }
 
-    /* ==========================================================================
-       3. NÚCLEO CLÍNICO: CÁLCULO DE INSULINA
-       ========================================================================== */
-    async function sincronizarAlarmaInsulinaAutomatica() {
-        const controlActivo = localStorage.getItem('pawsitive_insulina_active') === 'true';
-        
-        // Si el usuario lo apagó, matamos los procesos del Service Worker
-        if (!controlActivo) {
-            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ accion: 'cancelarAlarmaInsulina' });
-            }
-            return;
-        }
+    const ultimaInyeccion = historial.slice().reverse().find(registro => {
+        const esSalud = registro.categoria === 'Salud' || registro.tipo === 'Salud';
+        const detalles = (registro.detalles || registro.titulo || "").toLowerCase();
+        return esSalud && detalles.includes('insulina');
+    });
 
-        const pautaHoras = parseInt(localStorage.getItem('pawsitive_pauta_insulina') || '12', 10);
-        const antelacionMinutos = parseInt(localStorage.getItem('pawsitive_antelacion_insulina') || '15', 10);
-        const nombreMascota = localStorage.getItem('pawsitive_nombre_mascota') || 'Mascota';
+    if (!ultimaInyeccion) {
+        console.warn("⚠️ No se encontró inyección de insulina en el historial.");
+        return;
+    }
 
-        const historialRaw = localStorage.getItem('pawsitive_historial');
-        if (!historialRaw) return;
+    const timestampUltimaDose = new Date(ultimaInyeccion.fecha).getTime(); 
+    const timestampProximaDosis = timestampUltimaDose + (pautaHoras * 60 * 60 * 1000);
+    const timestampDisparoAlarma = timestampProximaDosis - (antelacionMinutos * 60 * 1000);
+    const tiempoEsperaMs = timestampDisparoAlarma - Date.now();
 
-        let historial = [];
-        try {
-            historial = JSON.parse(historialRaw);
-        } catch (e) {
-            return;
-        }
+    if (tiempoEsperaMs > 0) {
+        console.log(`✅ Alarma enviada. Sonará en ${Math.round(tiempoEsperaMs / 1000 / 60)} minutos.`);
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            if (Notification.permission === 'default') await Notification.requestPermission();
+            if (Notification.permission === 'granted') {
+                const nombreMascota = localStorage.getItem('pawsitive_nombre_mascota') || 'Mascota';
+                const horaPrevista = new Date(timestampProximaDosis).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-        // Búsqueda inversa de la última dosis de insulina
-        const ultimaInyeccion = historial.slice().reverse().find(registro => {
-            const esSalud = registro.categoria === 'Salud' || registro.tipo === 'Salud';
-            const tieneInsulina = registro.detalles && registro.detalles.toLowerCase().includes('insulina');
-            return esSalud && tieneInsulina;
-        });
-
-        if (!ultimaInyeccion) return;
-
-        const timestampUltimaDose = new Date(ultimaInyeccion.fecha).getTime(); 
-        const timestampProximaDosis = timestampUltimaDose + (pautaHoras * 60 * 60 * 1000);
-        const timestampDisparoAlarma = timestampProximaDosis - (antelacionMinutos * 60 * 1000);
-        const tiempoEsperaMs = timestampDisparoAlarma - Date.now();
-
-        // Formato exacto solicitado HH:MM
-        const horaPrevista = new Date(timestampProximaDosis).toLocaleTimeString('es-ES', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
-
-        // Solo programamos si la hora de aviso está en el futuro
-        if (tiempoEsperaMs > 0) {
-            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                if (Notification.permission === 'default') await Notification.requestPermission();
-
-                if (Notification.permission === 'granted') {
-                    navigator.serviceWorker.controller.postMessage({
-                        accion: 'programarAlarmaInsulina',
-                        titulo: '💉 Pawsitive Gluc',
-                        texto: `${nombreMascota} Próxima dosis de insulina prevista para las ${horaPrevista}`,
-                        tiempo: timestampDisparoAlarma
-                    });
-                }
+                navigator.serviceWorker.controller.postMessage({
+                    accion: 'programarAlarmaInsulina',
+                    titulo: '💉 Pawsitive Gluc',
+                    texto: `${nombreMascota} Próxima dosis de insulina prevista para las ${horaPrevista}`,
+                    tiempo: timestampDisparoAlarma
+                });
             }
         }
     }
+}
 
-    /* ==========================================================================
-       4. CONEXIÓN CON LA INTERFAZ (LISTENERS)
-       ========================================================================== */
+/* ==========================================================================
+   3. ACTIVADORES DE LOS BOTONES DE CONFIGURACIÓN
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
     const chkInsulina = document.getElementById('chk-insulina');
     const opcionesInsulina = document.getElementById('opciones-insulina');
     const selPauta = document.getElementById('sel-pauta');
     const selAntelacion = document.getElementById('sel-antelacion');
 
-    // Recuperar estados previos de la interfaz al cargar la app
     if (chkInsulina) {
         const isActivo = localStorage.getItem('pawsitive_insulina_active') === 'true';
         chkInsulina.checked = isActivo;
         if (opcionesInsulina) opcionesInsulina.style.display = isActivo ? 'flex' : 'none';
         
-        // Listener principal del interruptor
         chkInsulina.addEventListener('change', () => {
-            save('pawsitive_insulina_active', chkInsulina.checked);
+            localStorage.setItem('pawsitive_insulina_active', chkInsulina.checked);
             if (opcionesInsulina) opcionesInsulina.style.display = chkInsulina.checked ? 'flex' : 'none';
-            sincronizarAlarmaInsulinaAutomatica(); // Recalcula o cancela de inmediato
+            sincronizarAlarmaInsulinaAutomatica(); 
         });
     }
 
     if (selPauta) {
-        const pautaGuardada = localStorage.getItem('pawsitive_pauta_insulina');
-        if (pautaGuardada) selPauta.value = pautaGuardada;
+        selPauta.value = localStorage.getItem('pawsitive_pauta_insulina') || '12';
         selPauta.addEventListener('change', () => {
-            save('pawsitive_pauta_insulina', selPauta.value);
+            localStorage.setItem('pawsitive_pauta_insulina', selPauta.value);
             sincronizarAlarmaInsulinaAutomatica();
         });
     }
 
     if (selAntelacion) {
-        const antelacionGuardada = localStorage.getItem('pawsitive_antelacion_insulina');
-        if (antelacionGuardada) selAntelacion.value = antelacionGuardada;
+        selAntelacion.value = localStorage.getItem('pawsitive_antelacion_insulina') || '15';
         selAntelacion.addEventListener('change', () => {
-            save('pawsitive_antelacion_insulina', selAntelacion.value);
+            localStorage.setItem('pawsitive_antelacion_insulina', selAntelacion.value);
             sincronizarAlarmaInsulinaAutomatica();
         });
     }
 
-    // Arranque de seguridad: Garantiza que la alarma sigue viva si la app se recarga
+    // Arrancar chequeo al cargar
     sincronizarAlarmaInsulinaAutomatica();
-
-}); // Fin del DOMContentLoaded
+});
 
 
     </script>
